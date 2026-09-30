@@ -1,0 +1,8 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="root-container" style="flex-grow: 1; align-items: center; justify-content: center; width: 100%; height: 100%;">
+        <ui:Label text="Smog Buster" name="title-label"/>
+        <ui:Button text="Jugar" name="btn-play"/>
+        <ui:Button text="Opciones" name="btn-options"/>
+        <ui:Button text="Salir" name="btn-exit"/>
+    </ui:VisualElement>
+</ui:UXML>
