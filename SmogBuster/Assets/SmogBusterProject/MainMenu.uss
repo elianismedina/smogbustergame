@@ -1,0 +1,365 @@
+/* ---------- Paleta ----------
+   Fondo:   rgb(14, 28, 38)
+   Verde:   rgb(120, 230, 170)
+   Smog:    rgb(150, 140, 110)
+*/
+
+.root-container {
+    flex-grow: 1;
+    background-color: rgb(14, 28, 38);
+    overflow: hidden;
+}
+
+/* ---------- Fondo ---------- */
+
+.background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.sky {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+.sky--top {
+    top: 0;
+    height: 40%;
+    background-color: rgb(16, 34, 48);
+}
+
+.sky--mid {
+    top: 40%;
+    height: 30%;
+    background-color: rgb(34, 52, 58);
+}
+
+.sky--low {
+    top: 70%;
+    bottom: 0;
+    background-color: rgb(62, 66, 58);
+}
+
+.sun {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    right: 7%;
+    top: 9%;
+    border-radius: 80px;
+    background-color: rgb(225, 190, 120);
+    opacity: 0.25;
+}
+
+.skyline {
+    position: absolute;
+    left: -2%;
+    right: -2%;
+    bottom: 0;
+    height: 42%;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.building {
+    background-color: rgb(10, 20, 26);
+    margin: 0 4px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.building--light {
+    background-color: rgb(18, 32, 38);
+}
+
+.smog-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.smog {
+    position: absolute;
+    border-radius: 400px;
+    background-color: rgb(150, 140, 110);
+    transition-property: translate, opacity;
+    transition-duration: 9s;
+    transition-timing-function: ease-in-out;
+}
+
+.smog--a {
+    width: 70%;
+    height: 34%;
+    left: -15%;
+    bottom: 2%;
+    opacity: 0.14;
+}
+
+.smog--b {
+    width: 60%;
+    height: 28%;
+    right: -12%;
+    bottom: 10%;
+    opacity: 0.12;
+}
+
+.smog--c {
+    width: 50%;
+    height: 22%;
+    left: 22%;
+    bottom: -10%;
+    opacity: 0.16;
+}
+
+.smog--d {
+    width: 45%;
+    height: 18%;
+    left: 5%;
+    top: 6%;
+    opacity: 0.06;
+}
+
+/* Alterna cada pocos segundos desde MainMenuController */
+.smog-layer--drift .smog--a { translate: 12% 0; opacity: 0.2; }
+.smog-layer--drift .smog--b { translate: -10% -4%; opacity: 0.08; }
+.smog-layer--drift .smog--c { translate: -8% 0; opacity: 0.12; }
+.smog-layer--drift .smog--d { translate: 15% 4%; opacity: 0.1; }
+
+/* ---------- Contenido ---------- */
+
+.safe-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+}
+
+.menu {
+    align-items: center;
+    width: 100%;
+    max-width: 640px;
+    flex-shrink: 1;
+    opacity: 0;
+    translate: 0 24px;
+    transition-property: opacity, translate;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
+}
+
+.menu--visible {
+    opacity: 1;
+    translate: 0 0;
+}
+
+.title-block {
+    align-items: center;
+}
+
+.title {
+    font-size: 120px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    letter-spacing: 12px;
+    color: rgb(225, 235, 230);
+    text-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+    margin: 0;
+    padding: 0;
+}
+
+.title--accent {
+    margin-top: -24px;
+    color: rgb(120, 230, 170);
+}
+
+.subtitle {
+    font-size: 30px;
+    -unity-text-align: middle-center;
+    color: rgb(185, 205, 210);
+    margin-top: 8px;
+    margin-bottom: 48px;
+}
+
+.button-column {
+    width: 100%;
+    max-width: 520px;
+}
+
+.menu-button {
+    min-height: 88px;
+    margin: 8px 0;
+    padding: 0 24px;
+    font-size: 38px;
+    letter-spacing: 4px;
+    -unity-font-style: bold;
+    color: white;
+    background-color: rgba(32, 70, 78, 0.9);
+    border-width: 3px;
+    border-color: rgb(120, 230, 170);
+    border-radius: 24px;
+    transition-property: background-color, scale, opacity;
+    transition-duration: 0.15s;
+}
+
+.menu-button:hover,
+.menu-button:focus {
+    background-color: rgb(44, 102, 104);
+}
+
+.menu-button:active {
+    background-color: rgb(120, 230, 170);
+    color: rgb(14, 28, 38);
+    scale: 0.96 0.96;
+}
+
+.menu-button:disabled {
+    opacity: 0.5;
+}
+
+.menu-button--primary {
+    min-height: 104px;
+    font-size: 44px;
+    background-color: rgb(46, 150, 104);
+    border-color: rgb(160, 245, 195);
+}
+
+.menu-button--primary:hover,
+.menu-button--primary:focus {
+    background-color: rgb(60, 180, 124);
+}
+
+.menu-button--ghost {
+    background-color: rgba(14, 28, 38, 0.6);
+    border-color: rgb(110, 130, 140);
+    color: rgb(185, 205, 210);
+}
+
+.menu-button--ghost:hover,
+.menu-button--ghost:focus {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.version {
+    position: absolute;
+    bottom: 24px;
+    right: 32px;
+    font-size: 24px;
+    color: rgb(110, 130, 140);
+}
+
+/* ---------- Panel de opciones ---------- */
+
+.overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    background-color: rgba(5, 12, 16, 0.75);
+    display: none;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.2s;
+}
+
+.overlay--visible {
+    opacity: 1;
+}
+
+.panel {
+    width: 100%;
+    max-width: 760px;
+    padding: 40px 48px;
+    background-color: rgb(20, 40, 50);
+    border-width: 3px;
+    border-color: rgb(120, 230, 170);
+    border-radius: 32px;
+}
+
+.panel-title {
+    font-size: 56px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    letter-spacing: 6px;
+    color: rgb(120, 230, 170);
+    margin-bottom: 24px;
+}
+
+.panel-button {
+    margin-top: 24px;
+}
+
+.option-slider,
+.option-toggle {
+    min-height: 80px;
+    margin: 6px 0;
+    align-items: center;
+}
+
+.option-slider .unity-base-field__label,
+.option-toggle .unity-base-field__label {
+    min-width: 220px;
+    font-size: 34px;
+    color: white;
+}
+
+.option-slider .unity-base-slider__tracker {
+    height: 12px;
+    margin-top: -6px;
+    border-radius: 6px;
+    border-width: 0;
+    background-color: rgb(50, 80, 88);
+}
+
+.option-slider .unity-base-slider__dragger {
+    width: 48px;
+    height: 48px;
+    margin-top: -24px;
+    margin-left: -24px;
+    border-radius: 24px;
+    border-width: 0;
+    background-color: rgb(120, 230, 170);
+}
+
+.option-toggle .unity-toggle__checkmark {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    border-width: 3px;
+    border-color: rgb(120, 230, 170);
+    background-color: rgb(50, 80, 88);
+}
+
+.option-toggle:checked .unity-toggle__checkmark {
+    background-color: rgb(120, 230, 170);
+}
+
+/* ---------- Transición de escena ---------- */
+
+.fade {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(0, 0, 0);
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.4s;
+}
+
+.fade--visible {
+    opacity: 1;
+}
