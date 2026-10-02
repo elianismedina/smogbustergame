@@ -260,6 +260,7 @@ public static class CityGridGenerator
             go.transform.position += offset;
 
             ReplaceWithBoxCollider(go);
+            go.AddComponent<CrashHazard>(); // chocar con un edificio = derrota
             MakeStatic(go, occluder: true);
             cursor += c.Width + gap;
         }
