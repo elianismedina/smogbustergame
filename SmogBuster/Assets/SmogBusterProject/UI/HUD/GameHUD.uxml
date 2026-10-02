@@ -1,0 +1,34 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <!-- Reutiliza botones, panel, sliders, overlay y fundido del menú principal -->
+    <Style src="project://database/Assets/SmogBusterProject/UI/MainMenu/MainMenu.uss"/>
+    <Style src="project://database/Assets/SmogBusterProject/UI/HUD/GameHUD.uss"/>
+    <ui:VisualElement name="game-hud-root" class="game-hud-root" picking-mode="Ignore">
+
+        <!-- Controles dentro del área segura (notch) -->
+        <ui:VisualElement name="game-hud-safe-area" class="game-hud-safe-area" picking-mode="Ignore">
+            <!-- Joysticks: GameHudController crea un VirtualJoystick dentro de cada zona -->
+            <ui:VisualElement name="touch-zones" class="touch-zones" picking-mode="Ignore">
+                <ui:VisualElement name="touch-zone-left" class="touch-zone touch-zone--left"/>
+                <ui:VisualElement name="touch-zone-right" class="touch-zone touch-zone--right"/>
+            </ui:VisualElement>
+            <ui:Button text="II" name="btn-pause" class="pause-button"/>
+        </ui:VisualElement>
+
+        <!-- Menú de pausa -->
+        <ui:VisualElement name="pause-overlay" class="overlay">
+            <ui:VisualElement name="pause-panel" class="panel">
+                <ui:Label text="PAUSA" class="panel-title"/>
+                <ui:Slider label="Música" name="pause-slider-music" low-value="0" high-value="1" value="0.8" class="option-slider"/>
+                <ui:Slider label="Efectos" name="pause-slider-sfx" low-value="0" high-value="1" value="0.8" class="option-slider"/>
+                <ui:Toggle label="Vibración" name="pause-toggle-vibration" value="true" class="option-toggle"/>
+                <ui:Button text="CONTINUAR" name="btn-resume" class="menu-button menu-button--primary panel-button"/>
+                <ui:VisualElement class="pause-row">
+                    <ui:Button text="REINTENTAR" name="btn-pause-retry" class="menu-button pause-row__button pause-row__button--left"/>
+                    <ui:Button text="MENÚ" name="btn-pause-menu" class="menu-button menu-button--ghost pause-row__button"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="fade" class="fade" picking-mode="Ignore"/>
+    </ui:VisualElement>
+</ui:UXML>

@@ -71,6 +71,8 @@ public class AudioManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         _musicSources = new[] { CreateSource("Music A", _musicGroup, true), CreateSource("Music B", _musicGroup, true) };
+        // La música sigue sonando con el juego en pausa (AudioListener.pause)
+        foreach (AudioSource music in _musicSources) music.ignoreListenerPause = true;
         _ambienceSource = CreateSource("Ambience", _ambienceGroup, true);
 
         _sfxPool = new AudioSource[Mathf.Max(1, _sfxVoices)];
@@ -210,6 +212,7 @@ public class AudioManager : MonoBehaviour
 
         AudioSource source = NextFreeSource();
         source.outputAudioMixerGroup = group;
+        source.ignoreListenerPause = group == _uiGroup; // los clics del menú de pausa deben oírse
         source.pitch = pitch;
         source.volume = volume;
         source.clip = clip;
