@@ -19,6 +19,7 @@ public class GameOverController : MonoBehaviour
     [SerializeField] private float _fadeDuration = 0.4f;
 
     private VisualElement _overlay;
+    private Label _subtitle;
     private VisualElement _fade;
     private Button _btnRetry;
     private Button _btnMenu;
@@ -29,6 +30,7 @@ public class GameOverController : MonoBehaviour
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         _overlay = root.Q<VisualElement>("gameover-overlay");
         _fade = root.Q<VisualElement>("fade");
+        _subtitle = root.Q<Label>("gameover-subtitle");
         _btnRetry = root.Q<Button>("btn-retry");
         _btnMenu = root.Q<Button>("btn-menu");
 
@@ -52,6 +54,12 @@ public class GameOverController : MonoBehaviour
     private void OnPlayerCrashed()
     {
         if (_followCamera != null) _followCamera.FollowYaw = false;
+        if (_subtitle != null)
+        {
+            _subtitle.text = _player.LastCrashReason == QuadcopterCrash.CrashReason.HardLanding
+                ? "Aterrizaje demasiado brusco"
+                : "El dron se estrelló contra un edificio";
+        }
         StartCoroutine(ShowAfterDelay());
     }
 

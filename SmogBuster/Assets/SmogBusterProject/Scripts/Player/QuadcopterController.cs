@@ -24,6 +24,8 @@ public class QuadcopterController : MonoBehaviour
     [SerializeField] private float _maxAltitude = 60f;
     [SerializeField] private float _maxVerticalAcceleration = 20f;
     [SerializeField] private PIDController _altitudePid = new PIDController(6f, 0.5f, 4f, 5f);
+    [Tooltip("Máximo que la altitud objetivo puede quedar por debajo del dron (m). Evita que, posado en una azotea, el objetivo siga bajando y tarde en despegar.")]
+    [SerializeField] private float _maxAltitudeBelow = 1f;
 
     [Header("Giro (yaw)")]
     [SerializeField] private float _maxYawRate = 120f;
@@ -118,6 +120,7 @@ public class QuadcopterController : MonoBehaviour
             _targetAltitude + _input.Climb * _climbSpeed * dt,
             _minAltitude,
             _maxAltitude);
+        _targetAltitude = Mathf.Max(_targetAltitude, _rb.position.y - _maxAltitudeBelow);
 
         float error = _targetAltitude - _rb.position.y;
         float acceleration = Mathf.Clamp(_altitudePid.Update(error, dt), -_maxVerticalAcceleration, _maxVerticalAcceleration);
