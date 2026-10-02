@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.76, g: 0.72, b: 0.62, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.009
+  m_FogDensity: 0.016
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.65741724, g: 0.6333145, b: 0.5587663, a: 0.9}
@@ -30311,7 +30311,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2030982960}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1056352136
@@ -56289,6 +56290,68 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4759262865471542, guid: 6825a3fe8a1605f42a0d0589e582ac40, type: 3}
   m_PrefabInstance: {fileID: 2030964230}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &2030982959
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1056210278}
+    m_Modifications:
+    - target: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 7.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3723574177131023068, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+      propertyPath: m_Name
+      value: SmogClouds
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+--- !u!4 &2030982960 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+  m_PrefabInstance: {fileID: 2030982959}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2032049440
 GameObject:
