@@ -342,7 +342,8 @@ public static class CityGridGenerator
 
         Undo.RecordObject(ground.transform, "Generate City");
         ground.transform.position = Vector3.zero;
-        ground.transform.localScale = new Vector3(40f, 1f, 40f); // plano de 400 x 400 m
+        // Plano de 1 x 1 km: llega más allá del plano lejano de la cámara, donde la niebla ya lo cubre del todo
+        ground.transform.localScale = new Vector3(100f, 1f, 100f);
 
         Material asphalt = GetOrCreateMaterial("City_Ground", new Color(0.18f, 0.18f, 0.17f), null, Vector2.one);
         var renderer = ground.GetComponent<MeshRenderer>();
@@ -366,19 +367,21 @@ public static class CityGridGenerator
 
     private static void ConfigureAtmosphere()
     {
-        // Niebla de smog: da ambiente y oculta lo lejano (rendimiento en móvil)
+        // Niebla de smog: da ambiente y oculta lo lejano (rendimiento en móvil).
+        // Su color coincide con el horizonte de Mat_Sky (tinte calculado para ello), así no hay corte.
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogColor = new Color(0.58f, 0.54f, 0.45f);
+        RenderSettings.fogColor = new Color(0.76f, 0.72f, 0.62f);
         RenderSettings.fogDensity = 0.009f;
 
-        var day = AssetDatabase.LoadAssetAtPath<Material>("Assets/POLYGON city pack/Materials/Day.mat");
-        if (day != null) RenderSettings.skybox = day;
+        var sky = AssetDatabase.LoadAssetAtPath<Material>("Assets/SmogBusterProject/Materials/Mat_Sky.mat");
+        if (sky == null) sky = AssetDatabase.LoadAssetAtPath<Material>("Assets/POLYGON city pack/Materials/Day.mat");
+        if (sky != null) RenderSettings.skybox = sky;
 
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
-        RenderSettings.ambientSkyColor = new Color(0.62f, 0.6f, 0.55f);
-        RenderSettings.ambientEquatorColor = new Color(0.5f, 0.47f, 0.4f);
-        RenderSettings.ambientGroundColor = new Color(0.22f, 0.2f, 0.18f);
+        RenderSettings.ambientSkyColor = new Color(0.657f, 0.633f, 0.559f);
+        RenderSettings.ambientEquatorColor = new Color(0.608f, 0.576f, 0.496f);
+        RenderSettings.ambientGroundColor = new Color(0.24f, 0.22f, 0.19f);
 
         Light sun = Object.FindAnyObjectByType<Light>();
         if (sun != null && sun.type == LightType.Directional)
@@ -386,16 +389,18 @@ public static class CityGridGenerator
             Undo.RecordObject(sun, "Generate City");
             Undo.RecordObject(sun.transform, "Generate City");
             sun.transform.rotation = Quaternion.Euler(45f, -35f, 0f);
-            sun.color = new Color(1f, 0.88f, 0.72f);
-            sun.intensity = 1.3f;
+            // Cielo cubierto: luz algo más suave y sombras menos duras
+            sun.color = new Color(1f, 0.92f, 0.8f);
+            sun.intensity = 1.1f;
             sun.shadows = LightShadows.Soft;
+            sun.shadowStrength = 0.7f;
         }
 
         Camera cam = Camera.main;
         if (cam != null)
         {
             Undo.RecordObject(cam, "Generate City");
-            cam.farClipPlane = 250f;
+            cam.farClipPlane = 400f;
             cam.clearFlags = CameraClearFlags.Skybox;
         }
     }
