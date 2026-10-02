@@ -104,3 +104,7 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Asset Store packages (licensed, not redistributable — import locally from the Asset Store)
+/[Aa]ssets/POLYGON city pack/
+/[Aa]ssets/POLYGON city pack.meta

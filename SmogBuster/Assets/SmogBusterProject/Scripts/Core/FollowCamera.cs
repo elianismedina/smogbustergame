@@ -16,6 +16,9 @@ public class FollowCamera : MonoBehaviour
 
     private float _yaw;
 
+    /// <summary>Si es false, la cámara mantiene su rumbo actual (p. ej. mientras el dron cae girando).</summary>
+    public bool FollowYaw { get; set; } = true;
+
     private void Start()
     {
         if (_target == null)
@@ -38,7 +41,10 @@ public class FollowCamera : MonoBehaviour
         }
 
         float dt = Time.deltaTime;
-        _yaw = Mathf.LerpAngle(_yaw, _target.eulerAngles.y, 1f - Mathf.Exp(-_yawSmoothing * dt));
+        if (FollowYaw)
+        {
+            _yaw = Mathf.LerpAngle(_yaw, _target.eulerAngles.y, 1f - Mathf.Exp(-_yawSmoothing * dt));
+        }
 
         Vector3 desired = DesiredPosition();
         transform.position = Vector3.Lerp(transform.position, desired, 1f - Mathf.Exp(-_positionSmoothing * dt));

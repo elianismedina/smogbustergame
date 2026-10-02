@@ -1,0 +1,17 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/SmogBusterProject/UI/HUD/SmogMeter.uss"/>
+    <ui:VisualElement name="hud-root" class="hud-root" picking-mode="Ignore">
+        <!-- Área segura (notch); el controlador ajusta sus márgenes -->
+        <ui:VisualElement name="hud-safe-area" class="hud-safe-area" picking-mode="Ignore">
+            <ui:VisualElement name="smog-meter" class="smog-meter" picking-mode="Ignore">
+                <ui:VisualElement class="smog-meter__header" picking-mode="Ignore">
+                    <ui:Label text="SMOG" class="smog-meter__title" picking-mode="Ignore"/>
+                    <ui:Label text="80%" name="smog-meter-value" class="smog-meter__value" picking-mode="Ignore"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="smog-meter-track" class="smog-meter__track" picking-mode="Ignore">
+                    <ui:VisualElement name="smog-meter-fill" class="smog-meter__fill" picking-mode="Ignore"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -7,11 +7,6 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class MainMenuController : MonoBehaviour
 {
-    // Claves de PlayerPrefs, para que otras escenas puedan leer las opciones
-    public const string PrefMusicVolume = "options.musicVolume";
-    public const string PrefSfxVolume = "options.sfxVolume";
-    public const string PrefVibration = "options.vibration";
-
     [Header("Configuración de Escena")]
     [SerializeField] private string _nextSceneName = "Level01";
     [SerializeField] private float _fadeDuration = 0.4f;
@@ -189,16 +184,25 @@ public class MainMenuController : MonoBehaviour
 
     private void LoadOptions()
     {
-        _sliderMusic?.SetValueWithoutNotify(PlayerPrefs.GetFloat(PrefMusicVolume, 0.8f));
-        _sliderSfx?.SetValueWithoutNotify(PlayerPrefs.GetFloat(PrefSfxVolume, 0.8f));
-        _toggleVibration?.SetValueWithoutNotify(PlayerPrefs.GetInt(PrefVibration, 1) == 1);
+        _sliderMusic?.SetValueWithoutNotify(GameSettings.MusicVolume);
+        _sliderSfx?.SetValueWithoutNotify(GameSettings.SfxVolume);
+        _toggleVibration?.SetValueWithoutNotify(GameSettings.Vibration);
     }
 
-    private void OnMusicChanged(ChangeEvent<float> evt) => PlayerPrefs.SetFloat(PrefMusicVolume, evt.newValue);
+    // El volumen se aplica al mixer en vivo, mientras se mueve el slider
+    private void OnMusicChanged(ChangeEvent<float> evt)
+    {
+        GameSettings.MusicVolume = evt.newValue;
+        AudioManager.Instance?.ApplyVolumes();
+    }
 
-    private void OnSfxChanged(ChangeEvent<float> evt) => PlayerPrefs.SetFloat(PrefSfxVolume, evt.newValue);
+    private void OnSfxChanged(ChangeEvent<float> evt)
+    {
+        GameSettings.SfxVolume = evt.newValue;
+        AudioManager.Instance?.ApplyVolumes();
+    }
 
-    private void OnVibrationChanged(ChangeEvent<bool> evt) => PlayerPrefs.SetInt(PrefVibration, evt.newValue ? 1 : 0);
+    private void OnVibrationChanged(ChangeEvent<bool> evt) => GameSettings.Vibration = evt.newValue;
 
     private bool IsOptionsOpen => _optionsOverlay != null && _optionsOverlay.resolvedStyle.display == DisplayStyle.Flex;
 
@@ -219,7 +223,7 @@ public class MainMenuController : MonoBehaviour
     {
         if (_optionsOverlay == null) return;
 
-        PlayerPrefs.Save();
+        GameSettings.Save();
         _optionsOverlay.RemoveFromClassList("overlay--visible");
         _optionsOverlay.schedule.Execute(() => _optionsOverlay.style.display = DisplayStyle.None).StartingIn(200);
         _btnOptions?.Focus();
