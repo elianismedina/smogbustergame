@@ -11,6 +11,9 @@ GameObject:
   - component: {fileID: 109262677340539266}
   - component: {fileID: 7629906045067887036}
   - component: {fileID: 6749437228007933960}
+  - component: {fileID: 7100000000000000001}
+  - component: {fileID: 7100000000000000002}
+  - component: {fileID: 7100000000000000003}
   m_Layer: 0
   m_Name: PlayerBuster1
   m_TagString: Untagged
@@ -42,7 +45,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5565141978225087962}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 20
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -58,7 +61,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!135 &6749437228007933960
@@ -144,3 +147,42 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 217a1ed65c8f59145872c8585940701c, type: 3}
   m_PrefabInstance: {fileID: 3163506464417570172}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7100000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5565141978225087962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2c3d4e5f60718293a4b5c6d7e8f0112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7100000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5565141978225087962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3d4e5f60718293a4b5c6d7e8f011223, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _moveReference: {fileID: 0}
+--- !u!114 &7100000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5565141978225087962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e5f60718293a4b5c6d7e8f01122334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _controller: {fileID: 7100000000000000002}
+  _model: {fileID: 3201409674800773783}
