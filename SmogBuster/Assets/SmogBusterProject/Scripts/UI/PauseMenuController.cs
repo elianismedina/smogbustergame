@@ -91,8 +91,11 @@ public class PauseMenuController : MonoBehaviour
 
     private void OnApplicationPause(bool paused)
     {
-        // Al minimizar la app en el móvil, dejar el juego en pausa
+        // Al minimizar la app en el móvil, dejar el juego en pausa.
+        // En el Editor no: allí se dispara al cambiar de ventana y el juego arrancaba en pausa y sin sonido.
+#if !UNITY_EDITOR
         if (paused) Pause();
+#endif
     }
 
     public void Pause()
