@@ -27,10 +27,14 @@ public class GameHudController : MonoBehaviour
     private HoldButton _upButton;
     private HoldButton _downButton;
     private HoldButton _beamButton;
+    private HoldButton _seedButton;
     private QuadcopterCrash _crash;
     private GameSession _session;
     private Label _timer;
     private PurifierBeam _beam;
+    private SeedLauncher _seeds;
+    private VisualElement _seedElement;
+    private IVisualElementScheduledItem _seedPulse;
     private VisualElement _beamElement;
     private IVisualElementScheduledItem _beamPulse;
     private int _shownSeconds = -1;
@@ -48,12 +52,16 @@ public class GameHudController : MonoBehaviour
         _downButton = new HoldButton(_root.Q<VisualElement>("btn-down"));
         _beamElement = _root.Q<VisualElement>("btn-beam");
         _beamButton = new HoldButton(_beamElement);
+        _seedElement = _root.Q<VisualElement>("btn-seed");
+        _seedButton = new HoldButton(_seedElement);
+        _seedPulse = _seedElement?.schedule.Execute(() => _seedElement.ToggleInClassList("action-button--pulse")).Every(350);
         // Con una nube en la mira el botón del Rayo late, para invitar a disparar
         _beamPulse = _beamElement?.schedule.Execute(() => _beamElement.ToggleInClassList("action-button--pulse")).Every(350);
 
         if (_input == null) _input = FindAnyObjectByType<QuadInput>();
         _crash = _input != null ? _input.GetComponent<QuadcopterCrash>() : null;
         _beam = _input != null ? _input.GetComponent<PurifierBeam>() : null;
+        _seeds = _input != null ? _input.GetComponent<SeedLauncher>() : null;
         _session = FindAnyObjectByType<GameSession>();
         if (_timer != null) _timer.style.display = _session != null ? DisplayStyle.Flex : DisplayStyle.None;
 
@@ -65,6 +73,8 @@ public class GameHudController : MonoBehaviour
         _root?.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         ReleaseSticks();
         _beamPulse?.Pause();
+        _seedPulse?.Pause();
+        _seedButton?.Dispose();
         _upButton?.Dispose();
         _downButton?.Dispose();
         _beamButton?.Dispose();
@@ -86,14 +96,21 @@ public class GameHudController : MonoBehaviour
         float climb = (_upButton.IsPressed ? 1f : 0f) - (_downButton.IsPressed ? 1f : 0f);
         _input.SetClimb(climb);
         _input.SetBeam(_beamButton.IsPressed);
+        _input.SetSeed(_seedButton.IsPressed);
     }
 
     private void UpdateBeamReady()
     {
-        if (_beamElement == null) return;
-        bool ready = _beam != null && _beam.CurrentTarget != null;
-        _beamElement.EnableInClassList("action-button--ready", ready);
-        if (!ready) _beamElement.RemoveFromClassList("action-button--pulse");
+        SetReady(_beamElement, _beam != null && _beam.CurrentTarget != null);
+        SetReady(_seedElement, _seeds != null && _seeds.CurrentTarget != null);
+    }
+
+    // Con un objetivo a tiro el botón late, para invitar a pulsarlo
+    private static void SetReady(VisualElement button, bool ready)
+    {
+        if (button == null) return;
+        button.EnableInClassList("action-button--ready", ready);
+        if (!ready) button.RemoveFromClassList("action-button--pulse");
     }
 
     private void UpdateTimer()
@@ -128,11 +145,13 @@ public class GameHudController : MonoBehaviour
         _upButton?.Release();
         _downButton?.Release();
         _beamButton?.Release();
+        _seedButton?.Release();
         if (_input != null)
         {
             _input.SetMove(Vector2.zero);
             _input.SetClimb(0f);
             _input.SetBeam(false);
+            _input.SetSeed(false);
         }
     }
 

@@ -11,10 +11,12 @@ public class QuadInput : MonoBehaviour
     private InputAction _move;
     private InputAction _climb;
     private InputAction _beam;
+    private InputAction _seed;
 
     private Vector2 _externalMove;
     private float _externalClimb;
     private bool _externalBeam;
+    private bool _externalSeed;
 
     /// <summary>Movimiento horizontal: x = lateral, y = adelante/atrás.</summary>
     public Vector2 Move { get; private set; }
@@ -25,6 +27,9 @@ public class QuadInput : MonoBehaviour
     /// <summary>Rayo Purificador pulsado (se mantiene para disparar).</summary>
     public bool Beam { get; private set; }
 
+    /// <summary>Botón de Semilla pulsado (se lanza una semilla al pulsar).</summary>
+    public bool Seed { get; private set; }
+
     /// <summary>Con true se ignora toda entrada (p. ej. al terminar la partida).</summary>
     public bool Locked { get; set; }
 
@@ -32,6 +37,7 @@ public class QuadInput : MonoBehaviour
     public void SetMove(Vector2 value) => _externalMove = value;
     public void SetClimb(float value) => _externalClimb = value;
     public void SetBeam(bool value) => _externalBeam = value;
+    public void SetSeed(bool value) => _externalSeed = value;
 
     private void Awake()
     {
@@ -52,6 +58,10 @@ public class QuadInput : MonoBehaviour
         _beam = new InputAction("Beam", InputActionType.Button);
         _beam.AddBinding("<Mouse>/leftButton");
         _beam.AddBinding("<Gamepad>/rightTrigger");
+
+        _seed = new InputAction("Seed", InputActionType.Button);
+        _seed.AddBinding("<Mouse>/rightButton");
+        _seed.AddBinding("<Gamepad>/leftTrigger");
     }
 
     private void OnEnable()
@@ -59,6 +69,7 @@ public class QuadInput : MonoBehaviour
         _move.Enable();
         _climb.Enable();
         _beam.Enable();
+        _seed.Enable();
     }
 
     private void OnDisable()
@@ -66,6 +77,7 @@ public class QuadInput : MonoBehaviour
         _move.Disable();
         _climb.Disable();
         _beam.Disable();
+        _seed.Disable();
     }
 
     private void OnDestroy()
@@ -73,6 +85,7 @@ public class QuadInput : MonoBehaviour
         _move.Dispose();
         _climb.Dispose();
         _beam.Dispose();
+        _seed.Dispose();
     }
 
     // Se lee una vez por frame; FixedUpdate solo consume los valores en caché.
@@ -83,11 +96,13 @@ public class QuadInput : MonoBehaviour
             Move = Vector2.zero;
             Climb = 0f;
             Beam = false;
+            Seed = false;
             return;
         }
 
         Move = Vector2.ClampMagnitude(_move.ReadValue<Vector2>() + _externalMove, 1f);
         Climb = Mathf.Clamp(_climb.ReadValue<float>() + _externalClimb, -1f, 1f);
         Beam = _beam.IsPressed() || _externalBeam;
+        Seed = _seed.IsPressed() || _externalSeed;
     }
 }

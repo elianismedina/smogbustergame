@@ -22,6 +22,7 @@ public class PurifierBeam : MonoBehaviour
     private readonly RaycastHit[] _hits = new RaycastHit[16];
     private QuadInput _input;
     private QuadcopterCrash _crash;
+    private SeedLauncher _seeds;
 
     /// <summary>True mientras el haz está activo (para sonido y efectos).</summary>
     public bool IsFiring { get; private set; }
@@ -33,6 +34,7 @@ public class PurifierBeam : MonoBehaviour
     {
         _input = GetComponent<QuadInput>();
         _crash = GetComponent<QuadcopterCrash>();
+        _seeds = GetComponent<SeedLauncher>();
         if (_muzzle == null) _muzzle = FindChild(transform, "Cannon_Beam");
         if (_line != null) _line.enabled = false;
     }
@@ -42,7 +44,9 @@ public class PurifierBeam : MonoBehaviour
         bool crashed = _crash != null && _crash.HasCrashed;
         bool over = GameSession.Instance != null && GameSession.Instance.IsOver;
         bool active = !crashed && !over && Time.timeScale > 0f;
-        IsFiring = _input.Beam && active;
+        // No se usa a la vez que la semilla (GDD 7.5)
+        bool seedBusy = _seeds != null && _seeds.IsBusy;
+        IsFiring = _input.Beam && active && !seedBusy;
         if (_line != null) _line.enabled = IsFiring;
 
         Vector3 origin = _muzzle != null ? _muzzle.position : transform.position;

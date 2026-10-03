@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7100000000000000002}
   - component: {fileID: 7100000000000000003}
   - component: {fileID: 280414826589290065}
+  - component: {fileID: 7459789704528402382}
   m_Layer: 0
   m_Name: PlayerBuster1
   m_TagString: Untagged
@@ -130,7 +131,7 @@ MonoBehaviour:
     IntegralLimit: 5
   _maxAltitudeBelow: 1
   _maxYawRate: 120
-  _yawSmoothing: 8
+  _minTurnSpeed: 0.8
   _moveReference: {fileID: 0}
 --- !u!114 &7100000000000000003
 MonoBehaviour:
@@ -167,6 +168,26 @@ MonoBehaviour:
   _range: 30
   _aimRadius: 1.5
   _downAngle: 4
+--- !u!114 &7459789704528402382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5565141978225087962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e05a4cea7c97f43b05bfacb2e38fd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SeedLauncher
+  _muzzle: {fileID: 6627607720060264937}
+  _seedPrefab: {fileID: 4451624097685474920, guid: e386e9f277a52e14faa0c33c6d6ba9c5, type: 3}
+  _range: 35
+  _aimAngle: 35
+  _cooldown: 0.6
+  _busyTime: 0.35
+  _flightTime: 0.9
+  _missDistance: 14
 --- !u!1 &6195994256036962268
 GameObject:
   m_ObjectHideFlags: 0
@@ -378,6 +399,11 @@ PrefabInstance:
 --- !u!4 &3201409674800773783 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 217a1ed65c8f59145872c8585940701c, type: 3}
+  m_PrefabInstance: {fileID: 3163506464417570172}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6627607720060264937 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8079165557906537621, guid: 217a1ed65c8f59145872c8585940701c, type: 3}
   m_PrefabInstance: {fileID: 3163506464417570172}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8038440550681215095 stripped

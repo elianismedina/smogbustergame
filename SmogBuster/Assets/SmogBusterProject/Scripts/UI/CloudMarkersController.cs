@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 /// <summary>
-/// Marcadores del HUD sobre cada nube de smog (GDD 10.3: iconos además de colores).
-/// Se dibujan en la interfaz, así que se ven a distancia y aunque un edificio tape la nube.
-/// La nube que está en la mira del Rayo cambia de aspecto y muestra «¡DISPARA!».
+/// Marcadores del HUD sobre cada nube de smog y cada punto de siembra libre (GDD 10.3: iconos además
+/// de colores). Se dibujan en la interfaz, así que se ven a distancia y aunque un edificio los tape.
+/// Lo que está en la mira cambia de aspecto: «¡DISPARA!» en las nubes, «¡SIEMBRA!» en los puntos.
 /// </summary>
 [RequireComponent(typeof(UIDocument))]
 public class CloudMarkersController : MonoBehaviour
@@ -25,9 +25,11 @@ public class CloudMarkersController : MonoBehaviour
     private const string MarkerClass = "cloud-marker";
     private const string MicroClass = "cloud-marker--micro";
     private const string TargetClass = "cloud-marker--target";
+    private const string SpotClass = "spot-marker";
 
-    private readonly Dictionary<SmogCloud, VisualElement> _markers = new Dictionary<SmogCloud, VisualElement>();
-    private readonly List<SmogCloud> _stale = new List<SmogCloud>();
+    private readonly Dictionary<Object, VisualElement> _markers = new Dictionary<Object, VisualElement>();
+    private readonly HashSet<Object> _seen = new HashSet<Object>();
+    private readonly List<Object> _stale = new List<Object>();
     private readonly Stack<VisualElement> _pool = new Stack<VisualElement>();
 
     private VisualElement _layer;
@@ -57,33 +59,46 @@ public class CloudMarkersController : MonoBehaviour
         _layer.style.display = hidden ? DisplayStyle.None : DisplayStyle.Flex;
         if (hidden) return;
 
-        // Quitar marcadores de nubes que ya no están
-        _stale.Clear();
-        foreach (SmogCloud cloud in _markers.Keys)
-        {
-            if (cloud == null || !cloud.isActiveAndEnabled || !Contains(cloud)) _stale.Add(cloud);
-        }
-        foreach (SmogCloud cloud in _stale)
-        {
-            Recycle(_markers[cloud]);
-            _markers.Remove(cloud);
-        }
-
+        _seen.Clear();
         foreach (SmogCloud cloud in SmogCloud.Active)
         {
-            if (!_markers.TryGetValue(cloud, out VisualElement marker))
-            {
-                marker = Rent();
-                marker.EnableInClassList(MicroClass, cloud.IsMicro);
-                _markers.Add(cloud, marker);
-            }
-            Place(cloud, marker);
+            VisualElement marker = Get(cloud, cloud.IsMicro, false);
+            Place(cloud.transform.position + Vector3.up * (cloud.Radius + _heightOffset), cloud.IsTargeted, marker);
+        }
+        foreach (PlantingSpot spot in PlantingSpot.Available)
+        {
+            VisualElement marker = Get(spot, false, true);
+            Place(spot.AimPoint + Vector3.up * _heightOffset, spot.IsTargeted, marker);
+        }
+
+        // Quitar marcadores de lo que ya no está (nube disipada, punto sembrado)
+        _stale.Clear();
+        foreach (Object key in _markers.Keys)
+        {
+            if (!_seen.Contains(key)) _stale.Add(key);
+        }
+        foreach (Object key in _stale)
+        {
+            Recycle(_markers[key]);
+            _markers.Remove(key);
         }
     }
 
-    private void Place(SmogCloud cloud, VisualElement marker)
+    private VisualElement Get(Object key, bool micro, bool spot)
     {
-        Vector3 world = cloud.transform.position + Vector3.up * (cloud.Radius + _heightOffset);
+        _seen.Add(key);
+        if (_markers.TryGetValue(key, out VisualElement marker)) return marker;
+
+        marker = Rent();
+        marker.EnableInClassList(MicroClass, micro);
+        marker.EnableInClassList(SpotClass, spot);
+        marker.Q<Label>().text = spot ? "¡SIEMBRA!" : "¡DISPARA!";
+        _markers.Add(key, marker);
+        return marker;
+    }
+
+    private void Place(Vector3 world, bool targeted, VisualElement marker)
+    {
         Vector3 screen = _camera.WorldToScreenPoint(world);
         float distance = screen.z;
 
@@ -110,16 +125,7 @@ public class CloudMarkersController : MonoBehaviour
         marker.style.left = panelPos.x;
         marker.style.top = panelPos.y;
         marker.style.scale = new Scale(new Vector3(scale, scale, 1f));
-        marker.EnableInClassList(TargetClass, cloud.IsTargeted);
-    }
-
-    private static bool Contains(SmogCloud cloud)
-    {
-        foreach (SmogCloud active in SmogCloud.Active)
-        {
-            if (active == cloud) return true;
-        }
-        return false;
+        marker.EnableInClassList(TargetClass, targeted);
     }
 
     private VisualElement Rent()

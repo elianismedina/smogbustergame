@@ -19,6 +19,9 @@
                 <ui:VisualElement name="btn-down" class="altitude-button altitude-button--down">
                     <ui:Label text="▼" class="altitude-button__label" picking-mode="Ignore"/>
                 </ui:VisualElement>
+                <ui:VisualElement name="btn-seed" class="action-button action-button--seed">
+                    <ui:Label text="SEMILLA" class="action-button__label" picking-mode="Ignore"/>
+                </ui:VisualElement>
                 <ui:VisualElement name="btn-beam" class="action-button action-button--beam">
                     <ui:Label text="RAYO" class="action-button__label" picking-mode="Ignore"/>
                 </ui:VisualElement>

@@ -89,6 +89,29 @@
     display: flex;
 }
 
+/* Puntos de siembra: rombo verde (hoja) en lugar de diana */
+.spot-marker .cloud-marker__ring {
+    border-color: rgb(140, 235, 110);
+    background-color: rgba(30, 80, 30, 0.35);
+    border-radius: 12px;
+    rotate: 45deg;
+}
+
+.spot-marker .cloud-marker__dot {
+    background-color: rgb(140, 235, 110);
+    border-radius: 3px;
+}
+
+.spot-marker .cloud-marker__label {
+    background-color: rgb(140, 235, 110);
+}
+
+.spot-marker.cloud-marker--target .cloud-marker__ring {
+    border-color: rgb(200, 255, 170);
+    background-color: rgba(60, 160, 60, 0.55);
+    scale: 1.25 1.25;
+}
+
 /* ---------- Joysticks ---------- */
 
 .touch-controls {
@@ -207,6 +230,26 @@
     border-color: rgb(120, 220, 255);
 }
 
+/* Semilla: encima del Rayo, verde (GDD 6.2) */
+.action-button--seed {
+    bottom: 350px;
+    width: 150px;
+    height: 150px;
+    border-radius: 75px;
+    right: 77px;
+    background-color: rgba(60, 150, 60, 0.75);
+    border-color: rgb(170, 240, 120);
+}
+
+.action-button--seed .action-button__label {
+    font-size: 24px;
+}
+
+.action-button--seed.hud-button--pressed,
+.action-button--seed.action-button--ready.action-button--pulse {
+    background-color: rgba(110, 210, 90, 0.95);
+}
+
 .hud-button--pressed {
     scale: 0.92 0.92;
 }
@@ -222,7 +265,27 @@
     background-color: rgba(60, 190, 255, 0.95);
 }
 
-.action-button--beam.hud-button--pressed {
+.action-button--beam/* Semilla: encima del Rayo, verde (GDD 6.2) */
+.action-button--seed {
+    bottom: 350px;
+    width: 150px;
+    height: 150px;
+    border-radius: 75px;
+    right: 77px;
+    background-color: rgba(60, 150, 60, 0.75);
+    border-color: rgb(170, 240, 120);
+}
+
+.action-button--seed .action-button__label {
+    font-size: 24px;
+}
+
+.action-button--seed.hud-button--pressed,
+.action-button--seed.action-button--ready.action-button--pulse {
+    background-color: rgba(110, 210, 90, 0.95);
+}
+
+.hud-button--pressed {
     background-color: rgba(60, 190, 255, 0.95);
 }
 
@@ -257,7 +320,27 @@
     padding: 0;
 }
 
-.altitude-button.hud-button--pressed {
+.altitude-button/* Semilla: encima del Rayo, verde (GDD 6.2) */
+.action-button--seed {
+    bottom: 350px;
+    width: 150px;
+    height: 150px;
+    border-radius: 75px;
+    right: 77px;
+    background-color: rgba(60, 150, 60, 0.75);
+    border-color: rgb(170, 240, 120);
+}
+
+.action-button--seed .action-button__label {
+    font-size: 24px;
+}
+
+.action-button--seed.hud-button--pressed,
+.action-button--seed.action-button--ready.action-button--pulse {
+    background-color: rgba(110, 210, 90, 0.95);
+}
+
+.hud-button--pressed {
     background-color: rgba(44, 102, 104, 0.9);
 }
 
