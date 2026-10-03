@@ -19,6 +19,11 @@ public class GameHudController : MonoBehaviour
     [SerializeField] private float _deadZone = 0.12f;
     [Tooltip("Segundos restantes a partir de los que el temporizador se marca en rojo.")]
     [SerializeField] private float _timerWarning = 30f;
+    [Header("Borde del mapa (GDD 5.4)")]
+    [Tooltip("Mitad del lado del área de vuelo, centrada en el origen (paredes invisibles de City/Bounds).")]
+    [SerializeField] private float _playAreaHalfSize = 77.5f;
+    [Tooltip("A esta distancia de la pared aparece «Fuera de alcance».")]
+    [SerializeField] private float _boundaryMargin = 6f;
 
     private VisualElement _root;
     private VisualElement _safeArea;
@@ -31,6 +36,7 @@ public class GameHudController : MonoBehaviour
     private QuadcopterCrash _crash;
     private GameSession _session;
     private Label _timer;
+    private Label _boundary;
     private PurifierBeam _beam;
     private SeedLauncher _seeds;
     private VisualElement _seedElement;
@@ -46,6 +52,7 @@ public class GameHudController : MonoBehaviour
         _safeArea = _root.Q<VisualElement>("game-hud-safe-area");
         _touchControls = _root.Q<VisualElement>("touch-controls");
         _timer = _root.Q<Label>("hud-timer");
+        _boundary = _root.Q<Label>("hud-boundary");
 
         _moveStick = CreateStick("touch-zone-left", "joystick--move");
         _upButton = new HoldButton(_root.Q<VisualElement>("btn-up"));
@@ -85,6 +92,7 @@ public class GameHudController : MonoBehaviour
         if (Screen.safeArea != _lastSafeArea) ApplySafeArea();
         UpdateTimer();
         UpdateBeamReady();
+        UpdateBoundary();
         if (_input == null) return;
 
         // Al terminar la partida (o tras el choque) los controles no hacen nada y se ocultan
@@ -97,6 +105,19 @@ public class GameHudController : MonoBehaviour
         _input.SetClimb(climb);
         _input.SetBeam(_beamButton.IsPressed);
         _input.SetSeed(_seedButton.IsPressed);
+    }
+
+    private void UpdateBoundary()
+    {
+        if (_boundary == null) return;
+        bool near = false;
+        if (_input != null && (_session == null || !_session.IsOver))
+        {
+            Vector3 p = _input.transform.position;
+            float limit = _playAreaHalfSize - _boundaryMargin;
+            near = Mathf.Abs(p.x) > limit || Mathf.Abs(p.z) > limit;
+        }
+        _boundary.EnableInClassList("hud-boundary--visible", near);
     }
 
     private void UpdateBeamReady()

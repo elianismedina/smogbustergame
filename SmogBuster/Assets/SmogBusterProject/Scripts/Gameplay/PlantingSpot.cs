@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Punto de siembra (GDD 5.2, 8.1): maceta, parterre o techo verde con un haz de luz verde que lo señala.
 /// Al recibir una Semilla Instantánea, la planta crece al instante y purifica el aire de forma pasiva
-/// (−1% de smog por segundo) durante el resto de la partida. Cada punto se siembra una sola vez.
+/// (0.2% de smog por segundo; ver _purifyPerSecond) durante el resto de la partida. Cada punto se siembra una sola vez.
 /// </summary>
 public class PlantingSpot : MonoBehaviour
 {
@@ -18,8 +18,8 @@ public class PlantingSpot : MonoBehaviour
     [Tooltip("Halo que se enciende cuando el punto está en la mira de la semilla.")]
     [SerializeField] private GameObject _highlight;
     [SerializeField] private float _growDuration = 1.2f;
-    [Tooltip("Cuánto baja el smog por segundo una vez crecida la planta (0.01 = 1%).")]
-    [SerializeField] private float _purifyPerSecond = 0.01f;
+    [Tooltip("Cuánto baja el smog por segundo una vez crecida la planta (0.002 = 0.2%). El GDD pide 1%, ajustado para que ganar exija combinar semillas y Rayo.")]
+    [SerializeField] private float _purifyPerSecond = 0.002f;
     [Tooltip("Altura del punto al que apunta la semilla, sobre el origen.")]
     [SerializeField] private float _aimHeight = 0.4f;
 

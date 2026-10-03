@@ -323,7 +323,7 @@ MonoBehaviour:
   _plant: {fileID: 14475458558671221}
   _highlight: {fileID: 6615746734266794938}
   _growDuration: 1.2
-  _purifyPerSecond: 0.01
+  _purifyPerSecond: 0.002
   _aimHeight: 0.4
 --- !u!1 &3924112470016696063
 GameObject:

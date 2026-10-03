@@ -26,6 +26,8 @@
                     <ui:Label text="RAYO" class="action-button__label" picking-mode="Ignore"/>
                 </ui:VisualElement>
             </ui:VisualElement>
+            <!-- Aviso de borde del mapa (GDD 5.4); GameHudController lo muestra cerca de las paredes -->
+            <ui:Label text="FUERA DE ALCANCE · vuelve a la ciudad" name="hud-boundary" class="hud-boundary" picking-mode="Ignore"/>
             <ui:Label text="03:00" name="hud-timer" class="hud-timer" picking-mode="Ignore"/>
             <ui:Button text="II" name="btn-pause" class="pause-button"/>
         </ui:VisualElement>
