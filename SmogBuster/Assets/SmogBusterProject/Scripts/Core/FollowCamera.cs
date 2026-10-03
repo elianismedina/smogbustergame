@@ -2,6 +2,9 @@ using UnityEngine;
 
 /// <summary>
 /// Cámara de persecución: se mantiene detrás del objetivo siguiendo su rumbo (yaw) con suavizado.
+/// Solo se recoloca detrás cuando el objetivo mira en la misma dirección que la cámara: si el dron
+/// vuelve hacia la cámara o se mueve de lado, la cámara no gira, y así el joystick (relativo a la
+/// cámara) no cambia de sentido a mitad de movimiento.
 /// </summary>
 public class FollowCamera : MonoBehaviour
 {
@@ -13,8 +16,13 @@ public class FollowCamera : MonoBehaviour
     [SerializeField] private float _positionSmoothing = 6f;
     [SerializeField] private float _yawSmoothing = 3f;
     [SerializeField] private float _minHeight = 0.5f;
+    [Tooltip("La cámara solo se recoloca detrás si el objetivo mira a menos de estos grados de su frente.")]
+    [SerializeField] private float _followConeAngle = 45f;
 
     private float _yaw;
+
+    /// <summary>Rumbo de la cámara alrededor del objetivo (grados). Es estable aunque la cámara mire hacia el objetivo al moverse de lado.</summary>
+    public float Heading => _yaw;
 
     /// <summary>Si es false, la cámara mantiene su rumbo actual (p. ej. mientras el dron cae girando).</summary>
     public bool FollowYaw { get; set; } = true;
@@ -43,7 +51,12 @@ public class FollowCamera : MonoBehaviour
         float dt = Time.deltaTime;
         if (FollowYaw)
         {
-            _yaw = Mathf.LerpAngle(_yaw, _target.eulerAngles.y, 1f - Mathf.Exp(-_yawSmoothing * dt));
+            float delta = Mathf.Abs(Mathf.DeltaAngle(_yaw, _target.eulerAngles.y));
+            // 1 si el objetivo mira hacia delante de la cámara; 0 a partir de _followConeAngle
+            // (de lado o hacia la cámara), para que mover el stick de lado no haga girar la cámara
+            float ahead = Mathf.Clamp01(1f - delta / _followConeAngle);
+            float rate = _yawSmoothing * ahead;
+            _yaw = Mathf.LerpAngle(_yaw, _target.eulerAngles.y, 1f - Mathf.Exp(-rate * dt));
         }
 
         Vector3 desired = DesiredPosition();

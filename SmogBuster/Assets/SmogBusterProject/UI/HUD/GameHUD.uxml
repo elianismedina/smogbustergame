@@ -6,14 +6,19 @@
 
         <!-- Controles dentro del área segura (notch) -->
         <ui:VisualElement name="game-hud-safe-area" class="game-hud-safe-area" picking-mode="Ignore">
-            <!-- Joysticks: GameHudController crea un VirtualJoystick dentro de cada zona -->
-            <ui:VisualElement name="touch-zones" class="touch-zones" picking-mode="Ignore">
+            <!-- Controles táctiles (GDD 6.2): joystick a la izquierda; subir, bajar y Rayo a la derecha.
+                 Los botones se mantienen pulsados (GameHudController). -->
+            <ui:VisualElement name="touch-controls" class="touch-controls" picking-mode="Ignore">
                 <ui:VisualElement name="touch-zone-left" class="touch-zone touch-zone--left"/>
-                <ui:VisualElement name="touch-zone-right" class="touch-zone touch-zone--right"/>
-            </ui:VisualElement>
-            <!-- Botón de acción: se mantiene pulsado para disparar (GameHudController) -->
-            <ui:VisualElement name="btn-beam" class="action-button action-button--beam">
-                <ui:Label text="RAYO" class="action-button__label" picking-mode="Ignore"/>
+                <ui:VisualElement name="btn-up" class="altitude-button altitude-button--up">
+                    <ui:Label text="▲" class="altitude-button__label" picking-mode="Ignore"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="btn-down" class="altitude-button altitude-button--down">
+                    <ui:Label text="▼" class="altitude-button__label" picking-mode="Ignore"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="btn-beam" class="action-button action-button--beam">
+                    <ui:Label text="RAYO" class="action-button__label" picking-mode="Ignore"/>
+                </ui:VisualElement>
             </ui:VisualElement>
             <ui:Label text="03:00" name="hud-timer" class="hud-timer" picking-mode="Ignore"/>
             <ui:Button text="II" name="btn-pause" class="pause-button"/>

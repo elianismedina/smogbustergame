@@ -33870,6 +33870,7 @@ MonoBehaviour:
   _positionSmoothing: 6
   _yawSmoothing: 3
   _minHeight: 0.5
+  _followConeAngle: 45
 --- !u!114 &1154730237
 MonoBehaviour:
   m_ObjectHideFlags: 0

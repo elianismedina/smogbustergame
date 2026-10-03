@@ -3,17 +3,16 @@ using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 /// <summary>
-/// HUD de juego: crea los joysticks táctiles y pasa sus valores a <see cref="QuadInput"/>.
-/// - Stick izquierdo: mover (adelante/atrás, lateral).
-/// - Stick derecho: vertical = subir/bajar, horizontal = girar.
-/// Muestra el tiempo restante de <see cref="GameSession"/> (MM:SS) y el botón del Rayo (mantener pulsado).
-/// Ajusta el área segura (notch) y oculta los sticks en dispositivos sin pantalla táctil.
+/// HUD de juego (GDD 6.2 y 9.3): un joystick táctil para moverse y botones que se mantienen
+/// pulsados para subir, bajar y disparar el Rayo. Pasa sus valores a <see cref="QuadInput"/>.
+/// Muestra el tiempo restante de <see cref="GameSession"/> (MM:SS).
+/// Ajusta el área segura (notch) y oculta los controles táctiles en dispositivos sin pantalla táctil.
 /// </summary>
 [RequireComponent(typeof(UIDocument))]
 public class GameHudController : MonoBehaviour
 {
     [SerializeField] private QuadInput _input;
-    [Tooltip("Mostrar los sticks también en escritorio (útil para probar con el ratón).")]
+    [Tooltip("Mostrar los controles táctiles también en escritorio (útil para probar con el ratón).")]
     [SerializeField] private bool _showSticksOnDesktop;
     [SerializeField] private float _stickRadius = 110f;
     [Range(0f, 0.5f)]
@@ -23,14 +22,14 @@ public class GameHudController : MonoBehaviour
 
     private VisualElement _root;
     private VisualElement _safeArea;
-    private VisualElement _touchZones;
+    private VisualElement _touchControls;
     private VirtualJoystick _moveStick;
-    private VirtualJoystick _altitudeStick;
+    private HoldButton _upButton;
+    private HoldButton _downButton;
+    private HoldButton _beamButton;
     private QuadcopterCrash _crash;
     private GameSession _session;
     private Label _timer;
-    private VisualElement _beamButton;
-    private int _beamPointer = -1;
     private int _shownSeconds = -1;
     private Rect _lastSafeArea;
 
@@ -38,18 +37,13 @@ public class GameHudController : MonoBehaviour
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
         _safeArea = _root.Q<VisualElement>("game-hud-safe-area");
-        _touchZones = _root.Q<VisualElement>("touch-zones");
+        _touchControls = _root.Q<VisualElement>("touch-controls");
         _timer = _root.Q<Label>("hud-timer");
-        _beamButton = _root.Q<VisualElement>("btn-beam");
-        if (_beamButton != null)
-        {
-            _beamButton.RegisterCallback<PointerDownEvent>(OnBeamDown);
-            _beamButton.RegisterCallback<PointerUpEvent>(OnBeamUp);
-            _beamButton.RegisterCallback<PointerCancelEvent>(OnBeamCancel);
-        }
 
         _moveStick = CreateStick("touch-zone-left", "joystick--move");
-        _altitudeStick = CreateStick("touch-zone-right", "joystick--altitude");
+        _upButton = new HoldButton(_root.Q<VisualElement>("btn-up"));
+        _downButton = new HoldButton(_root.Q<VisualElement>("btn-down"));
+        _beamButton = new HoldButton(_root.Q<VisualElement>("btn-beam"));
 
         if (_input == null) _input = FindAnyObjectByType<QuadInput>();
         _crash = _input != null ? _input.GetComponent<QuadcopterCrash>() : null;
@@ -62,13 +56,10 @@ public class GameHudController : MonoBehaviour
     private void OnDisable()
     {
         _root?.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-        if (_beamButton != null)
-        {
-            _beamButton.UnregisterCallback<PointerDownEvent>(OnBeamDown);
-            _beamButton.UnregisterCallback<PointerUpEvent>(OnBeamUp);
-            _beamButton.UnregisterCallback<PointerCancelEvent>(OnBeamCancel);
-        }
         ReleaseSticks();
+        _upButton?.Dispose();
+        _downButton?.Dispose();
+        _beamButton?.Dispose();
     }
 
     private void Update()
@@ -77,47 +68,15 @@ public class GameHudController : MonoBehaviour
         UpdateTimer();
         if (_input == null) return;
 
-        // Al terminar la partida (o tras el choque) los sticks no hacen nada y se ocultan
+        // Al terminar la partida (o tras el choque) los controles no hacen nada y se ocultan
         bool over = (_crash != null && _crash.HasCrashed) || (_session != null && _session.IsOver);
         SetSticksVisible(!over && HasTouchInput());
         if (over) return;
 
-        Vector2 move = _moveStick?.Value ?? Vector2.zero;
-        Vector2 altitude = _altitudeStick?.Value ?? Vector2.zero;
-        _input.SetMove(move);
-        _input.SetClimb(altitude.y);
-        _input.SetYaw(altitude.x);
-    }
-
-    private void OnBeamDown(PointerDownEvent evt)
-    {
-        if (_beamPointer >= 0) return;
-        _beamPointer = evt.pointerId;
-        _beamButton.CapturePointer(evt.pointerId);
-        _beamButton.AddToClassList("action-button--pressed");
-        _input?.SetBeam(true);
-        evt.StopPropagation();
-    }
-
-    private void OnBeamUp(PointerUpEvent evt)
-    {
-        if (evt.pointerId == _beamPointer) ReleaseBeam();
-    }
-
-    private void OnBeamCancel(PointerCancelEvent evt)
-    {
-        if (evt.pointerId == _beamPointer) ReleaseBeam();
-    }
-
-    private void ReleaseBeam()
-    {
-        if (_beamButton != null && _beamPointer >= 0 && _beamButton.HasPointerCapture(_beamPointer))
-        {
-            _beamButton.ReleasePointer(_beamPointer);
-        }
-        _beamPointer = -1;
-        _beamButton?.RemoveFromClassList("action-button--pressed");
-        _input?.SetBeam(false);
+        _input.SetMove(_moveStick?.Value ?? Vector2.zero);
+        float climb = (_upButton.IsPressed ? 1f : 0f) - (_downButton.IsPressed ? 1f : 0f);
+        _input.SetClimb(climb);
+        _input.SetBeam(_beamButton.IsPressed);
     }
 
     private void UpdateTimer()
@@ -138,25 +97,25 @@ public class GameHudController : MonoBehaviour
 
     private void SetSticksVisible(bool visible)
     {
-        if (_touchZones == null) return;
+        if (_touchControls == null) return;
         DisplayStyle wanted = visible ? DisplayStyle.Flex : DisplayStyle.None;
-        if (_touchZones.style.display == wanted) return;
+        if (_touchControls.style.display == wanted) return;
         if (!visible) ReleaseSticks();
-        _touchZones.style.display = wanted;
-        if (_beamButton != null) _beamButton.style.display = wanted;
+        _touchControls.style.display = wanted;
     }
 
-    /// <summary>Suelta los sticks y el botón del rayo y pone la entrada externa a 0 (p. ej. al pausar).</summary>
+    /// <summary>Suelta el joystick y los botones y pone la entrada externa a 0 (p. ej. al pausar).</summary>
     public void ReleaseSticks()
     {
-        ReleaseBeam();
         _moveStick?.Release();
-        _altitudeStick?.Release();
+        _upButton?.Release();
+        _downButton?.Release();
+        _beamButton?.Release();
         if (_input != null)
         {
             _input.SetMove(Vector2.zero);
             _input.SetClimb(0f);
-            _input.SetYaw(0f);
+            _input.SetBeam(false);
         }
     }
 
@@ -189,5 +148,64 @@ public class GameHudController : MonoBehaviour
         _safeArea.style.right = (Screen.width - area.xMax) * scaleX;
         _safeArea.style.top = (Screen.height - area.yMax) * scaleY;
         _safeArea.style.bottom = area.yMin * scaleY;
+    }
+
+    /// <summary>
+    /// Botón táctil que cuenta mientras se mantiene pulsado. Captura su puntero,
+    /// así que funciona a la vez que el joystick (multitouch).
+    /// </summary>
+    private sealed class HoldButton
+    {
+        private const string PressedClass = "hud-button--pressed";
+        private readonly VisualElement _element;
+        private int _pointerId = -1;
+
+        public HoldButton(VisualElement element)
+        {
+            _element = element;
+            if (_element == null) return;
+            _element.RegisterCallback<PointerDownEvent>(OnDown);
+            _element.RegisterCallback<PointerUpEvent>(OnUp);
+            _element.RegisterCallback<PointerCancelEvent>(OnCancel);
+        }
+
+        public bool IsPressed => _pointerId >= 0;
+
+        public void Release()
+        {
+            if (_element != null && _pointerId >= 0 && _element.HasPointerCapture(_pointerId))
+            {
+                _element.ReleasePointer(_pointerId);
+            }
+            _pointerId = -1;
+            _element?.RemoveFromClassList(PressedClass);
+        }
+
+        public void Dispose()
+        {
+            if (_element == null) return;
+            _element.UnregisterCallback<PointerDownEvent>(OnDown);
+            _element.UnregisterCallback<PointerUpEvent>(OnUp);
+            _element.UnregisterCallback<PointerCancelEvent>(OnCancel);
+        }
+
+        private void OnDown(PointerDownEvent evt)
+        {
+            if (_pointerId >= 0) return;
+            _pointerId = evt.pointerId;
+            _element.CapturePointer(evt.pointerId);
+            _element.AddToClassList(PressedClass);
+            evt.StopPropagation();
+        }
+
+        private void OnUp(PointerUpEvent evt)
+        {
+            if (evt.pointerId == _pointerId) Release();
+        }
+
+        private void OnCancel(PointerCancelEvent evt)
+        {
+            if (evt.pointerId == _pointerId) Release();
+        }
     }
 }

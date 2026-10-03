@@ -4,7 +4,7 @@ using UnityEngine;
 /// Controlador de movimiento arcade del quadcopter.
 /// - Velocidad horizontal: PID de velocidad -> aceleración.
 /// - Altitud: PID de altura con setpoint que sube/baja con la entrada.
-/// - Yaw: giro suavizado sobre el eje Y.
+/// - Rumbo: el dron gira solo hacia donde se mueve (GDD 6.2, sin giro manual).
 /// Usa ForceMode.Acceleration, así que la masa del Rigidbody no afecta a la sensación.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
@@ -27,12 +27,14 @@ public class QuadcopterController : MonoBehaviour
     [Tooltip("Máximo que la altitud objetivo puede quedar por debajo del dron (m). Evita que, posado en una azotea, el objetivo siga bajando y tarde en despegar.")]
     [SerializeField] private float _maxAltitudeBelow = 1f;
 
-    [Header("Giro (yaw)")]
-    [SerializeField] private float _maxYawRate = 120f;
-    [SerializeField] private float _yawSmoothing = 8f;
+    [Header("Rumbo automático")]
+    [Tooltip("Grados por segundo con los que el dron gira hacia la dirección de movimiento.")]
+    [SerializeField] private float _maxYawRate = 240f;
+    [Tooltip("Por debajo de esta velocidad (m/s) el dron mantiene su rumbo.")]
+    [SerializeField] private float _minTurnSpeed = 0.8f;
 
     [Header("Referencia de movimiento")]
-    [Tooltip("Opcional. Si se asigna (p. ej. la cámara), el stick es relativo a su orientación; si no, al rumbo del dron.")]
+    [Tooltip("El stick es relativo a su orientación. Si se deja vacío, se usa la cámara principal.")]
     [SerializeField] private Transform _moveReference;
 
     private Rigidbody _rb;
@@ -41,7 +43,8 @@ public class QuadcopterController : MonoBehaviour
     private Vector3 _targetVelocity;
     private float _targetAltitude;
     private float _heading;
-    private float _yawRate;
+    private FollowCamera _followCamera;
+    private bool _referenceResolved;
 
     private PIDController _velocityPidX;
     private PIDController _velocityPidZ;
@@ -69,7 +72,6 @@ public class QuadcopterController : MonoBehaviour
         _targetAltitude = _rb.position.y;
         _heading = _rb.rotation.eulerAngles.y;
         _targetVelocity = Vector3.zero;
-        _yawRate = 0f;
         _velocityPidX.Reset();
         _velocityPidZ.Reset();
         _altitudePid.Reset();
@@ -86,16 +88,29 @@ public class QuadcopterController : MonoBehaviour
 
     private void UpdateYaw(float dt)
     {
-        float targetRate = _input.Yaw * _maxYawRate;
-        _yawRate = Mathf.Lerp(_yawRate, targetRate, 1f - Mathf.Exp(-_yawSmoothing * dt));
-        _heading += _yawRate * dt;
+        // Mirar hacia donde se quiere ir: así el Rayo dispara en la dirección del movimiento
+        if (_targetVelocity.magnitude > _minTurnSpeed)
+        {
+            float targetHeading = Mathf.Atan2(_targetVelocity.x, _targetVelocity.z) * Mathf.Rad2Deg;
+            _heading = Mathf.MoveTowardsAngle(_heading, targetHeading, _maxYawRate * dt);
+        }
         _rb.MoveRotation(Quaternion.Euler(0f, _heading, 0f));
     }
 
     private void UpdateHorizontal(float dt)
     {
-        // Referencia de orientación proyectada al plano horizontal.
-        float referenceYaw = _moveReference != null ? _moveReference.eulerAngles.y : _heading;
+        if (_moveReference == null && Camera.main != null) _moveReference = Camera.main.transform;
+        if (_moveReference != null && !_referenceResolved)
+        {
+            _followCamera = _moveReference.GetComponent<FollowCamera>();
+            _referenceResolved = true;
+        }
+
+        // Referencia de orientación proyectada al plano horizontal. Con la cámara de persecución se usa su
+        // rumbo y no hacia dónde mira: al moverse de lado la cámara gira para seguir al dron, y si el stick
+        // dependiera de eso el dron acabaría dando vueltas.
+        float referenceYaw = _followCamera != null ? _followCamera.Heading
+            : _moveReference != null ? _moveReference.eulerAngles.y : _heading;
         Quaternion yawRotation = Quaternion.Euler(0f, referenceYaw, 0f);
 
         Vector2 stick = _input.Move;

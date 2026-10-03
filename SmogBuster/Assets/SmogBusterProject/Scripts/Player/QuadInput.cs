@@ -2,19 +2,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// Entrada del quadcopter. Combina teclado/gamepad (para pruebas en editor) con
-/// valores externos (sticks en pantalla en móvil) mediante los métodos Set*.
+/// Entrada del quadcopter (GDD 6.2). Combina teclado, ratón y gamepad con los valores de los
+/// controles táctiles del HUD (métodos Set*). No hay giro manual: el dron gira hacia donde se mueve.
+/// Teclado: WASD mover, Espacio subir, Shift izquierdo bajar, clic izquierdo Rayo.
 /// </summary>
 public class QuadInput : MonoBehaviour
 {
     private InputAction _move;
     private InputAction _climb;
-    private InputAction _yaw;
     private InputAction _beam;
 
     private Vector2 _externalMove;
     private float _externalClimb;
-    private float _externalYaw;
     private bool _externalBeam;
 
     /// <summary>Movimiento horizontal: x = lateral, y = adelante/atrás.</summary>
@@ -22,9 +21,6 @@ public class QuadInput : MonoBehaviour
 
     /// <summary>Ascenso (+1) / descenso (-1).</summary>
     public float Climb { get; private set; }
-
-    /// <summary>Giro (yaw): +1 derecha, -1 izquierda.</summary>
-    public float Yaw { get; private set; }
 
     /// <summary>Rayo Purificador pulsado (se mantiene para disparar).</summary>
     public bool Beam { get; private set; }
@@ -35,7 +31,6 @@ public class QuadInput : MonoBehaviour
     // Los sticks en pantalla llaman a estos métodos.
     public void SetMove(Vector2 value) => _externalMove = value;
     public void SetClimb(float value) => _externalClimb = value;
-    public void SetYaw(float value) => _externalYaw = value;
     public void SetBeam(bool value) => _externalBeam = value;
 
     private void Awake()
@@ -51,14 +46,8 @@ public class QuadInput : MonoBehaviour
         _climb = new InputAction("Climb", InputActionType.Value);
         _climb.AddCompositeBinding("1DAxis")
             .With("Positive", "<Keyboard>/space")
-            .With("Negative", "<Keyboard>/leftCtrl");
+            .With("Negative", "<Keyboard>/leftShift");
         _climb.AddBinding("<Gamepad>/rightStick/y").WithProcessor("axisDeadzone");
-
-        _yaw = new InputAction("Yaw", InputActionType.Value);
-        _yaw.AddCompositeBinding("1DAxis")
-            .With("Positive", "<Keyboard>/e")
-            .With("Negative", "<Keyboard>/q");
-        _yaw.AddBinding("<Gamepad>/rightStick/x").WithProcessor("axisDeadzone");
 
         _beam = new InputAction("Beam", InputActionType.Button);
         _beam.AddBinding("<Mouse>/leftButton");
@@ -69,7 +58,6 @@ public class QuadInput : MonoBehaviour
     {
         _move.Enable();
         _climb.Enable();
-        _yaw.Enable();
         _beam.Enable();
     }
 
@@ -77,7 +65,6 @@ public class QuadInput : MonoBehaviour
     {
         _move.Disable();
         _climb.Disable();
-        _yaw.Disable();
         _beam.Disable();
     }
 
@@ -85,7 +72,6 @@ public class QuadInput : MonoBehaviour
     {
         _move.Dispose();
         _climb.Dispose();
-        _yaw.Dispose();
         _beam.Dispose();
     }
 
@@ -96,14 +82,12 @@ public class QuadInput : MonoBehaviour
         {
             Move = Vector2.zero;
             Climb = 0f;
-            Yaw = 0f;
             Beam = false;
             return;
         }
 
         Move = Vector2.ClampMagnitude(_move.ReadValue<Vector2>() + _externalMove, 1f);
         Climb = Mathf.Clamp(_climb.ReadValue<float>() + _externalClimb, -1f, 1f);
-        Yaw = Mathf.Clamp(_yaw.ReadValue<float>() + _externalYaw, -1f, 1f);
         Beam = _beam.IsPressed() || _externalBeam;
     }
 }
