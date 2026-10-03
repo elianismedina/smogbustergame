@@ -24,6 +24,9 @@ public class QuadInput : MonoBehaviour
     /// <summary>Giro (yaw): +1 derecha, -1 izquierda.</summary>
     public float Yaw { get; private set; }
 
+    /// <summary>Con true se ignora toda entrada (p. ej. al terminar la partida).</summary>
+    public bool Locked { get; set; }
+
     // Los sticks en pantalla llaman a estos métodos.
     public void SetMove(Vector2 value) => _externalMove = value;
     public void SetClimb(float value) => _externalClimb = value;
@@ -76,6 +79,14 @@ public class QuadInput : MonoBehaviour
     // Se lee una vez por frame; FixedUpdate solo consume los valores en caché.
     private void Update()
     {
+        if (Locked)
+        {
+            Move = Vector2.zero;
+            Climb = 0f;
+            Yaw = 0f;
+            return;
+        }
+
         Move = Vector2.ClampMagnitude(_move.ReadValue<Vector2>() + _externalMove, 1f);
         Climb = Mathf.Clamp(_climb.ReadValue<float>() + _externalClimb, -1f, 1f);
         Yaw = Mathf.Clamp(_yaw.ReadValue<float>() + _externalYaw, -1f, 1f);

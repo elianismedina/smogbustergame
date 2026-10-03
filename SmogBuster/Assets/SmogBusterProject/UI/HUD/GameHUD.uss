@@ -103,6 +103,32 @@
     scale: 0.92 0.92;
 }
 
+/* ---------- Temporizador (a la izquierda del botón de pausa) ---------- */
+
+.hud-timer {
+    position: absolute;
+    top: 28px;
+    right: 160px;
+    height: 104px;
+    min-width: 200px;
+    margin: 0;
+    padding: 0 28px;
+    font-size: 52px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    letter-spacing: 2px;
+    color: rgb(225, 235, 230);
+    background-color: rgba(14, 28, 38, 0.72);
+    border-width: 3px;
+    border-color: rgba(120, 230, 170, 0.6);
+    border-radius: 24px;
+}
+
+.hud-timer--warning {
+    color: rgb(240, 95, 85);
+    border-color: rgba(235, 90, 80, 0.85);
+}
+
 /* ---------- Menú de pausa ---------- */
 
 .pause-row {

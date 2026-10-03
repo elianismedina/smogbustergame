@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 /// HUD de juego: crea los joysticks táctiles y pasa sus valores a <see cref="QuadInput"/>.
 /// - Stick izquierdo: mover (adelante/atrás, lateral).
 /// - Stick derecho: vertical = subir/bajar, horizontal = girar.
+/// Muestra el tiempo restante de <see cref="GameSession"/> (MM:SS).
 /// Ajusta el área segura (notch) y oculta los sticks en dispositivos sin pantalla táctil.
 /// </summary>
 [RequireComponent(typeof(UIDocument))]
@@ -17,6 +18,8 @@ public class GameHudController : MonoBehaviour
     [SerializeField] private float _stickRadius = 110f;
     [Range(0f, 0.5f)]
     [SerializeField] private float _deadZone = 0.12f;
+    [Tooltip("Segundos restantes a partir de los que el temporizador se marca en rojo.")]
+    [SerializeField] private float _timerWarning = 30f;
 
     private VisualElement _root;
     private VisualElement _safeArea;
@@ -24,6 +27,9 @@ public class GameHudController : MonoBehaviour
     private VirtualJoystick _moveStick;
     private VirtualJoystick _altitudeStick;
     private QuadcopterCrash _crash;
+    private GameSession _session;
+    private Label _timer;
+    private int _shownSeconds = -1;
     private Rect _lastSafeArea;
 
     private void OnEnable()
@@ -31,12 +37,15 @@ public class GameHudController : MonoBehaviour
         _root = GetComponent<UIDocument>().rootVisualElement;
         _safeArea = _root.Q<VisualElement>("game-hud-safe-area");
         _touchZones = _root.Q<VisualElement>("touch-zones");
+        _timer = _root.Q<Label>("hud-timer");
 
         _moveStick = CreateStick("touch-zone-left", "joystick--move");
         _altitudeStick = CreateStick("touch-zone-right", "joystick--altitude");
 
         if (_input == null) _input = FindAnyObjectByType<QuadInput>();
         _crash = _input != null ? _input.GetComponent<QuadcopterCrash>() : null;
+        _session = FindAnyObjectByType<GameSession>();
+        if (_timer != null) _timer.style.display = _session != null ? DisplayStyle.Flex : DisplayStyle.None;
 
         _root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
     }
@@ -50,18 +59,32 @@ public class GameHudController : MonoBehaviour
     private void Update()
     {
         if (Screen.safeArea != _lastSafeArea) ApplySafeArea();
+        UpdateTimer();
         if (_input == null) return;
 
-        // Tras el choque los sticks no hacen nada y se ocultan
-        bool crashed = _crash != null && _crash.HasCrashed;
-        SetSticksVisible(!crashed && HasTouchInput());
-        if (crashed) return;
+        // Al terminar la partida (o tras el choque) los sticks no hacen nada y se ocultan
+        bool over = (_crash != null && _crash.HasCrashed) || (_session != null && _session.IsOver);
+        SetSticksVisible(!over && HasTouchInput());
+        if (over) return;
 
         Vector2 move = _moveStick?.Value ?? Vector2.zero;
         Vector2 altitude = _altitudeStick?.Value ?? Vector2.zero;
         _input.SetMove(move);
         _input.SetClimb(altitude.y);
         _input.SetYaw(altitude.x);
+    }
+
+    private void UpdateTimer()
+    {
+        if (_timer == null || _session == null) return;
+
+        // Redondeo hacia arriba: muestra 00:00 solo cuando el tiempo se ha agotado
+        int seconds = Mathf.CeilToInt(_session.TimeRemaining);
+        if (seconds == _shownSeconds) return;
+
+        _shownSeconds = seconds;
+        _timer.text = $"{seconds / 60:00}:{seconds % 60:00}";
+        _timer.EnableInClassList("hud-timer--warning", seconds <= _timerWarning);
     }
 
     // Móvil real, Device Simulator (crea un Touchscreen) o PC táctil

@@ -11,6 +11,7 @@
                 <ui:VisualElement name="touch-zone-left" class="touch-zone touch-zone--left"/>
                 <ui:VisualElement name="touch-zone-right" class="touch-zone touch-zone--right"/>
             </ui:VisualElement>
+            <ui:Label text="03:00" name="hud-timer" class="hud-timer" picking-mode="Ignore"/>
             <ui:Button text="II" name="btn-pause" class="pause-button"/>
         </ui:VisualElement>
 
