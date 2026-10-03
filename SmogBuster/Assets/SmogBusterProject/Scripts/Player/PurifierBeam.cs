@@ -4,6 +4,8 @@ using UnityEngine;
 /// Rayo Purificador (GDD 6.1): mientras se mantiene pulsado, lanza un haz hacia delante desde el
 /// cañón azul. La primera nube de smog que toca se disipa al instante; un edificio corta el haz.
 /// Usa un barrido esférico para que no haga falta apuntar con precisión en pantalla táctil.
+/// Aunque no se dispare, marca la nube que está en la mira (<see cref="CurrentTarget"/>) para que
+/// el jugador sepa que, si dispara ahora, acierta.
 /// </summary>
 [RequireComponent(typeof(QuadInput))]
 public class PurifierBeam : MonoBehaviour
@@ -24,6 +26,9 @@ public class PurifierBeam : MonoBehaviour
     /// <summary>True mientras el haz está activo (para sonido y efectos).</summary>
     public bool IsFiring { get; private set; }
 
+    /// <summary>Nube que acertaría el Rayo si se disparase ahora (null si ninguna).</summary>
+    public SmogCloud CurrentTarget { get; private set; }
+
     private void Awake()
     {
         _input = GetComponent<QuadInput>();
@@ -35,16 +40,26 @@ public class PurifierBeam : MonoBehaviour
     private void Update()
     {
         bool crashed = _crash != null && _crash.HasCrashed;
-        IsFiring = _input.Beam && !crashed && Time.timeScale > 0f;
+        bool over = GameSession.Instance != null && GameSession.Instance.IsOver;
+        bool active = !crashed && !over && Time.timeScale > 0f;
+        IsFiring = _input.Beam && active;
         if (_line != null) _line.enabled = IsFiring;
-        if (!IsFiring) return;
 
         Vector3 origin = _muzzle != null ? _muzzle.position : transform.position;
         // El cañón apunta según el rumbo del dron, no según su inclinación al moverse
         Vector3 forward = Quaternion.Euler(0f, transform.eulerAngles.y, 0f) * Vector3.forward;
         Vector3 direction = Quaternion.AngleAxis(_downAngle, Vector3.Cross(Vector3.up, forward)) * forward;
 
-        float end = Cast(origin, direction);
+        float end = Cast(origin, direction, out SmogCloud target);
+        SetTarget(active ? target : null);
+        if (!IsFiring) return;
+
+        if (target != null)
+        {
+            SetTarget(null);
+            target.Purify();
+        }
+
         if (_line != null)
         {
             _line.SetPosition(0, origin);
@@ -52,8 +67,18 @@ public class PurifierBeam : MonoBehaviour
         }
     }
 
-    /// <summary>Busca lo primero que toca el haz. Devuelve la longitud del haz.</summary>
-    private float Cast(Vector3 origin, Vector3 direction)
+    private void SetTarget(SmogCloud target)
+    {
+        if (target == CurrentTarget) return;
+        if (CurrentTarget != null) CurrentTarget.SetTargeted(false);
+        CurrentTarget = target;
+        if (target != null) target.SetTargeted(true);
+    }
+
+    private void OnDisable() => SetTarget(null);
+
+    /// <summary>Busca lo primero que toca el haz: la nube en la mira (o null) y la longitud del haz.</summary>
+    private float Cast(Vector3 origin, Vector3 direction, out SmogCloud target)
     {
         int count = Physics.SphereCastNonAlloc(origin, _aimRadius, direction, _hits, _range,
             Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide);
@@ -82,7 +107,7 @@ public class PurifierBeam : MonoBehaviour
             }
         }
 
-        if (closestCloud != null) closestCloud.Purify();
+        target = closestCloud;
         // Barridos que empiezan dentro de un collider dan distancia 0: mostrar al menos un tramo corto
         return Mathf.Max(closest, 1f);
     }

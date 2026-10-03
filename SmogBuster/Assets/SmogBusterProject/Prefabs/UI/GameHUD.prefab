@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 466055391226565401}
   - component: {fileID: 889835750783337278}
   - component: {fileID: 2394422312420655757}
+  - component: {fileID: 4774209577229946703}
   m_Layer: 0
   m_Name: GameHUD
   m_TagString: Untagged
@@ -73,6 +74,7 @@ MonoBehaviour:
   _showSticksOnDesktop: 0
   _stickRadius: 110
   _deadZone: 0.12
+  _timerWarning: 30
 --- !u!114 &2394422312420655757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,3 +89,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuController
   _menuSceneName: MainMenu
   _fadeDuration: 0.4
+--- !u!114 &4774209577229946703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4474563007509518495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d75f0362c90c6d74cae28daa5537f510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CloudMarkersController
+  _heightOffset: 1.5
+  _fullSizeDistance: 15
+  _minScale: 0.45
+  _maxDistance: 140

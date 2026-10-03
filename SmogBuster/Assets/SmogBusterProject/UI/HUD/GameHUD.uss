@@ -13,6 +13,82 @@
     bottom: 0;
 }
 
+/* ---------- Marcadores de nubes (diana sobre cada nube) ---------- */
+
+.cloud-markers {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.cloud-marker {
+    position: absolute;
+    align-items: center;
+    /* left/top es la punta inferior del marcador, justo encima de la nube */
+    translate: -50% -100%;
+    transform-origin: 50% 100%;
+}
+
+.cloud-marker__ring {
+    width: 84px;
+    height: 84px;
+    border-radius: 42px;
+    border-width: 9px;
+    border-color: rgb(255, 196, 60);
+    background-color: rgba(60, 50, 20, 0.35);
+    align-items: center;
+    justify-content: center;
+}
+
+.cloud-marker__dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    background-color: rgb(255, 196, 60);
+}
+
+.cloud-marker__label {
+    display: none;
+    margin-top: 6px;
+    padding: 2px 12px;
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: rgb(14, 28, 38);
+    background-color: rgb(120, 220, 255);
+    border-radius: 10px;
+}
+
+/* Micro-nubes: diana más pequeña */
+.cloud-marker--micro .cloud-marker__ring {
+    width: 52px;
+    height: 52px;
+    border-radius: 26px;
+    border-width: 6px;
+}
+
+.cloud-marker--micro .cloud-marker__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+}
+
+/* En la mira del Rayo: cian, más grande y con aviso */
+.cloud-marker--target .cloud-marker__ring {
+    border-color: rgb(120, 220, 255);
+    background-color: rgba(20, 120, 200, 0.45);
+    scale: 1.25 1.25;
+}
+
+.cloud-marker--target .cloud-marker__dot {
+    background-color: rgb(120, 220, 255);
+}
+
+.cloud-marker--target .cloud-marker__label {
+    display: flex;
+}
+
 /* ---------- Joysticks ---------- */
 
 .touch-controls {
@@ -133,6 +209,17 @@
 
 .hud-button--pressed {
     scale: 0.92 0.92;
+}
+
+/* Hay una nube en la mira: el botón del Rayo late (GameHudController alterna --pulse) */
+.action-button--ready {
+    border-color: rgb(255, 255, 255);
+    border-width: 7px;
+}
+
+.action-button--ready.action-button--pulse {
+    scale: 1.1 1.1;
+    background-color: rgba(60, 190, 255, 0.95);
 }
 
 .action-button--beam.hud-button--pressed {

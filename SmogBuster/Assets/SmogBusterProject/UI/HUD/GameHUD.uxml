@@ -4,6 +4,9 @@
     <Style src="project://database/Assets/SmogBusterProject/UI/HUD/GameHUD.uss"/>
     <ui:VisualElement name="game-hud-root" class="game-hud-root" picking-mode="Ignore">
 
+        <!-- Marcadores sobre las nubes de smog (CloudMarkersController); debajo de los controles -->
+        <ui:VisualElement name="cloud-markers" class="cloud-markers" picking-mode="Ignore"/>
+
         <!-- Controles dentro del área segura (notch) -->
         <ui:VisualElement name="game-hud-safe-area" class="game-hud-safe-area" picking-mode="Ignore">
             <!-- Controles táctiles (GDD 6.2): joystick a la izquierda; subir, bajar y Rayo a la derecha.

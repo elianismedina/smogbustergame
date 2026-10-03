@@ -30,6 +30,9 @@ public class GameHudController : MonoBehaviour
     private QuadcopterCrash _crash;
     private GameSession _session;
     private Label _timer;
+    private PurifierBeam _beam;
+    private VisualElement _beamElement;
+    private IVisualElementScheduledItem _beamPulse;
     private int _shownSeconds = -1;
     private Rect _lastSafeArea;
 
@@ -43,10 +46,14 @@ public class GameHudController : MonoBehaviour
         _moveStick = CreateStick("touch-zone-left", "joystick--move");
         _upButton = new HoldButton(_root.Q<VisualElement>("btn-up"));
         _downButton = new HoldButton(_root.Q<VisualElement>("btn-down"));
-        _beamButton = new HoldButton(_root.Q<VisualElement>("btn-beam"));
+        _beamElement = _root.Q<VisualElement>("btn-beam");
+        _beamButton = new HoldButton(_beamElement);
+        // Con una nube en la mira el botón del Rayo late, para invitar a disparar
+        _beamPulse = _beamElement?.schedule.Execute(() => _beamElement.ToggleInClassList("action-button--pulse")).Every(350);
 
         if (_input == null) _input = FindAnyObjectByType<QuadInput>();
         _crash = _input != null ? _input.GetComponent<QuadcopterCrash>() : null;
+        _beam = _input != null ? _input.GetComponent<PurifierBeam>() : null;
         _session = FindAnyObjectByType<GameSession>();
         if (_timer != null) _timer.style.display = _session != null ? DisplayStyle.Flex : DisplayStyle.None;
 
@@ -57,6 +64,7 @@ public class GameHudController : MonoBehaviour
     {
         _root?.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         ReleaseSticks();
+        _beamPulse?.Pause();
         _upButton?.Dispose();
         _downButton?.Dispose();
         _beamButton?.Dispose();
@@ -66,6 +74,7 @@ public class GameHudController : MonoBehaviour
     {
         if (Screen.safeArea != _lastSafeArea) ApplySafeArea();
         UpdateTimer();
+        UpdateBeamReady();
         if (_input == null) return;
 
         // Al terminar la partida (o tras el choque) los controles no hacen nada y se ocultan
@@ -77,6 +86,14 @@ public class GameHudController : MonoBehaviour
         float climb = (_upButton.IsPressed ? 1f : 0f) - (_downButton.IsPressed ? 1f : 0f);
         _input.SetClimb(climb);
         _input.SetBeam(_beamButton.IsPressed);
+    }
+
+    private void UpdateBeamReady()
+    {
+        if (_beamElement == null) return;
+        bool ready = _beam != null && _beam.CurrentTarget != null;
+        _beamElement.EnableInClassList("action-button--ready", ready);
+        if (!ready) _beamElement.RemoveFromClassList("action-button--pulse");
     }
 
     private void UpdateTimer()

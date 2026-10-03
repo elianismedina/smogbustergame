@@ -28,6 +28,10 @@ public class SmogCloud : MonoBehaviour
     [Tooltip("Escala final respecto a la inicial (crece mientras viaja).")]
     [SerializeField] private float _growth = 2f;
 
+    [Header("Apuntado")]
+    [Tooltip("Halo que se enciende cuando la nube está en la mira del Rayo.")]
+    [SerializeField] private GameObject _highlight;
+
     [Header("Desaparición")]
     [SerializeField] private float _fadeDuration = 0.5f;
 
@@ -37,11 +41,20 @@ public class SmogCloud : MonoBehaviour
     private Vector3 _startScale;
     private float _age;
     private bool _gone;
+    private bool _targeted;
 
     /// <summary>Nubes que siguen en el aire.</summary>
     public static IReadOnlyList<SmogCloud> Active => ActiveList;
 
     public bool IsMicro => _isMicro;
+
+    /// <summary>Radio aproximado en metros (para colocar su marcador encima).</summary>
+    public float Radius => _collider is SphereCollider sphere
+        ? sphere.radius * transform.lossyScale.y
+        : _collider.bounds.extents.y;
+
+    /// <summary>True mientras el Rayo la está apuntando.</summary>
+    public bool IsTargeted => _targeted;
 
     private void Awake()
     {
@@ -49,6 +62,7 @@ public class SmogCloud : MonoBehaviour
         _collider.isTrigger = true;
         _particles = GetComponentsInChildren<ParticleSystem>();
         _startScale = transform.localScale;
+        if (_highlight != null) _highlight.SetActive(false);
 
         Vector2 flat = Random.insideUnitCircle.normalized;
         _driftDirection = new Vector3(flat.x, 0.15f, flat.y).normalized;
@@ -74,6 +88,14 @@ public class SmogCloud : MonoBehaviour
         }
     }
 
+    /// <summary>Enciende o apaga el halo de «en la mira».</summary>
+    public void SetTargeted(bool targeted)
+    {
+        if (_gone || targeted == _targeted) return;
+        _targeted = targeted;
+        if (_highlight != null) _highlight.SetActive(targeted);
+    }
+
     /// <summary>La disipa el Rayo Purificador: baja el smog y la nube se desvanece.</summary>
     public void Purify()
     {
@@ -85,6 +107,8 @@ public class SmogCloud : MonoBehaviour
     private void Disappear()
     {
         _gone = true;
+        _targeted = false;
+        if (_highlight != null) _highlight.SetActive(false);
         _collider.enabled = false;
         ActiveList.Remove(this);
         StartCoroutine(FadeOut());
