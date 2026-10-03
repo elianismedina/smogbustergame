@@ -30393,6 +30393,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1056210278}
   - component: {fileID: 1056210277}
+  - component: {fileID: 1056210279}
   m_Layer: 0
   m_Name: Environment
   m_TagString: Untagged
@@ -30429,6 +30430,30 @@ Transform:
   - {fileID: 2030982960}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1056210279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056210276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bbc5a854075577469e99d4518a0d405, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkyPurification
+  _session: {fileID: 0}
+  _dirtySmog: 0.5
+  _cleanSmog: 0.05
+  _smoothing: 1.5
+  _cleanFogColor: {r: 0.74, g: 0.8, b: 0.86, a: 1}
+  _cleanFogDensity: 0.004
+  _cleanAmbientSky: {r: 0.62, g: 0.74, b: 0.92, a: 1}
+  _cleanAmbientEquator: {r: 0.72, g: 0.7, b: 0.64, a: 1}
+  _cleanAmbientGround: {r: 0.3, g: 0.29, b: 0.25, a: 1}
+  _sun: {fileID: 0}
+  _cleanSunColor: {r: 1, g: 0.9, b: 0.76, a: 1}
+  _cleanSunIntensity: 1.5
 --- !u!1001 &1056352136
 PrefabInstance:
   m_ObjectHideFlags: 0
