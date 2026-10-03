@@ -35086,6 +35086,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FollowCamera
   _target: {fileID: 2009726937}
+  _mode: 0
+  _firstPersonOffset: {x: 0, y: 0.25, z: 0.9}
+  _firstPersonPitch: 8
+  _firstPersonNearClip: 0.05
+  _hiddenModel: {fileID: 0}
   _offset: {x: 0, y: 3, z: -7}
   _lookOffset: {x: 0, y: 0.5, z: 0}
   _positionSmoothing: 6
@@ -45029,6 +45034,7 @@ MonoBehaviour:
   _showDelay: 1.2
   _menuSceneName: MainMenu
   _fadeDuration: 0.4
+  _defeatSound: {fileID: 8300000, guid: 99323c526d2742f46983396e33503207, type: 3}
 --- !u!114 &1517060631
 MonoBehaviour:
   m_ObjectHideFlags: 0

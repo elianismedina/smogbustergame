@@ -22,6 +22,8 @@ public class GameOverController : MonoBehaviour
     [SerializeField] private float _showDelay = 0.6f;
     [SerializeField] private string _menuSceneName = "MainMenu";
     [SerializeField] private float _fadeDuration = 0.4f;
+    [Tooltip("Efecto de sonido al perder (smog al 100%, tiempo agotado o choque).")]
+    [SerializeField] private AudioClip _defeatSound;
 
     private VisualElement _overlay;
     private Label _title;
@@ -68,6 +70,7 @@ public class GameOverController : MonoBehaviour
     private void OnSessionEnded(GameSession.Result result)
     {
         bool victory = result == GameSession.Result.Victory;
+        if (!victory && _defeatSound != null) AudioManager.Instance?.PlayUi(_defeatSound);
         _overlay?.EnableInClassList("gameover-overlay--victory", victory);
         if (_btnRetry != null) _btnRetry.text = victory ? "JUGAR DE NUEVO" : "REINTENTAR";
 
