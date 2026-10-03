@@ -73,11 +73,8 @@ public class QuadcopterAudio : MonoBehaviour
         if (_session != null) _session.Ended -= OnSessionEnded;
     }
 
-    // Al perder (smog al 100% o tiempo agotado) los motores se apagan igual que al chocar
-    private void OnSessionEnded(GameSession.Result result)
-    {
-        if (result != GameSession.Result.Victory) OnCrashed();
-    }
+    // Al terminar la partida (victoria o derrota) los motores se apagan igual que al chocar
+    private void OnSessionEnded(GameSession.Result result) => OnCrashed();
 
     private void Update()
     {
