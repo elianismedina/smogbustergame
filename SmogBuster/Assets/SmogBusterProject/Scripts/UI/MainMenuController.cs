@@ -14,6 +14,10 @@ public class MainMenuController : MonoBehaviour
     [Header("Fondo")]
     [SerializeField] private float _smogDriftInterval = 9f;
 
+    [Header("Sonido")]
+    [Tooltip("Se reproduce al pulsar cualquier botón del menú (grupo UI del mixer).")]
+    [SerializeField] private AudioClip _selectSound;
+
     private VisualElement _root;
     private VisualElement _safeArea;
     private VisualElement _menu;
@@ -132,6 +136,7 @@ public class MainMenuController : MonoBehaviour
     {
         if (button != null)
         {
+            button.clicked += PlaySelectSound;
             button.clicked += callback;
         }
         else
@@ -144,9 +149,12 @@ public class MainMenuController : MonoBehaviour
     {
         if (button != null)
         {
+            button.clicked -= PlaySelectSound;
             button.clicked -= callback;
         }
     }
+
+    private void PlaySelectSound() => AudioManager.Instance?.PlayUi(_selectSound);
 
     #region Área segura
 
@@ -270,6 +278,7 @@ public class MainMenuController : MonoBehaviour
 
         if (IsOptionsOpen)
         {
+            PlaySelectSound();
             CloseOptions();
         }
 #if UNITY_ANDROID && !UNITY_EDITOR
