@@ -45035,6 +45035,7 @@ MonoBehaviour:
   _menuSceneName: MainMenu
   _fadeDuration: 0.4
   _defeatSound: {fileID: 8300000, guid: 99323c526d2742f46983396e33503207, type: 3}
+  _victorySound: {fileID: 8300000, guid: bd60450ae8e2e444697bf5cfbb0bf116, type: 3}
 --- !u!114 &1517060631
 MonoBehaviour:
   m_ObjectHideFlags: 0
