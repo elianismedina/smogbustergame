@@ -11,6 +11,10 @@
                 <ui:VisualElement name="touch-zone-left" class="touch-zone touch-zone--left"/>
                 <ui:VisualElement name="touch-zone-right" class="touch-zone touch-zone--right"/>
             </ui:VisualElement>
+            <!-- Botón de acción: se mantiene pulsado para disparar (GameHudController) -->
+            <ui:VisualElement name="btn-beam" class="action-button action-button--beam">
+                <ui:Label text="RAYO" class="action-button__label" picking-mode="Ignore"/>
+            </ui:VisualElement>
             <ui:Label text="03:00" name="hud-timer" class="hud-timer" picking-mode="Ignore"/>
             <ui:Button text="II" name="btn-pause" class="pause-button"/>
         </ui:VisualElement>

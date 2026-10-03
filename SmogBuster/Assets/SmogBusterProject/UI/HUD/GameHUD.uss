@@ -103,6 +103,44 @@
     scale: 0.92 0.92;
 }
 
+/* ---------- Botones de acción (GDD 9.3: grandes, abajo a la derecha) ---------- */
+
+.action-button {
+    position: absolute;
+    right: 64px;
+    bottom: 320px;
+    width: 176px;
+    height: 176px;
+    border-radius: 88px;
+    border-width: 5px;
+    align-items: center;
+    justify-content: center;
+    transition-property: scale, background-color;
+    transition-duration: 0.08s;
+}
+
+.action-button__label {
+    font-size: 30px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    color: rgb(240, 250, 255);
+    margin: 0;
+    padding: 0;
+}
+
+.action-button--beam {
+    background-color: rgba(20, 120, 200, 0.75);
+    border-color: rgb(120, 220, 255);
+}
+
+.action-button--pressed {
+    scale: 0.92 0.92;
+}
+
+.action-button--beam.action-button--pressed {
+    background-color: rgba(60, 190, 255, 0.95);
+}
+
 /* ---------- Temporizador (a la izquierda del botón de pausa) ---------- */
 
 .hud-timer {

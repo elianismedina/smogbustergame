@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 /// HUD de juego: crea los joysticks táctiles y pasa sus valores a <see cref="QuadInput"/>.
 /// - Stick izquierdo: mover (adelante/atrás, lateral).
 /// - Stick derecho: vertical = subir/bajar, horizontal = girar.
-/// Muestra el tiempo restante de <see cref="GameSession"/> (MM:SS).
+/// Muestra el tiempo restante de <see cref="GameSession"/> (MM:SS) y el botón del Rayo (mantener pulsado).
 /// Ajusta el área segura (notch) y oculta los sticks en dispositivos sin pantalla táctil.
 /// </summary>
 [RequireComponent(typeof(UIDocument))]
@@ -29,6 +29,8 @@ public class GameHudController : MonoBehaviour
     private QuadcopterCrash _crash;
     private GameSession _session;
     private Label _timer;
+    private VisualElement _beamButton;
+    private int _beamPointer = -1;
     private int _shownSeconds = -1;
     private Rect _lastSafeArea;
 
@@ -38,6 +40,13 @@ public class GameHudController : MonoBehaviour
         _safeArea = _root.Q<VisualElement>("game-hud-safe-area");
         _touchZones = _root.Q<VisualElement>("touch-zones");
         _timer = _root.Q<Label>("hud-timer");
+        _beamButton = _root.Q<VisualElement>("btn-beam");
+        if (_beamButton != null)
+        {
+            _beamButton.RegisterCallback<PointerDownEvent>(OnBeamDown);
+            _beamButton.RegisterCallback<PointerUpEvent>(OnBeamUp);
+            _beamButton.RegisterCallback<PointerCancelEvent>(OnBeamCancel);
+        }
 
         _moveStick = CreateStick("touch-zone-left", "joystick--move");
         _altitudeStick = CreateStick("touch-zone-right", "joystick--altitude");
@@ -53,6 +62,12 @@ public class GameHudController : MonoBehaviour
     private void OnDisable()
     {
         _root?.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+        if (_beamButton != null)
+        {
+            _beamButton.UnregisterCallback<PointerDownEvent>(OnBeamDown);
+            _beamButton.UnregisterCallback<PointerUpEvent>(OnBeamUp);
+            _beamButton.UnregisterCallback<PointerCancelEvent>(OnBeamCancel);
+        }
         ReleaseSticks();
     }
 
@@ -72,6 +87,37 @@ public class GameHudController : MonoBehaviour
         _input.SetMove(move);
         _input.SetClimb(altitude.y);
         _input.SetYaw(altitude.x);
+    }
+
+    private void OnBeamDown(PointerDownEvent evt)
+    {
+        if (_beamPointer >= 0) return;
+        _beamPointer = evt.pointerId;
+        _beamButton.CapturePointer(evt.pointerId);
+        _beamButton.AddToClassList("action-button--pressed");
+        _input?.SetBeam(true);
+        evt.StopPropagation();
+    }
+
+    private void OnBeamUp(PointerUpEvent evt)
+    {
+        if (evt.pointerId == _beamPointer) ReleaseBeam();
+    }
+
+    private void OnBeamCancel(PointerCancelEvent evt)
+    {
+        if (evt.pointerId == _beamPointer) ReleaseBeam();
+    }
+
+    private void ReleaseBeam()
+    {
+        if (_beamButton != null && _beamPointer >= 0 && _beamButton.HasPointerCapture(_beamPointer))
+        {
+            _beamButton.ReleasePointer(_beamPointer);
+        }
+        _beamPointer = -1;
+        _beamButton?.RemoveFromClassList("action-button--pressed");
+        _input?.SetBeam(false);
     }
 
     private void UpdateTimer()
@@ -97,11 +143,13 @@ public class GameHudController : MonoBehaviour
         if (_touchZones.style.display == wanted) return;
         if (!visible) ReleaseSticks();
         _touchZones.style.display = wanted;
+        if (_beamButton != null) _beamButton.style.display = wanted;
     }
 
-    /// <summary>Suelta ambos sticks y pone la entrada externa a 0 (p. ej. al pausar).</summary>
+    /// <summary>Suelta los sticks y el botón del rayo y pone la entrada externa a 0 (p. ej. al pausar).</summary>
     public void ReleaseSticks()
     {
+        ReleaseBeam();
         _moveStick?.Release();
         _altitudeStick?.Release();
         if (_input != null)
