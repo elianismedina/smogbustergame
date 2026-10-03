@@ -132,6 +132,7 @@ MonoBehaviour:
   _maxAltitudeBelow: 1
   _maxYawRate: 120
   _minTurnSpeed: 0.8
+  _firstPersonTurnRate: 110
   _moveReference: {fileID: 0}
 --- !u!114 &7100000000000000003
 MonoBehaviour:
@@ -165,9 +166,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PurifierBeam
   _muzzle: {fileID: 8038440550681215095}
   _line: {fileID: 7870386505285359575}
-  _range: 30
+  _range: 35
   _aimRadius: 1.5
+  _assistAngle: 20
   _downAngle: 4
+  _firstPersonLineStart: 2.5
 --- !u!114 &7459789704528402382
 MonoBehaviour:
   m_ObjectHideFlags: 0

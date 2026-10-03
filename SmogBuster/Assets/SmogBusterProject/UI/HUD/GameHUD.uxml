@@ -4,6 +4,11 @@
     <Style src="project://database/Assets/SmogBusterProject/UI/HUD/GameHUD.uss"/>
     <ui:VisualElement name="game-hud-root" class="game-hud-root" picking-mode="Ignore">
 
+        <!-- Mira del Rayo (GameHudController la coloca donde apunta el rayo) -->
+        <ui:VisualElement name="crosshair" class="crosshair" picking-mode="Ignore">
+            <ui:VisualElement class="crosshair__dot" picking-mode="Ignore"/>
+        </ui:VisualElement>
+
         <!-- Marcadores sobre las nubes de smog (CloudMarkersController); debajo de los controles -->
         <ui:VisualElement name="cloud-markers" class="cloud-markers" picking-mode="Ignore"/>
 

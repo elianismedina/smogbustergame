@@ -1,11 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Rayo Purificador (GDD 6.1): mientras se mantiene pulsado, lanza un haz hacia delante desde el
-/// cañón azul. La primera nube de smog que toca se disipa al instante; un edificio corta el haz.
-/// Usa un barrido esférico para que no haga falta apuntar con precisión en pantalla táctil.
-/// Aunque no se dispare, marca la nube que está en la mira (<see cref="CurrentTarget"/>) para que
-/// el jugador sepa que, si dispara ahora, acierta.
+/// Rayo Purificador (GDD 6.1): mientras se mantiene pulsado, lanza un haz desde el cañón azul.
+/// La primera nube de smog que toca se disipa al instante; un edificio corta el haz.
+/// Apuntado:
+/// - La mira del HUD marca hacia dónde va el rayo: en primera persona, el centro de la cámara.
+/// - Fijado automático: si ninguna nube está justo en la mira, el rayo se fija en la nube visible más
+///   cercana a la mira dentro de un cono (20° a los lados, 40° arriba/abajo), aunque esté más alta o más baja.
+/// Aunque no se dispare, marca la nube fijada (<see cref="CurrentTarget"/>) para que el jugador sepa
+/// que, si dispara ahora, acierta.
 /// </summary>
 [RequireComponent(typeof(QuadInput))]
 public class PurifierBeam : MonoBehaviour
@@ -13,10 +16,14 @@ public class PurifierBeam : MonoBehaviour
     [Tooltip("Punta del cañón azul. Si se deja vacío, se busca un hijo llamado Cannon_Beam.")]
     [SerializeField] private Transform _muzzle;
     [SerializeField] private LineRenderer _line;
-    [SerializeField] private float _range = 30f;
-    [Tooltip("Radio del barrido: tolerancia al apuntar.")]
+    [SerializeField] private float _range = 35f;
+    [Tooltip("Radio del barrido a lo largo de la mira: tolerancia al apuntar.")]
     [SerializeField] private float _aimRadius = 1.5f;
-    [Tooltip("Grados hacia abajo respecto al frente del dron.")]
+    [Tooltip("Fijado automático: grados a izquierda/derecha de la mira dentro de los que se fija una nube.")]
+    [SerializeField] private float _assistAngle = 20f;
+    [Tooltip("Fijado automático: grados arriba/abajo. Más amplio que el horizontal porque la altura es lo difícil de igualar.")]
+    [SerializeField] private float _assistVerticalAngle = 40f;
+    [Tooltip("En tercera persona: grados hacia abajo respecto al frente del dron.")]
     [SerializeField] private float _downAngle = 4f;
     [Tooltip("En primera persona el haz se dibuja desde aquí (m por delante del cañón) para no tapar la vista.")]
     [SerializeField] private float _firstPersonLineStart = 2.5f;
@@ -32,6 +39,11 @@ public class PurifierBeam : MonoBehaviour
 
     /// <summary>Nube que acertaría el Rayo si se disparase ahora (null si ninguna).</summary>
     public SmogCloud CurrentTarget { get; private set; }
+
+    /// <summary>Origen y dirección de la mira (para dibujarla en el HUD).</summary>
+    public Vector3 AimOrigin { get; private set; }
+    public Vector3 AimDirection { get; private set; } = Vector3.forward;
+    public float Range => _range;
 
     private void Awake()
     {
@@ -53,15 +65,29 @@ public class PurifierBeam : MonoBehaviour
         IsFiring = _input.Beam && active && !seedBusy;
         if (_line != null) _line.enabled = IsFiring;
 
-        Vector3 origin = _muzzle != null ? _muzzle.position : transform.position;
-        // El cañón apunta según el rumbo del dron, no según su inclinación al moverse
-        Vector3 forward = Quaternion.Euler(0f, transform.eulerAngles.y, 0f) * Vector3.forward;
-        Vector3 direction = Quaternion.AngleAxis(_downAngle, Vector3.Cross(Vector3.up, forward)) * forward;
+        Vector3 muzzle = _muzzle != null ? _muzzle.position : transform.position;
+        bool firstPerson = _camera != null && _camera.IsFirstPerson;
 
-        float end = Cast(origin, direction, out SmogCloud target);
+        // La mira: en primera persona, el centro de la cámara; si no, el frente del dron (sin su inclinación)
+        if (firstPerson)
+        {
+            AimOrigin = _camera.transform.position;
+            AimDirection = _camera.transform.forward;
+        }
+        else
+        {
+            Vector3 forward = Quaternion.Euler(0f, transform.eulerAngles.y, 0f) * Vector3.forward;
+            AimOrigin = muzzle;
+            AimDirection = Quaternion.AngleAxis(_downAngle, Vector3.Cross(Vector3.up, forward)) * forward;
+        }
+
+        float end = Cast(AimOrigin, AimDirection, out SmogCloud target);
+        if (target == null) target = FindAssistTarget(AimOrigin, AimDirection);
         SetTarget(active ? target : null);
         if (!IsFiring) return;
 
+        // El haz va a la nube fijada; si no hay, sigue la mira hasta donde choque
+        Vector3 beamEnd = target != null ? target.transform.position : AimOrigin + AimDirection * end;
         if (target != null)
         {
             SetTarget(null);
@@ -70,13 +96,57 @@ public class PurifierBeam : MonoBehaviour
 
         if (_line != null)
         {
+            Vector3 toEnd = beamEnd - muzzle;
             // En primera persona la cámara está junto al cañón: empezar el haz algo más adelante
-            bool firstPerson = _camera != null && _camera.IsFirstPerson;
-            float lineStart = firstPerson ? Mathf.Min(_firstPersonLineStart, end * 0.5f) : 0f;
-            _line.SetPosition(0, origin + direction * lineStart);
-            _line.SetPosition(1, origin + direction * end);
+            float lineStart = firstPerson ? Mathf.Min(_firstPersonLineStart, toEnd.magnitude * 0.5f) : 0f;
+            _line.SetPosition(0, muzzle + toEnd.normalized * lineStart);
+            _line.SetPosition(1, beamEnd);
         }
     }
+
+    /// <summary>Nube visible más cercana a la mira dentro del cono de fijado (null si ninguna).</summary>
+    private SmogCloud FindAssistTarget(Vector3 origin, Vector3 direction)
+    {
+        SmogCloud best = null;
+        float bestScore = float.MaxValue;
+        Vector3 flatAim = Flat(direction);
+        float aimPitch = Pitch(direction);
+        foreach (SmogCloud cloud in SmogCloud.Active)
+        {
+            Vector3 toCloud = cloud.transform.position - origin;
+            float distance = toCloud.magnitude;
+            if (distance > _range + cloud.Radius) continue;
+
+            // Cono separado en horizontal y vertical
+            float yaw = Vector3.Angle(flatAim, Flat(toCloud));
+            float pitch = Mathf.Abs(Pitch(toCloud) - aimPitch);
+            if (yaw > _assistAngle || pitch > _assistVerticalAngle) continue;
+            float score = yaw / _assistAngle + pitch / _assistVerticalAngle;
+            if (score >= bestScore) continue;
+
+            // Sin edificios en medio
+            float clear = Mathf.Max(0f, distance - cloud.Radius);
+            if (clear > 0.1f && Physics.Raycast(origin, toCloud / distance, out RaycastHit hit, clear,
+                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)
+                && !hit.collider.transform.IsChildOf(transform))
+            {
+                continue;
+            }
+
+            bestScore = score;
+            best = cloud;
+        }
+        return best;
+    }
+
+    private static Vector3 Flat(Vector3 v)
+    {
+        v.y = 0f;
+        return v.sqrMagnitude > 0.0001f ? v.normalized : Vector3.forward;
+    }
+
+    // Grados por encima (+) o por debajo (−) del horizonte
+    private static float Pitch(Vector3 v) => Mathf.Atan2(v.y, new Vector2(v.x, v.z).magnitude) * Mathf.Rad2Deg;
 
     private void SetTarget(SmogCloud target)
     {

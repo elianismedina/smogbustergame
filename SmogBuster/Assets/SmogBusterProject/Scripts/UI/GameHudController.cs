@@ -37,6 +37,7 @@ public class GameHudController : MonoBehaviour
     private GameSession _session;
     private Label _timer;
     private Label _boundary;
+    private VisualElement _crosshair;
     private PurifierBeam _beam;
     private SeedLauncher _seeds;
     private VisualElement _seedElement;
@@ -53,6 +54,7 @@ public class GameHudController : MonoBehaviour
         _touchControls = _root.Q<VisualElement>("touch-controls");
         _timer = _root.Q<Label>("hud-timer");
         _boundary = _root.Q<Label>("hud-boundary");
+        _crosshair = _root.Q<VisualElement>("crosshair");
 
         _moveStick = CreateStick("touch-zone-left", "joystick--move");
         _upButton = new HoldButton(_root.Q<VisualElement>("btn-up"));
@@ -93,6 +95,7 @@ public class GameHudController : MonoBehaviour
         UpdateTimer();
         UpdateBeamReady();
         UpdateBoundary();
+        UpdateCrosshair();
         if (_input == null) return;
 
         // Al terminar la partida (o tras el choque) los controles no hacen nada y se ocultan
@@ -105,6 +108,33 @@ public class GameHudController : MonoBehaviour
         _input.SetClimb(climb);
         _input.SetBeam(_beamButton.IsPressed);
         _input.SetSeed(_seedButton.IsPressed);
+    }
+
+    // La mira marca hacia dónde va el Rayo; se pone cian cuando hay una nube fijada
+    private void UpdateCrosshair()
+    {
+        if (_crosshair == null) return;
+        Camera cam = Camera.main;
+        bool over = (_crash != null && _crash.HasCrashed) || (_session != null && _session.IsOver);
+        if (_beam == null || cam == null || over || _crosshair.panel == null)
+        {
+            _crosshair.style.display = DisplayStyle.None;
+            return;
+        }
+
+        Vector3 aimPoint = _beam.AimOrigin + _beam.AimDirection * (_beam.Range * 0.6f);
+        Vector3 screen = cam.WorldToScreenPoint(aimPoint);
+        if (screen.z <= 0f)
+        {
+            _crosshair.style.display = DisplayStyle.None;
+            return;
+        }
+
+        Vector2 panelPos = RuntimePanelUtils.ScreenToPanel(_crosshair.panel, new Vector2(screen.x, Screen.height - screen.y));
+        _crosshair.style.display = DisplayStyle.Flex;
+        _crosshair.style.left = panelPos.x;
+        _crosshair.style.top = panelPos.y;
+        _crosshair.EnableInClassList("crosshair--locked", _beam.CurrentTarget != null);
     }
 
     private void UpdateBoundary()
