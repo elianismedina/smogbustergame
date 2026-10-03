@@ -36,6 +36,7 @@ public class AudioManager : MonoBehaviour
     private AudioSource[] _sfxPool;
     private int _nextSfx;
     private Coroutine _musicFade;
+    private float _musicVolume = 1f;
     private Coroutine _ambienceFade;
 
     public static AudioManager Instance { get; private set; }
@@ -119,17 +120,26 @@ public class AudioManager : MonoBehaviour
 
     #region Música y ambiente
 
-    public void PlayMusic(AudioClip clip, float fadeDuration = -1f)
+    /// <param name="volume">Volumen propio de la pista (0-1), aparte del slider de música.</param>
+    public void PlayMusic(AudioClip clip, float fadeDuration = -1f, float volume = 1f)
     {
         if (fadeDuration < 0f) fadeDuration = _defaultMusicFade;
+        volume = Mathf.Clamp01(volume);
 
         AudioSource current = _musicSources[_activeMusic];
-        if (clip != null && current.clip == clip && current.isPlaying) return;
+        if (clip != null && current.clip == clip && current.isPlaying)
+        {
+            // Misma pista: solo se ajusta el volumen (el fundido en curso lo recoge)
+            _musicVolume = volume;
+            if (_musicFade == null) current.volume = volume;
+            return;
+        }
 
         _activeMusic = 1 - _activeMusic;
         AudioSource next = _musicSources[_activeMusic];
         next.clip = clip;
         next.volume = 0f;
+        _musicVolume = volume;
         if (clip != null) next.Play();
 
         if (_musicFade != null) StopCoroutine(_musicFade);
@@ -156,14 +166,14 @@ public class AudioManager : MonoBehaviour
         {
             float k = t / duration;
             from.volume = Mathf.Lerp(startFrom, 0f, k);
-            if (to.clip != null) to.volume = Mathf.Lerp(0f, 1f, k);
+            if (to.clip != null) to.volume = Mathf.Lerp(0f, _musicVolume, k);
             yield return null;
         }
 
         from.volume = 0f;
         from.Stop();
         from.clip = null;
-        if (to.clip != null) to.volume = 1f;
+        if (to.clip != null) to.volume = _musicVolume;
         _musicFade = null;
     }
 

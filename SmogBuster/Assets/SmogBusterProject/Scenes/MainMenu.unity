@@ -149,6 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneAudio
   _music: {fileID: 8300000, guid: 7a0d7877c1dcd7e4bb2c929973e5a105, type: 3}
+  _musicVolume: 1
   _ambience: {fileID: 0}
   _fadeDuration: -1
 --- !u!4 &895336891
