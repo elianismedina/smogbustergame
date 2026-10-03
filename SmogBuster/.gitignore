@@ -108,3 +108,12 @@ InitTestScene*.unity*
 # Asset Store packages (licensed, not redistributable — import locally from the Asset Store)
 /[Aa]ssets/POLYGON city pack/
 /[Aa]ssets/POLYGON city pack.meta
+
+# Licensed music (Epidemic Sound, not redistributable): keep the audio local, commit only the .meta so scene references keep their GUID
+/[Aa]ssets/SmogBusterProject/Audio/BGM/main_menu_music.wav
+/[Aa]ssets/SmogBusterProject/Audio/BGM/main_menu_music.wav.meta
+/[Aa]ssets/SmogBusterProject/Audio/BGM/main_menu_music_loop.wav
+/[Aa]ssets/SmogBusterProject/Audio/SFX/menu_selection_sound.wav
+/[Aa]ssets/SmogBusterProject/Audio/SFX/sfx_drone_loop.wav
+/[Aa]ssets/SmogBusterProject/Audio/SFX/game_over_sound.wav
+/[Aa]ssets/SmogBusterProject/Audio/SFX/win_game_sound.wav

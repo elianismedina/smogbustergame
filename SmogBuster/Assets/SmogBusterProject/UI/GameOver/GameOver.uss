@@ -1,4 +1,4 @@
-/* Pantalla de derrota. Reutiliza .menu-button, .button-column y .fade de MainMenu.uss */
+/* Pantalla de resultados (victoria o derrota). Reutiliza .menu-button, .button-column y .fade de MainMenu.uss */
 
 .gameover-root {
     flex-grow: 1;
@@ -45,7 +45,8 @@
 }
 
 .gameover-title {
-    font-size: 96px;
+    font-size: 80px;
+    white-space: normal;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     letter-spacing: 8px;
@@ -59,5 +60,26 @@
     -unity-text-align: middle-center;
     color: rgb(185, 205, 210);
     margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.gameover-hint {
+    font-size: 26px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    color: rgb(150, 175, 180);
     margin-bottom: 40px;
+}
+
+/* Victoria: verde en lugar de rojo */
+.gameover-overlay--victory {
+    background-color: rgba(6, 40, 22, 0.7);
+}
+
+.gameover-overlay--victory .gameover-panel {
+    border-color: rgb(120, 230, 170);
+}
+
+.gameover-overlay--victory .gameover-title {
+    color: rgb(120, 230, 170);
 }

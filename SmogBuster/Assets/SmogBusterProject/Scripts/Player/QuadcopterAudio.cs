@@ -29,6 +29,7 @@ public class QuadcopterAudio : MonoBehaviour
     private Rigidbody _rb;
     private QuadcopterController _controller;
     private QuadcopterCrash _crash;
+    private GameSession _session;
     private AudioSource _source;
     private float _spinUp;
     private bool _poweringDown;
@@ -62,12 +63,18 @@ public class QuadcopterAudio : MonoBehaviour
     private void OnEnable()
     {
         if (_crash != null) _crash.Crashed += OnCrashed;
+        _session = FindAnyObjectByType<GameSession>();
+        if (_session != null) _session.Ended += OnSessionEnded;
     }
 
     private void OnDisable()
     {
         if (_crash != null) _crash.Crashed -= OnCrashed;
+        if (_session != null) _session.Ended -= OnSessionEnded;
     }
+
+    // Al terminar la partida (victoria o derrota) los motores se apagan igual que al chocar
+    private void OnSessionEnded(GameSession.Result result) => OnCrashed();
 
     private void Update()
     {

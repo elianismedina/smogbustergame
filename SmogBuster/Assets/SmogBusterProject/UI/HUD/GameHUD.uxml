@@ -4,13 +4,36 @@
     <Style src="project://database/Assets/SmogBusterProject/UI/HUD/GameHUD.uss"/>
     <ui:VisualElement name="game-hud-root" class="game-hud-root" picking-mode="Ignore">
 
+        <!-- Mira del Rayo (GameHudController la coloca donde apunta el rayo) -->
+        <ui:VisualElement name="crosshair" class="crosshair" picking-mode="Ignore">
+            <ui:VisualElement class="crosshair__dot" picking-mode="Ignore"/>
+        </ui:VisualElement>
+
+        <!-- Marcadores sobre las nubes de smog (CloudMarkersController); debajo de los controles -->
+        <ui:VisualElement name="cloud-markers" class="cloud-markers" picking-mode="Ignore"/>
+
         <!-- Controles dentro del área segura (notch) -->
         <ui:VisualElement name="game-hud-safe-area" class="game-hud-safe-area" picking-mode="Ignore">
-            <!-- Joysticks: GameHudController crea un VirtualJoystick dentro de cada zona -->
-            <ui:VisualElement name="touch-zones" class="touch-zones" picking-mode="Ignore">
+            <!-- Controles táctiles (GDD 6.2): joystick a la izquierda; subir, bajar y Rayo a la derecha.
+                 Los botones se mantienen pulsados (GameHudController). -->
+            <ui:VisualElement name="touch-controls" class="touch-controls" picking-mode="Ignore">
                 <ui:VisualElement name="touch-zone-left" class="touch-zone touch-zone--left"/>
-                <ui:VisualElement name="touch-zone-right" class="touch-zone touch-zone--right"/>
+                <ui:VisualElement name="btn-up" class="altitude-button altitude-button--up">
+                    <ui:Label text="▲" class="altitude-button__label" picking-mode="Ignore"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="btn-down" class="altitude-button altitude-button--down">
+                    <ui:Label text="▼" class="altitude-button__label" picking-mode="Ignore"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="btn-seed" class="action-button action-button--seed">
+                    <ui:Label text="SEMILLA" class="action-button__label" picking-mode="Ignore"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="btn-beam" class="action-button action-button--beam">
+                    <ui:Label text="RAYO" class="action-button__label" picking-mode="Ignore"/>
+                </ui:VisualElement>
             </ui:VisualElement>
+            <!-- Aviso de borde del mapa (GDD 5.4); GameHudController lo muestra cerca de las paredes -->
+            <ui:Label text="FUERA DE ALCANCE · vuelve a la ciudad" name="hud-boundary" class="hud-boundary" picking-mode="Ignore"/>
+            <ui:Label text="03:00" name="hud-timer" class="hud-timer" picking-mode="Ignore"/>
             <ui:Button text="II" name="btn-pause" class="pause-button"/>
         </ui:VisualElement>
 

@@ -5,7 +5,8 @@
         <ui:VisualElement name="gameover-overlay" class="gameover-overlay">
             <ui:VisualElement name="gameover-panel" class="gameover-panel">
                 <ui:Label text="¡CHOCASTE!" name="gameover-title" class="gameover-title"/>
-                <ui:Label text="El dron se estrelló contra un edificio" name="gameover-subtitle" class="gameover-subtitle"/>
+                <ui:Label text="¡El dron chocó contra un edificio!" name="gameover-subtitle" class="gameover-subtitle"/>
+                <ui:Label text="Consejo: sube por encima de los edificios para cruzar la ciudad." name="gameover-hint" class="gameover-hint"/>
                 <ui:VisualElement class="button-column">
                     <ui:Button text="REINTENTAR" name="btn-retry" class="menu-button menu-button--primary"/>
                     <ui:Button text="MENÚ PRINCIPAL" name="btn-menu" class="menu-button"/>

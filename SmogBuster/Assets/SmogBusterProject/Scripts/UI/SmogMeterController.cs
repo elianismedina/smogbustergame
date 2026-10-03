@@ -2,15 +2,17 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 /// <summary>
-/// HUD con la barra de nivel de smog. Lee <see cref="SmogClouds.Density"/> (0-1) y la muestra
+/// HUD con la barra de nivel de smog. Lee <see cref="GameSession.Smog"/> (0-1) y la muestra
 /// con relleno animado, porcentaje y color (verde = limpio, marrón rojizo = muy contaminado).
 /// Por encima del umbral crítico el borde parpadea.
-/// Si la escena no tiene SmogClouds, se puede alimentar con <see cref="SetLevel"/>.
+/// Sin GameSession usa <see cref="SmogClouds.Density"/>; también se puede alimentar con <see cref="SetLevel"/>.
 /// </summary>
 [RequireComponent(typeof(UIDocument))]
 public class SmogMeterController : MonoBehaviour
 {
     [Tooltip("Fuente del nivel. Si se deja vacío, se busca en la escena.")]
+    [SerializeField] private GameSession _session;
+    [Tooltip("Fuente alternativa si la escena no tiene GameSession.")]
     [SerializeField] private SmogClouds _source;
     [Tooltip("Velocidad con la que la barra alcanza el valor real.")]
     [SerializeField] private float _smoothing = 4f;
@@ -37,6 +39,7 @@ public class SmogMeterController : MonoBehaviour
     /// <summary>Fija el nivel manualmente (ignora la fuente).</summary>
     public void SetLevel(float level)
     {
+        _session = null;
         _source = null;
         _target = Mathf.Clamp01(level);
     }
@@ -49,8 +52,9 @@ public class SmogMeterController : MonoBehaviour
         _fill = _root.Q<VisualElement>("smog-meter-fill");
         _value = _root.Q<Label>("smog-meter-value");
 
-        if (_source == null) _source = FindAnyObjectByType<SmogClouds>();
-        if (_source != null) _target = _source.Density;
+        if (_session == null) _session = FindAnyObjectByType<GameSession>();
+        if (_session == null && _source == null) _source = FindAnyObjectByType<SmogClouds>();
+        ReadSource();
 
         _root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         _pulse = _meter?.schedule.Execute(() => _meter.ToggleInClassList("smog-meter--pulse"))
@@ -65,7 +69,7 @@ public class SmogMeterController : MonoBehaviour
 
     private void Update()
     {
-        if (_source != null) _target = _source.Density;
+        ReadSource();
         if (Screen.safeArea != _lastSafeArea) ApplySafeArea();
         if (_fill == null) return;
 
@@ -87,6 +91,12 @@ public class SmogMeterController : MonoBehaviour
         bool critical = _displayed >= _criticalThreshold;
         _meter.EnableInClassList("smog-meter--critical", critical);
         if (!critical) _meter.RemoveFromClassList("smog-meter--pulse");
+    }
+
+    private void ReadSource()
+    {
+        if (_session != null) _target = _session.Smog;
+        else if (_source != null) _target = _source.Density;
     }
 
     private void OnGeometryChanged(GeometryChangedEvent evt) => ApplySafeArea();

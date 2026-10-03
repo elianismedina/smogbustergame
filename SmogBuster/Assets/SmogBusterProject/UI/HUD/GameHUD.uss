@@ -13,21 +13,155 @@
     bottom: 0;
 }
 
+/* ---------- Mira del Rayo ---------- */
+
+.crosshair {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    translate: -50% -50%;
+    border-radius: 36px;
+    border-width: 4px;
+    border-color: rgba(255, 255, 255, 0.85);
+    align-items: center;
+    justify-content: center;
+    transition-property: scale, border-color;
+    transition-duration: 0.12s;
+}
+
+.crosshair__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Nube fijada: la mira se vuelve cian y se cierra un poco */
+.crosshair--locked {
+    border-color: rgb(120, 220, 255);
+    border-width: 6px;
+    scale: 0.8 0.8;
+}
+
+.crosshair--locked .crosshair__dot {
+    background-color: rgb(120, 220, 255);
+}
+
+/* ---------- Marcadores de nubes (diana sobre cada nube) ---------- */
+
+.cloud-markers {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.cloud-marker {
+    position: absolute;
+    align-items: center;
+    /* left/top es la punta inferior del marcador, justo encima de la nube */
+    translate: -50% -100%;
+    transform-origin: 50% 100%;
+}
+
+.cloud-marker__ring {
+    width: 84px;
+    height: 84px;
+    border-radius: 42px;
+    border-width: 9px;
+    border-color: rgb(255, 196, 60);
+    background-color: rgba(60, 50, 20, 0.35);
+    align-items: center;
+    justify-content: center;
+}
+
+.cloud-marker__dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    background-color: rgb(255, 196, 60);
+}
+
+.cloud-marker__label {
+    display: none;
+    margin-top: 6px;
+    padding: 2px 12px;
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: rgb(14, 28, 38);
+    background-color: rgb(120, 220, 255);
+    border-radius: 10px;
+}
+
+/* Micro-nubes: diana más pequeña */
+.cloud-marker--micro .cloud-marker__ring {
+    width: 52px;
+    height: 52px;
+    border-radius: 26px;
+    border-width: 6px;
+}
+
+.cloud-marker--micro .cloud-marker__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+}
+
+/* En la mira del Rayo: cian, más grande y con aviso */
+.cloud-marker--target .cloud-marker__ring {
+    border-color: rgb(120, 220, 255);
+    background-color: rgba(20, 120, 200, 0.45);
+    scale: 1.25 1.25;
+}
+
+.cloud-marker--target .cloud-marker__dot {
+    background-color: rgb(120, 220, 255);
+}
+
+.cloud-marker--target .cloud-marker__label {
+    display: flex;
+}
+
+/* Puntos de siembra: rombo verde (hoja) en lugar de diana */
+.spot-marker .cloud-marker__ring {
+    border-color: rgb(140, 235, 110);
+    background-color: rgba(30, 80, 30, 0.35);
+    border-radius: 12px;
+    rotate: 45deg;
+}
+
+.spot-marker .cloud-marker__dot {
+    background-color: rgb(140, 235, 110);
+    border-radius: 3px;
+}
+
+.spot-marker .cloud-marker__label {
+    background-color: rgb(140, 235, 110);
+}
+
+.spot-marker.cloud-marker--target .cloud-marker__ring {
+    border-color: rgb(200, 255, 170);
+    background-color: rgba(60, 160, 60, 0.55);
+    scale: 1.25 1.25;
+}
+
 /* ---------- Joysticks ---------- */
 
-.touch-zones {
+.touch-controls {
     position: absolute;
     left: 0;
     right: 0;
+    top: 0;
     bottom: 0;
-    height: 62%;
-    flex-direction: row;
-    justify-content: space-between;
 }
 
 .touch-zone {
+    position: absolute;
+    left: 0;
+    bottom: 0;
     width: 42%;
-    height: 100%;
+    height: 62%;
 }
 
 .joystick {
@@ -68,9 +202,6 @@
     background-color: rgba(120, 230, 170, 0.85);
 }
 
-.joystick--altitude .joystick__knob {
-    background-color: rgba(230, 200, 110, 0.85);
-}
 
 /* ---------- Botón de pausa ---------- */
 
@@ -101,6 +232,200 @@
 
 .pause-button:active {
     scale: 0.92 0.92;
+}
+
+/* ---------- Botones de acción (GDD 9.3: grandes, abajo a la derecha) ---------- */
+
+.action-button {
+    position: absolute;
+    right: 64px;
+    bottom: 150px;
+    width: 176px;
+    height: 176px;
+    border-radius: 88px;
+    border-width: 5px;
+    align-items: center;
+    justify-content: center;
+    transition-property: scale, background-color;
+    transition-duration: 0.08s;
+}
+
+.action-button__label {
+    font-size: 30px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    color: rgb(240, 250, 255);
+    margin: 0;
+    padding: 0;
+}
+
+.action-button--beam {
+    background-color: rgba(20, 120, 200, 0.75);
+    border-color: rgb(120, 220, 255);
+}
+
+/* Semilla: encima del Rayo, verde (GDD 6.2) */
+.action-button--seed {
+    bottom: 350px;
+    width: 150px;
+    height: 150px;
+    border-radius: 75px;
+    right: 77px;
+    background-color: rgba(60, 150, 60, 0.75);
+    border-color: rgb(170, 240, 120);
+}
+
+.action-button--seed .action-button__label {
+    font-size: 24px;
+}
+
+.action-button--seed.hud-button--pressed,
+.action-button--seed.action-button--ready.action-button--pulse {
+    background-color: rgba(110, 210, 90, 0.95);
+}
+
+.hud-button--pressed {
+    scale: 0.92 0.92;
+}
+
+/* Hay una nube en la mira: el botón del Rayo late (GameHudController alterna --pulse) */
+.action-button--ready {
+    border-color: rgb(255, 255, 255);
+    border-width: 7px;
+}
+
+.action-button--ready.action-button--pulse {
+    scale: 1.1 1.1;
+    background-color: rgba(60, 190, 255, 0.95);
+}
+
+.action-button--beam/* Semilla: encima del Rayo, verde (GDD 6.2) */
+.action-button--seed {
+    bottom: 350px;
+    width: 150px;
+    height: 150px;
+    border-radius: 75px;
+    right: 77px;
+    background-color: rgba(60, 150, 60, 0.75);
+    border-color: rgb(170, 240, 120);
+}
+
+.action-button--seed .action-button__label {
+    font-size: 24px;
+}
+
+.action-button--seed.hud-button--pressed,
+.action-button--seed.action-button--ready.action-button--pulse {
+    background-color: rgba(110, 210, 90, 0.95);
+}
+
+.hud-button--pressed {
+    background-color: rgba(60, 190, 255, 0.95);
+}
+
+/* Subir y bajar: columna a la izquierda del botón del Rayo */
+.altitude-button {
+    position: absolute;
+    right: 290px;
+    width: 128px;
+    height: 128px;
+    border-radius: 28px;
+    border-width: 4px;
+    border-color: rgba(225, 235, 230, 0.6);
+    background-color: rgba(14, 28, 38, 0.55);
+    align-items: center;
+    justify-content: center;
+    transition-property: scale, background-color;
+    transition-duration: 0.08s;
+}
+
+.altitude-button--up {
+    bottom: 230px;
+}
+
+.altitude-button--down {
+    bottom: 80px;
+}
+
+.altitude-button__label {
+    font-size: 48px;
+    color: rgb(230, 200, 110);
+    margin: 0;
+    padding: 0;
+}
+
+.altitude-button/* Semilla: encima del Rayo, verde (GDD 6.2) */
+.action-button--seed {
+    bottom: 350px;
+    width: 150px;
+    height: 150px;
+    border-radius: 75px;
+    right: 77px;
+    background-color: rgba(60, 150, 60, 0.75);
+    border-color: rgb(170, 240, 120);
+}
+
+.action-button--seed .action-button__label {
+    font-size: 24px;
+}
+
+.action-button--seed.hud-button--pressed,
+.action-button--seed.action-button--ready.action-button--pulse {
+    background-color: rgba(110, 210, 90, 0.95);
+}
+
+.hud-button--pressed {
+    background-color: rgba(44, 102, 104, 0.9);
+}
+
+/* ---------- Aviso de borde del mapa ---------- */
+
+.hud-boundary {
+    position: absolute;
+    top: 170px;
+    left: 50%;
+    translate: -50% 0;
+    margin: 0;
+    padding: 12px 32px;
+    font-size: 34px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(30, 20, 10);
+    background-color: rgba(255, 196, 60, 0.92);
+    border-radius: 18px;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.25s;
+}
+
+.hud-boundary--visible {
+    opacity: 1;
+}
+
+/* ---------- Temporizador (a la izquierda del botón de pausa) ---------- */
+
+.hud-timer {
+    position: absolute;
+    top: 28px;
+    right: 160px;
+    height: 104px;
+    min-width: 200px;
+    margin: 0;
+    padding: 0 28px;
+    font-size: 52px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    letter-spacing: 2px;
+    color: rgb(225, 235, 230);
+    background-color: rgba(14, 28, 38, 0.72);
+    border-width: 3px;
+    border-color: rgba(120, 230, 170, 0.6);
+    border-radius: 24px;
+}
+
+.hud-timer--warning {
+    color: rgb(240, 95, 85);
+    border-color: rgba(235, 90, 80, 0.85);
 }
 
 /* ---------- Menú de pausa ---------- */

@@ -16,7 +16,11 @@ public class SkyboxRotator : MonoBehaviour
     private Material _instance;
     private float _rotation;
 
-    private void Start()
+    /// <summary>Copia del skybox que usa la escena (null si no se pudo crear).</summary>
+    public Material Instance => _instance;
+
+    // En Awake para que otros componentes (p. ej. SkyPurification) usen la misma copia en Start
+    private void Awake()
     {
         _original = RenderSettings.skybox;
         if (_original == null || !_original.HasProperty(RotationId))

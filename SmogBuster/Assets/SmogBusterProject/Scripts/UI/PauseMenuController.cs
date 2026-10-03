@@ -27,6 +27,7 @@ public class PauseMenuController : MonoBehaviour
 
     private GameHudController _hud;
     private QuadcopterCrash _crash;
+    private GameSession _session;
     private bool _isLoading;
 
     public bool IsPaused { get; private set; }
@@ -56,6 +57,8 @@ public class PauseMenuController : MonoBehaviour
         _hud = GetComponent<GameHudController>();
         _crash = FindAnyObjectByType<QuadcopterCrash>();
         if (_crash != null) _crash.Crashed += OnCrashed;
+        _session = FindAnyObjectByType<GameSession>();
+        if (_session != null) _session.Ended += OnSessionEnded;
     }
 
     private void OnDisable()
@@ -70,6 +73,7 @@ public class PauseMenuController : MonoBehaviour
         _toggleVibration?.UnregisterValueChangedCallback(OnVibrationChanged);
 
         if (_crash != null) _crash.Crashed -= OnCrashed;
+        if (_session != null) _session.Ended -= OnSessionEnded;
 
         // Nunca dejar el juego congelado al salir de la escena
         if (IsPaused) SetPausedState(false);
@@ -95,6 +99,7 @@ public class PauseMenuController : MonoBehaviour
     {
         if (IsPaused || _isLoading) return;
         if (_crash != null && _crash.HasCrashed) return;
+        if (_session != null && _session.IsOver) return;
 
         _hud?.ReleaseSticks();
         LoadSettings();
@@ -126,9 +131,13 @@ public class PauseMenuController : MonoBehaviour
         AudioListener.pause = paused; // la música y la UI ignoran la pausa (ver AudioManager)
     }
 
-    private void OnCrashed()
+    private void OnCrashed() => HidePauseButton();
+
+    private void OnSessionEnded(GameSession.Result result) => HidePauseButton();
+
+    private void HidePauseButton()
     {
-        // La pantalla de derrota sustituye al botón de pausa
+        // La pantalla de resultados sustituye al botón de pausa
         if (_btnPause != null) _btnPause.style.display = DisplayStyle.None;
     }
 
