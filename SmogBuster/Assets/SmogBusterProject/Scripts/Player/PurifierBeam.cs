@@ -18,11 +18,14 @@ public class PurifierBeam : MonoBehaviour
     [SerializeField] private float _aimRadius = 1.5f;
     [Tooltip("Grados hacia abajo respecto al frente del dron.")]
     [SerializeField] private float _downAngle = 4f;
+    [Tooltip("En primera persona el haz se dibuja desde aquí (m por delante del cañón) para no tapar la vista.")]
+    [SerializeField] private float _firstPersonLineStart = 2.5f;
 
     private readonly RaycastHit[] _hits = new RaycastHit[16];
     private QuadInput _input;
     private QuadcopterCrash _crash;
     private SeedLauncher _seeds;
+    private FollowCamera _camera;
 
     /// <summary>True mientras el haz está activo (para sonido y efectos).</summary>
     public bool IsFiring { get; private set; }
@@ -35,6 +38,7 @@ public class PurifierBeam : MonoBehaviour
         _input = GetComponent<QuadInput>();
         _crash = GetComponent<QuadcopterCrash>();
         _seeds = GetComponent<SeedLauncher>();
+        if (Camera.main != null) _camera = Camera.main.GetComponent<FollowCamera>();
         if (_muzzle == null) _muzzle = FindChild(transform, "Cannon_Beam");
         if (_line != null) _line.enabled = false;
     }
@@ -66,7 +70,10 @@ public class PurifierBeam : MonoBehaviour
 
         if (_line != null)
         {
-            _line.SetPosition(0, origin);
+            // En primera persona la cámara está junto al cañón: empezar el haz algo más adelante
+            bool firstPerson = _camera != null && _camera.IsFirstPerson;
+            float lineStart = firstPerson ? Mathf.Min(_firstPersonLineStart, end * 0.5f) : 0f;
+            _line.SetPosition(0, origin + direction * lineStart);
             _line.SetPosition(1, origin + direction * end);
         }
     }

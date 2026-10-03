@@ -16,7 +16,7 @@ public class CloudMarkersController : MonoBehaviour
     [SerializeField] private float _fullSizeDistance = 20f;
     [SerializeField] private float _minScale = 0.7f;
     [Tooltip("Margen mínimo con el borde de la pantalla, en unidades del panel.")]
-    [SerializeField] private float _edgeMargin = 60f;
+    [SerializeField] private float _edgeMargin = 100f;
     [Tooltip("Margen superior: por debajo de la barra de smog y el temporizador.")]
     [SerializeField] private float _topMargin = 260f;
     [Tooltip("Más allá de esta distancia no se muestra el marcador.")]
