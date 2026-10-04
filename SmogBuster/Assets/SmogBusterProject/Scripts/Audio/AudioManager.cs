@@ -41,6 +41,7 @@ public class AudioManager : MonoBehaviour
 
     public static AudioManager Instance { get; private set; }
 
+    public AudioMixerGroup MusicGroup => _musicGroup;
     public AudioMixerGroup SfxGroup => _sfxGroup;
     public AudioMixerGroup UiGroup => _uiGroup;
     public AudioMixerGroup AmbienceGroup => _ambienceGroup;

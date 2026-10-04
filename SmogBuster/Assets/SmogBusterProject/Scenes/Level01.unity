@@ -37451,6 +37451,10 @@ MonoBehaviour:
   _riseAmount: 0.01
   _riseInterval: 2
   _timeLimit: 180
+  _cloudPoints: 100
+  _microCloudPoints: 50
+  _treePoints: 250
+  _timeBonusPerSecond: 10
   _player: {fileID: 2009726943}
   _clouds: {fileID: 2030982961}
   _debugStep: 0.1
@@ -48419,6 +48423,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1622377418}
   - component: {fileID: 1622377417}
+  - component: {fileID: 1622377419}
   m_Layer: 0
   m_Name: SceneAudio
   m_TagString: Untagged
@@ -48457,6 +48462,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1622377419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1622377416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf447a404e6b80f4db117b4afa5eab28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameMusic
+  _baseLayer: {fileID: 8300000, guid: 5237f429e05732b43bd12c05da43196c, type: 3}
+  _tensionLayer: {fileID: 8300000, guid: 95941ce5be3e9854fb39eaa862651bd8, type: 3}
+  _baseVolume: 0.7
+  _tensionVolume: 0.8
+  _tensionFrom: 0.7
+  _tensionFull: 0.8
+  _smoothing: 2
+  _fadeIn: 1.5
+  _fadeOutOnEnd: 1.2
 --- !u!1001 &1623739674
 PrefabInstance:
   m_ObjectHideFlags: 0
