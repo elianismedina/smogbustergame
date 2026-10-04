@@ -2,8 +2,9 @@ using UnityEngine;
 
 /// <summary>
 /// Cámara del dron con dos modos:
-/// - Primera persona: va en el morro del dron y mira hacia donde apunta. El modelo del dron se oculta
-///   para no tapar la vista. Al estrellarse pasa a tercera persona para ver la caída.
+/// - Primera persona: va en el centro del dron, un poco por detrás de las hélices delanteras, y mira hacia
+///   donde apunta. Se oculta el cuerpo; las hélices y motores delanteros siguen a la vista en las
+///   esquinas superiores, para sentir que se pilota el dron. Al estrellarse pasa a tercera persona.
 /// - Tercera persona (persecución): se mantiene detrás del objetivo siguiendo su rumbo con suavizado.
 ///   Solo se recoloca detrás cuando el objetivo mira en la misma dirección que la cámara: si el dron
 ///   vuelve hacia la cámara o se mueve de lado, la cámara no gira, y así el joystick (relativo a la
@@ -22,12 +23,14 @@ public class FollowCamera : MonoBehaviour
 
     [Header("Primera persona")]
     [Tooltip("Posición de la cámara respecto al dron, en el marco de su rumbo (x lateral, y altura, z adelante).")]
-    [SerializeField] private Vector3 _firstPersonOffset = new Vector3(0f, 0.25f, 0.9f);
+    [SerializeField] private Vector3 _firstPersonOffset = new Vector3(0f, 0.5f, -0.3f);
     [Tooltip("Grados hacia abajo: deja ver el suelo y lo que hay delante.")]
     [SerializeField] private float _firstPersonPitch = 8f;
     [SerializeField] private float _firstPersonNearClip = 0.05f;
     [Tooltip("Modelo que se oculta en primera persona (los renderers de malla bajo él). Si se deja vacío, se usa el hijo Quadcopter_Drone.")]
     [SerializeField] private Transform _hiddenModel;
+    [Tooltip("Dejar a la vista las hélices y motores que quedan delante de la cámara.")]
+    [SerializeField] private bool _showFrontPropellers = true;
 
     [Header("Tercera persona")]
     [Tooltip("Posición relativa al objetivo, en el marco de su rumbo (x lateral, y altura, z atrás es negativo).")]
@@ -76,7 +79,7 @@ public class FollowCamera : MonoBehaviour
         _camera = GetComponent<Camera>();
         if (_camera != null) _thirdPersonNearClip = _camera.nearClipPlane;
         if (_hiddenModel == null) _hiddenModel = _target.Find("Quadcopter_Drone");
-        if (_hiddenModel != null) _modelRenderers = _hiddenModel.GetComponentsInChildren<MeshRenderer>(true);
+        if (_hiddenModel != null) _modelRenderers = HideableRenderers(_hiddenModel);
 
         _yaw = _target.eulerAngles.y;
         if (IsFirstPerson) PlaceFirstPerson();
@@ -144,6 +147,23 @@ public class FollowCamera : MonoBehaviour
         Quaternion heading = Quaternion.Euler(0f, _yaw, 0f);
         transform.position = _target.position + heading * _firstPersonOffset;
         transform.rotation = heading * Quaternion.Euler(_firstPersonPitch, 0f, 0f);
+    }
+
+    // Todo el modelo salvo, si se pide, las hélices y motores que quedan por delante de la cámara
+    // (los brazos salen del centro, justo donde está la cámara, y taparían la vista).
+    // Se decide por la posición, no por el nombre: en el modelo las piezas "B" son las del morro.
+    private MeshRenderer[] HideableRenderers(Transform model)
+    {
+        var hideable = new System.Collections.Generic.List<MeshRenderer>();
+        foreach (MeshRenderer r in model.GetComponentsInChildren<MeshRenderer>(true))
+        {
+            string n = r.name;
+            bool frontPart = _showFrontPropellers
+                             && (n.StartsWith("Prop") || n.StartsWith("Motor"))
+                             && _target.InverseTransformPoint(r.bounds.center).z > _firstPersonOffset.z + 0.2f;
+            if (!frontPart) hideable.Add(r);
+        }
+        return hideable.ToArray();
     }
 
     private void SetModelHidden(bool hidden)

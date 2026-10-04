@@ -17,34 +17,58 @@
 
 .crosshair {
     position: absolute;
-    width: 72px;
-    height: 72px;
+    width: 92px;
+    height: 92px;
     translate: -50% -50%;
-    border-radius: 36px;
-    border-width: 4px;
-    border-color: rgba(255, 255, 255, 0.85);
-    align-items: center;
-    justify-content: center;
-    transition-property: scale, border-color;
+    transition-property: scale;
     transition-duration: 0.12s;
 }
 
-.crosshair__dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.9);
+/* Cada esquina es un cuadrado con solo dos bordes visibles (forma de escuadra) */
+.crosshair__corner {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-color: rgba(255, 255, 255, 0.9);
+    transition-property: border-color;
+    transition-duration: 0.12s;
 }
 
-/* Nube fijada: la mira se vuelve cian y se cierra un poco */
+.crosshair__corner--tl {
+    left: 0;
+    top: 0;
+    border-left-width: 5px;
+    border-top-width: 5px;
+}
+
+.crosshair__corner--tr {
+    right: 0;
+    top: 0;
+    border-right-width: 5px;
+    border-top-width: 5px;
+}
+
+.crosshair__corner--bl {
+    left: 0;
+    bottom: 0;
+    border-left-width: 5px;
+    border-bottom-width: 5px;
+}
+
+.crosshair__corner--br {
+    right: 0;
+    bottom: 0;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+}
+
+/* Nube fijada: las esquinas se vuelven cian y se cierran sobre el objetivo */
 .crosshair--locked {
-    border-color: rgb(120, 220, 255);
-    border-width: 6px;
     scale: 0.8 0.8;
 }
 
-.crosshair--locked .crosshair__dot {
-    background-color: rgb(120, 220, 255);
+.crosshair--locked .crosshair__corner {
+    border-color: rgb(120, 220, 255);
 }
 
 /* ---------- Marcadores de nubes (diana sobre cada nube) ---------- */

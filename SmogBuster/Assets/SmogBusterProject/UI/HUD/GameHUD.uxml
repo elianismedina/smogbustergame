@@ -6,7 +6,11 @@
 
         <!-- Mira del Rayo (GameHudController la coloca donde apunta el rayo) -->
         <ui:VisualElement name="crosshair" class="crosshair" picking-mode="Ignore">
-            <ui:VisualElement class="crosshair__dot" picking-mode="Ignore"/>
+            <!-- Cuatro esquinas en escuadra -->
+            <ui:VisualElement class="crosshair__corner crosshair__corner--tl" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--tr" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--bl" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--br" picking-mode="Ignore"/>
         </ui:VisualElement>
 
         <!-- Marcadores sobre las nubes de smog (CloudMarkersController); debajo de los controles -->
