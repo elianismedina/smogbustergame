@@ -384,3 +384,29 @@
     -unity-text-align: middle-center;
     margin: -4px 0 8px 0;
 }
+
+/* ---------- Créditos ---------- */
+
+.credits-panel {
+    max-height: 100%;
+}
+
+.credits-scroll {
+    max-height: 640px;
+    flex-shrink: 1;
+}
+
+.credits-heading {
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(120, 230, 170);
+    margin-top: 16px;
+}
+
+.credits-line {
+    font-size: 28px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    color: rgb(225, 235, 230);
+}

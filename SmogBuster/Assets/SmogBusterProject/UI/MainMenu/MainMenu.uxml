@@ -34,6 +34,7 @@
                 <ui:VisualElement name="VisualElement" class="button-column">
                     <ui:Button text="JUGAR" name="btn-play" class="menu-button menu-button--primary"/>
                     <ui:Button text="OPCIONES" name="btn-options" class="menu-button"/>
+                    <ui:Button text="CRÉDITOS" name="btn-credits" class="menu-button menu-button--ghost"/>
                     <ui:Button text="SALIR" name="btn-exit" class="menu-button menu-button--ghost"/>
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -49,6 +50,32 @@
                 <!-- Pulsar cambia entre Fácil, Normal y Difícil -->
                 <ui:Button text="DIFICULTAD: NORMAL" name="btn-difficulty" class="menu-button"/>
                 <ui:Button text="VOLVER" name="btn-options-back" class="menu-button menu-button--primary panel-button"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <!-- Créditos y atribuciones (GDD 9.4) -->
+        <ui:VisualElement name="credits-overlay" class="overlay">
+            <ui:VisualElement name="credits-panel" class="panel credits-panel">
+                <ui:Label text="CRÉDITOS" class="panel-title"/>
+                <ui:ScrollView name="credits-scroll" class="credits-scroll" mode="Vertical">
+                    <ui:Label text="Diseño y desarrollo" class="credits-heading"/>
+                    <ui:Label text="Equipo Smog Buster" class="credits-line"/>
+                    <ui:Label text="Dron Buster-1" class="credits-heading"/>
+                    <ui:Label text="Modelo propio hecho en Blender" class="credits-line"/>
+                    <ui:Label text="Ciudad" class="credits-heading"/>
+                    <ui:Label text="POLYGON City Pack (Unity Asset Store)" class="credits-line"/>
+                    <ui:Label text="Cielos" class="credits-heading"/>
+                    <ui:Label text="Kloofendal Overcast Pure Sky y Spruit Sunrise" class="credits-line"/>
+                    <ui:Label text="Poly Haven (CC0)" class="credits-line"/>
+                    <ui:Label text="Música y efectos" class="credits-heading"/>
+                    <ui:Label text="Epidemic Sound" class="credits-line"/>
+                    <ui:Label text="Efectos y música de juego provisionales: sintetizados para Smog Buster" class="credits-line"/>
+                    <ui:Label text="Tipografía" class="credits-heading"/>
+                    <ui:Label text="Fredoka, The Fredoka Project Authors" class="credits-line"/>
+                    <ui:Label text="SIL Open Font License 1.1" class="credits-line"/>
+                    <ui:Label text="Motor" class="credits-heading"/>
+                    <ui:Label text="Unity con Universal Render Pipeline" class="credits-line"/>
+                </ui:ScrollView>
+                <ui:Button text="VOLVER" name="btn-credits-back" class="menu-button menu-button--primary panel-button"/>
             </ui:VisualElement>
         </ui:VisualElement>
         <!-- Selección de nivel (GDD 9.3): JUGAR abre este panel -->

@@ -24,6 +24,7 @@ public class MainMenuController : MonoBehaviour
     private VisualElement _smogLayer;
     private VisualElement _optionsOverlay;
     private VisualElement _levelsOverlay;
+    private VisualElement _creditsOverlay;
     private VisualElement _fade;
 
     private Button _btnPlay;
@@ -33,6 +34,8 @@ public class MainMenuController : MonoBehaviour
     private Button _btnDifficulty;
     private Button _btnLevel1;
     private Button _btnLevelsBack;
+    private Button _btnCredits;
+    private Button _btnCreditsBack;
     private Label _level1Best;
 
     private Slider _sliderMusic;
@@ -61,6 +64,7 @@ public class MainMenuController : MonoBehaviour
         _smogLayer = _root.Q<VisualElement>("smog-layer");
         _optionsOverlay = _root.Q<VisualElement>("options-overlay");
         _levelsOverlay = _root.Q<VisualElement>("levels-overlay");
+        _creditsOverlay = _root.Q<VisualElement>("credits-overlay");
         _fade = _root.Q<VisualElement>("fade");
 
         _btnPlay = _root.Q<Button>("btn-play");
@@ -70,6 +74,8 @@ public class MainMenuController : MonoBehaviour
         _btnDifficulty = _root.Q<Button>("btn-difficulty");
         _btnLevel1 = _root.Q<Button>("btn-level-1");
         _btnLevelsBack = _root.Q<Button>("btn-levels-back");
+        _btnCredits = _root.Q<Button>("btn-credits");
+        _btnCreditsBack = _root.Q<Button>("btn-credits-back");
         _level1Best = _root.Q<Label>("level-1-best");
         // Los niveles 2 y 3 aún no existen
         _root.Q<Button>("btn-level-2")?.SetEnabled(false);
@@ -88,6 +94,8 @@ public class MainMenuController : MonoBehaviour
         RegisterButton(_btnDifficulty, OnDifficultyClicked, "btn-difficulty");
         RegisterButton(_btnLevel1, OnLevel1Clicked, "btn-level-1");
         RegisterButton(_btnLevelsBack, CloseLevels, "btn-levels-back");
+        RegisterButton(_btnCredits, OpenCredits, "btn-credits");
+        RegisterButton(_btnCreditsBack, CloseCredits, "btn-credits-back");
 
         LoadOptions();
         _sliderMusic?.RegisterValueChangedCallback(OnMusicChanged);
@@ -130,6 +138,8 @@ public class MainMenuController : MonoBehaviour
         UnregisterButton(_btnDifficulty, OnDifficultyClicked);
         UnregisterButton(_btnLevel1, OnLevel1Clicked);
         UnregisterButton(_btnLevelsBack, CloseLevels);
+        UnregisterButton(_btnCredits, OpenCredits);
+        UnregisterButton(_btnCreditsBack, CloseCredits);
 
         _sliderMusic?.UnregisterValueChangedCallback(OnMusicChanged);
         _sliderSfx?.UnregisterValueChangedCallback(OnSfxChanged);
@@ -276,6 +286,27 @@ public class MainMenuController : MonoBehaviour
         _btnOptions?.Focus();
     }
 
+    private bool IsCreditsOpen => _creditsOverlay != null && _creditsOverlay.resolvedStyle.display == DisplayStyle.Flex;
+
+    private void OpenCredits()
+    {
+        if (_creditsOverlay == null || _isLoading) return;
+        _creditsOverlay.style.display = DisplayStyle.Flex;
+        _creditsOverlay.schedule.Execute(() =>
+        {
+            _creditsOverlay.AddToClassList("overlay--visible");
+            _btnCreditsBack?.Focus();
+        });
+    }
+
+    private void CloseCredits()
+    {
+        if (_creditsOverlay == null) return;
+        _creditsOverlay.RemoveFromClassList("overlay--visible");
+        _creditsOverlay.schedule.Execute(() => _creditsOverlay.style.display = DisplayStyle.None).StartingIn(200);
+        _btnCredits?.Focus();
+    }
+
     private bool IsLevelsOpen => _levelsOverlay != null && _levelsOverlay.resolvedStyle.display == DisplayStyle.Flex;
 
     private void OpenLevels()
@@ -357,6 +388,11 @@ public class MainMenuController : MonoBehaviour
         {
             PlaySelectSound();
             CloseLevels();
+        }
+        else if (IsCreditsOpen)
+        {
+            PlaySelectSound();
+            CloseCredits();
         }
 #if UNITY_ANDROID && !UNITY_EDITOR
         else
