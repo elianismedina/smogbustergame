@@ -209,8 +209,8 @@
     position: absolute;
     top: 28px;
     right: 36px;
-    width: 104px;
-    height: 104px;
+    width: 128px;
+    height: 128px;
     margin: 0;
     padding: 0;
     font-size: 40px;
@@ -407,8 +407,8 @@
 .hud-timer {
     position: absolute;
     top: 28px;
-    right: 160px;
-    height: 104px;
+    right: 180px;
+    height: 128px;
     min-width: 200px;
     margin: 0;
     padding: 0 28px;

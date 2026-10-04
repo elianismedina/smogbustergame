@@ -195,7 +195,8 @@
 }
 
 .menu-button {
-    min-height: 88px;
+    /* Zona de toque mínima de 48 dp (GDD 10.4, WCAG 2.5.5): ~120 px a la resolución de referencia en un móvil típico */
+    min-height: 120px;
     margin: 8px 0;
     padding: 0 24px;
     font-size: 38px;
@@ -226,15 +227,16 @@
 }
 
 .menu-button--primary {
-    min-height: 104px;
+    min-height: 128px;
     font-size: 44px;
-    background-color: rgb(46, 150, 104);
+    /* Verde oscurecido: texto blanco con contraste 5.4:1 (WCAG 1.4.3) */
+    background-color: rgb(30, 122, 82);
     border-color: rgb(160, 245, 195);
 }
 
 .menu-button--primary:hover,
 .menu-button--primary:focus {
-    background-color: rgb(60, 180, 124);
+    background-color: rgb(40, 140, 94);
 }
 
 .menu-button--ghost {
@@ -253,7 +255,7 @@
     bottom: 24px;
     right: 32px;
     font-size: 24px;
-    color: rgb(110, 130, 140);
+    color: rgb(160, 178, 186);
 }
 
 /* ---------- Panel de opciones ---------- */
@@ -303,7 +305,8 @@
 
 .option-slider,
 .option-toggle {
-    min-height: 80px;
+    /* Toda la fila responde al toque: es la zona de 48 dp */
+    min-height: 120px;
     margin: 6px 0;
     align-items: center;
 }
@@ -324,11 +327,11 @@
 }
 
 .option-slider .unity-base-slider__dragger {
-    width: 48px;
-    height: 48px;
-    margin-top: -24px;
-    margin-left: -24px;
-    border-radius: 24px;
+    width: 64px;
+    height: 64px;
+    margin-top: -32px;
+    margin-left: -32px;
+    border-radius: 32px;
     border-width: 0;
     background-color: rgb(120, 230, 170);
 }
