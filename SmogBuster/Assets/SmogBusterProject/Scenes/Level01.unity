@@ -26401,6 +26401,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: SmogMeterHUD
       objectReference: {fileID: 0}
+    - target: {fileID: 4641377610514970776, guid: aa770518151096748aba030d554f0e01, type: 3}
+      propertyPath: _source
+      value: 
+      objectReference: {fileID: 2030982961}
+    - target: {fileID: 4641377610514970776, guid: aa770518151096748aba030d554f0e01, type: 3}
+      propertyPath: _session
+      value: 
+      objectReference: {fileID: 1243341321}
     - target: {fileID: 5489066718613668069, guid: aa770518151096748aba030d554f0e01, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -31911,7 +31919,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bbc5a854075577469e99d4518a0d405, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkyPurification
-  _session: {fileID: 0}
+  _session: {fileID: 1243341321}
   _dirtySmog: 0.5
   _cleanSmog: 0.05
   _smoothing: 1.5
@@ -31920,7 +31928,7 @@ MonoBehaviour:
   _cleanAmbientSky: {r: 0.62, g: 0.74, b: 0.92, a: 1}
   _cleanAmbientEquator: {r: 0.72, g: 0.7, b: 0.64, a: 1}
   _cleanAmbientGround: {r: 0.3, g: 0.29, b: 0.25, a: 1}
-  _sun: {fileID: 0}
+  _sun: {fileID: 1567996436}
   _cleanSunColor: {r: 1, g: 0.9, b: 0.76, a: 1}
   _cleanSunIntensity: 1.5
 --- !u!1001 &1056352136
@@ -37223,8 +37231,8 @@ MonoBehaviour:
   _riseAmount: 0.01
   _riseInterval: 2
   _timeLimit: 180
-  _player: {fileID: 0}
-  _clouds: {fileID: 0}
+  _player: {fileID: 2009726943}
+  _clouds: {fileID: 2030982961}
   _debugStep: 0.1
 --- !u!4 &1243341322
 Transform:
@@ -45027,7 +45035,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a1a0eac4ed4c344a8574f43b737085, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameOverController
-  _session: {fileID: 0}
+  _session: {fileID: 1243341321}
   _player: {fileID: 2009726943}
   _followCamera: {fileID: 1154730236}
   _crashDelay: 1.2
@@ -59215,6 +59223,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3182323747401812661, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
   m_PrefabInstance: {fileID: 2030982959}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2030982961 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1277798589588781376, guid: 0da36ced65911b74aa420a4d15331414, type: 3}
+  m_PrefabInstance: {fileID: 2030982959}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 548e0e03e6096a5418214f7ca0c88e90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SmogClouds
 --- !u!1 &2032049440
 GameObject:
   m_ObjectHideFlags: 0
