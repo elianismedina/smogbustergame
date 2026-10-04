@@ -10,6 +10,15 @@ public static class GameSettings
     public const string PrefSfxVolume = "options.sfxVolume";
     public const string PrefVibration = "options.vibration";
     public const string PrefFixedJoystick = "options.fixedJoystick";
+    public const string PrefDifficulty = "options.difficulty";
+
+    /// <summary>Dificultad ajustable (GDD 10.2 y 10.5): velocidad del smog y tiempo extra.</summary>
+    public enum DifficultyLevel
+    {
+        Easy,
+        Normal,
+        Hard,
+    }
 
     private const float DefaultVolume = 0.8f;
 
@@ -38,6 +47,45 @@ public static class GameSettings
     {
         get => PlayerPrefs.GetInt(PrefFixedJoystick, 0) == 1;
         set => PlayerPrefs.SetInt(PrefFixedJoystick, value ? 1 : 0);
+    }
+
+    public static DifficultyLevel Difficulty
+    {
+        get => (DifficultyLevel)Mathf.Clamp(PlayerPrefs.GetInt(PrefDifficulty, (int)DifficultyLevel.Normal), 0, 2);
+        set => PlayerPrefs.SetInt(PrefDifficulty, (int)value);
+    }
+
+    /// <summary>Nombre para mostrar en Opciones.</summary>
+    public static string DifficultyName(DifficultyLevel level)
+    {
+        switch (level)
+        {
+            case DifficultyLevel.Easy: return "FÁCIL";
+            case DifficultyLevel.Hard: return "DIFÍCIL";
+            default: return "NORMAL";
+        }
+    }
+
+    /// <summary>Multiplicador de los segundos entre subidas de smog (más alto = sube más despacio).</summary>
+    public static float SmogIntervalMultiplier(DifficultyLevel level)
+    {
+        switch (level)
+        {
+            case DifficultyLevel.Easy: return 1.5f;
+            case DifficultyLevel.Hard: return 0.8f;
+            default: return 1f;
+        }
+    }
+
+    /// <summary>Segundos que se suman (o restan) al tiempo del nivel.</summary>
+    public static float ExtraTime(DifficultyLevel level)
+    {
+        switch (level)
+        {
+            case DifficultyLevel.Easy: return 60f;
+            case DifficultyLevel.Hard: return -30f;
+            default: return 0f;
+        }
     }
 
     public static void Save() => PlayerPrefs.Save();

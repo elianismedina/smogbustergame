@@ -283,7 +283,8 @@
 .panel {
     width: 100%;
     max-width: 760px;
-    padding: 40px 48px;
+    /* Vertical ajustado: con filas de 48 dp, Opciones debe caber en 1080 px de alto */
+    padding: 28px 48px;
     background-color: rgb(20, 40, 50);
     border-width: 3px;
     border-color: rgb(120, 230, 170);
@@ -296,11 +297,11 @@
     -unity-text-align: middle-center;
     letter-spacing: 6px;
     color: rgb(120, 230, 170);
-    margin-bottom: 24px;
+    margin-bottom: 8px;
 }
 
 .panel-button {
-    margin-top: 24px;
+    margin-top: 12px;
 }
 
 .option-slider,

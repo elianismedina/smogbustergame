@@ -46,6 +46,8 @@
                 <ui:Slider label="Efectos" name="slider-sfx" low-value="0" high-value="1" value="0.8" class="option-slider"/>
                 <ui:Toggle label="Vibración" name="toggle-vibration" value="true" class="option-toggle"/>
                 <ui:Toggle label="Joystick fijo" name="toggle-fixed-joystick" value="false" class="option-toggle"/>
+                <!-- Pulsar cambia entre Fácil, Normal y Difícil -->
+                <ui:Button text="DIFICULTAD: NORMAL" name="btn-difficulty" class="menu-button"/>
                 <ui:Button text="VOLVER" name="btn-options-back" class="menu-button menu-button--primary panel-button"/>
             </ui:VisualElement>
         </ui:VisualElement>

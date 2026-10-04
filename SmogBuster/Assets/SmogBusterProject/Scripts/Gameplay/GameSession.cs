@@ -84,6 +84,12 @@ public class GameSession : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        // Dificultad de Opciones: el smog sube más o menos rápido y hay más o menos tiempo
+        GameSettings.DifficultyLevel difficulty = GameSettings.Difficulty;
+        _riseInterval *= GameSettings.SmogIntervalMultiplier(difficulty);
+        _timeLimit = Mathf.Max(30f, _timeLimit + GameSettings.ExtraTime(difficulty));
+
         Smog = Mathf.Clamp01(_startSmog);
         TimeRemaining = _timeLimit;
     }

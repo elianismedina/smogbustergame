@@ -29,6 +29,7 @@ public class MainMenuController : MonoBehaviour
     private Button _btnOptions;
     private Button _btnExit;
     private Button _btnOptionsBack;
+    private Button _btnDifficulty;
 
     private Slider _sliderMusic;
     private Slider _sliderSfx;
@@ -61,6 +62,7 @@ public class MainMenuController : MonoBehaviour
         _btnOptions = _root.Q<Button>("btn-options");
         _btnExit = _root.Q<Button>("btn-exit");
         _btnOptionsBack = _root.Q<Button>("btn-options-back");
+        _btnDifficulty = _root.Q<Button>("btn-difficulty");
 
         _sliderMusic = _root.Q<Slider>("slider-music");
         _sliderSfx = _root.Q<Slider>("slider-sfx");
@@ -72,6 +74,7 @@ public class MainMenuController : MonoBehaviour
         RegisterButton(_btnOptions, OnOptionsClicked, "btn-options");
         RegisterButton(_btnExit, OnExitClicked, "btn-exit");
         RegisterButton(_btnOptionsBack, CloseOptions, "btn-options-back");
+        RegisterButton(_btnDifficulty, OnDifficultyClicked, "btn-difficulty");
 
         LoadOptions();
         _sliderMusic?.RegisterValueChangedCallback(OnMusicChanged);
@@ -111,6 +114,7 @@ public class MainMenuController : MonoBehaviour
         UnregisterButton(_btnOptions, OnOptionsClicked);
         UnregisterButton(_btnExit, OnExitClicked);
         UnregisterButton(_btnOptionsBack, CloseOptions);
+        UnregisterButton(_btnDifficulty, OnDifficultyClicked);
 
         _sliderMusic?.UnregisterValueChangedCallback(OnMusicChanged);
         _sliderSfx?.UnregisterValueChangedCallback(OnSfxChanged);
@@ -200,6 +204,19 @@ public class MainMenuController : MonoBehaviour
         _sliderSfx?.SetValueWithoutNotify(GameSettings.SfxVolume);
         _toggleVibration?.SetValueWithoutNotify(GameSettings.Vibration);
         _toggleFixedJoystick?.SetValueWithoutNotify(GameSettings.FixedJoystick);
+        ShowDifficulty();
+    }
+
+    // Fácil -> Normal -> Difícil -> Fácil
+    private void OnDifficultyClicked()
+    {
+        GameSettings.Difficulty = (GameSettings.DifficultyLevel)(((int)GameSettings.Difficulty + 1) % 3);
+        ShowDifficulty();
+    }
+
+    private void ShowDifficulty()
+    {
+        if (_btnDifficulty != null) _btnDifficulty.text = "DIFICULTAD: " + GameSettings.DifficultyName(GameSettings.Difficulty);
     }
 
     // El volumen se aplica al mixer en vivo, mientras se mueve el slider
