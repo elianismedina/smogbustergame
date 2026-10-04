@@ -55,7 +55,7 @@
         <ui:VisualElement name="levels-overlay" class="overlay">
             <ui:VisualElement name="levels-panel" class="panel">
                 <ui:Label text="ELIGE NIVEL" class="panel-title"/>
-                <ui:Button text="1 · CENTRO DE LA CIUDAD" name="btn-level-1" class="menu-button menu-button--primary level-button"/>
+                <ui:Button text="1 · CENTRO DE VILLALIMPIA" name="btn-level-1" class="menu-button menu-button--primary level-button"/>
                 <ui:Label text="" name="level-1-best" class="level-best"/>
                 <ui:Button text="2 · PRÓXIMAMENTE" name="btn-level-2" class="menu-button level-button"/>
                 <ui:Button text="3 · PRÓXIMAMENTE" name="btn-level-3" class="menu-button level-button"/>
