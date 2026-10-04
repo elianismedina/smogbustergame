@@ -49,6 +49,7 @@
                 <ui:Slider label="Música" name="pause-slider-music" low-value="0" high-value="1" value="0.8" class="option-slider"/>
                 <ui:Slider label="Efectos" name="pause-slider-sfx" low-value="0" high-value="1" value="0.8" class="option-slider"/>
                 <ui:Toggle label="Vibración" name="pause-toggle-vibration" value="true" class="option-toggle"/>
+                <ui:Toggle label="Joystick fijo" name="pause-toggle-fixed-joystick" value="false" class="option-toggle"/>
                 <ui:Button text="CONTINUAR" name="btn-resume" class="menu-button menu-button--primary panel-button"/>
                 <ui:VisualElement class="pause-row">
                     <ui:Button text="REINTENTAR" name="btn-pause-retry" class="menu-button pause-row__button pause-row__button--left"/>

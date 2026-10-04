@@ -33,6 +33,7 @@ public class MainMenuController : MonoBehaviour
     private Slider _sliderMusic;
     private Slider _sliderSfx;
     private Toggle _toggleVibration;
+    private Toggle _toggleFixedJoystick;
 
     private IVisualElementScheduledItem _smogDrift;
     private Rect _lastSafeArea;
@@ -64,6 +65,7 @@ public class MainMenuController : MonoBehaviour
         _sliderMusic = _root.Q<Slider>("slider-music");
         _sliderSfx = _root.Q<Slider>("slider-sfx");
         _toggleVibration = _root.Q<Toggle>("toggle-vibration");
+        _toggleFixedJoystick = _root.Q<Toggle>("toggle-fixed-joystick");
 
         // 3. Registrar listeners con comprobación previa
         RegisterButton(_btnPlay, OnPlayClicked, "btn-play");
@@ -75,6 +77,7 @@ public class MainMenuController : MonoBehaviour
         _sliderMusic?.RegisterValueChangedCallback(OnMusicChanged);
         _sliderSfx?.RegisterValueChangedCallback(OnSfxChanged);
         _toggleVibration?.RegisterValueChangedCallback(OnVibrationChanged);
+        _toggleFixedJoystick?.RegisterValueChangedCallback(OnFixedJoystickChanged);
 
         // 4. Ajustes por plataforma: iOS y WebGL no permiten cerrar la app
 #if UNITY_IOS || UNITY_WEBGL
@@ -112,6 +115,7 @@ public class MainMenuController : MonoBehaviour
         _sliderMusic?.UnregisterValueChangedCallback(OnMusicChanged);
         _sliderSfx?.UnregisterValueChangedCallback(OnSfxChanged);
         _toggleVibration?.UnregisterValueChangedCallback(OnVibrationChanged);
+        _toggleFixedJoystick?.UnregisterValueChangedCallback(OnFixedJoystickChanged);
 
         _root?.UnregisterCallback<GeometryChangedEvent>(OnRootGeometryChanged);
         _smogDrift?.Pause();
@@ -195,6 +199,7 @@ public class MainMenuController : MonoBehaviour
         _sliderMusic?.SetValueWithoutNotify(GameSettings.MusicVolume);
         _sliderSfx?.SetValueWithoutNotify(GameSettings.SfxVolume);
         _toggleVibration?.SetValueWithoutNotify(GameSettings.Vibration);
+        _toggleFixedJoystick?.SetValueWithoutNotify(GameSettings.FixedJoystick);
     }
 
     // El volumen se aplica al mixer en vivo, mientras se mueve el slider
@@ -211,6 +216,8 @@ public class MainMenuController : MonoBehaviour
     }
 
     private void OnVibrationChanged(ChangeEvent<bool> evt) => GameSettings.Vibration = evt.newValue;
+
+    private void OnFixedJoystickChanged(ChangeEvent<bool> evt) => GameSettings.FixedJoystick = evt.newValue;
 
     private bool IsOptionsOpen => _optionsOverlay != null && _optionsOverlay.resolvedStyle.display == DisplayStyle.Flex;
 

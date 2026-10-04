@@ -112,6 +112,8 @@ public class GameHudController : MonoBehaviour
         SetSticksVisible(!over && HasTouchInput());
         if (over) return;
 
+        // Fijo o dinámico según Opciones (se puede cambiar desde la pausa)
+        if (_moveStick != null) _moveStick.Floating = !GameSettings.FixedJoystick;
         _input.SetMove(_moveStick?.Value ?? Vector2.zero);
         float climb = (_upButton.IsPressed ? 1f : 0f) - (_downButton.IsPressed ? 1f : 0f);
         _input.SetClimb(climb);

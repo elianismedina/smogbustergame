@@ -24,6 +24,7 @@ public class PauseMenuController : MonoBehaviour
     private Slider _sliderMusic;
     private Slider _sliderSfx;
     private Toggle _toggleVibration;
+    private Toggle _toggleFixedJoystick;
 
     private GameHudController _hud;
     private QuadcopterCrash _crash;
@@ -44,6 +45,7 @@ public class PauseMenuController : MonoBehaviour
         _sliderMusic = root.Q<Slider>("pause-slider-music");
         _sliderSfx = root.Q<Slider>("pause-slider-sfx");
         _toggleVibration = root.Q<Toggle>("pause-toggle-vibration");
+        _toggleFixedJoystick = root.Q<Toggle>("pause-toggle-fixed-joystick");
 
         if (_btnPause != null) _btnPause.clicked += Pause;
         if (_btnResume != null) _btnResume.clicked += Resume;
@@ -53,6 +55,7 @@ public class PauseMenuController : MonoBehaviour
         _sliderMusic?.RegisterValueChangedCallback(OnMusicChanged);
         _sliderSfx?.RegisterValueChangedCallback(OnSfxChanged);
         _toggleVibration?.RegisterValueChangedCallback(OnVibrationChanged);
+        _toggleFixedJoystick?.RegisterValueChangedCallback(OnFixedJoystickChanged);
 
         _hud = GetComponent<GameHudController>();
         _crash = FindAnyObjectByType<QuadcopterCrash>();
@@ -71,6 +74,7 @@ public class PauseMenuController : MonoBehaviour
         _sliderMusic?.UnregisterValueChangedCallback(OnMusicChanged);
         _sliderSfx?.UnregisterValueChangedCallback(OnSfxChanged);
         _toggleVibration?.UnregisterValueChangedCallback(OnVibrationChanged);
+        _toggleFixedJoystick?.UnregisterValueChangedCallback(OnFixedJoystickChanged);
 
         if (_crash != null) _crash.Crashed -= OnCrashed;
         if (_session != null) _session.Ended -= OnSessionEnded;
@@ -81,8 +85,10 @@ public class PauseMenuController : MonoBehaviour
 
     private void Update()
     {
-        // Botón "atrás" de Android (llega como Escape) o Escape en teclado
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        // Botón "atrás" de Android (llega como Escape), Escape en teclado o Start en el mando
+        bool escape = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
+        bool start = Gamepad.current != null && Gamepad.current.startButton.wasPressedThisFrame;
+        if (escape || start)
         {
             if (IsPaused) Resume();
             else Pause();
@@ -151,6 +157,7 @@ public class PauseMenuController : MonoBehaviour
         _sliderMusic?.SetValueWithoutNotify(GameSettings.MusicVolume);
         _sliderSfx?.SetValueWithoutNotify(GameSettings.SfxVolume);
         _toggleVibration?.SetValueWithoutNotify(GameSettings.Vibration);
+        _toggleFixedJoystick?.SetValueWithoutNotify(GameSettings.FixedJoystick);
     }
 
     private void OnMusicChanged(ChangeEvent<float> evt)
@@ -166,6 +173,8 @@ public class PauseMenuController : MonoBehaviour
     }
 
     private void OnVibrationChanged(ChangeEvent<bool> evt) => GameSettings.Vibration = evt.newValue;
+
+    private void OnFixedJoystickChanged(ChangeEvent<bool> evt) => GameSettings.FixedJoystick = evt.newValue;
 
     #endregion
 

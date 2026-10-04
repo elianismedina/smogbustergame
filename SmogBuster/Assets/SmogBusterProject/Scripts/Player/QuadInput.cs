@@ -3,8 +3,10 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Entrada del quadcopter (GDD 6.2). Combina teclado, ratón y gamepad con los valores de los
-/// controles táctiles del HUD (métodos Set*). No hay giro manual: el dron gira hacia donde se mueve.
-/// Teclado: WASD mover, Espacio subir, Shift izquierdo bajar, clic izquierdo Rayo.
+/// controles táctiles del HUD (métodos Set*). En primera persona el stick lateral gira el dron; en tercera, gira hacia donde se mueve.
+/// Teclado: WASD mover, Espacio subir, Shift izquierdo bajar, clic izquierdo Rayo, clic derecho Semilla.
+/// Mando (Bluetooth o USB, GDD 10.4): stick izquierdo mover; stick derecho, cruceta o RB/LB subir y bajar;
+/// RT o A Rayo; LT o X Semilla; Start pausa (ver PauseMenuController).
 /// </summary>
 public class QuadInput : MonoBehaviour
 {
@@ -54,14 +56,22 @@ public class QuadInput : MonoBehaviour
             .With("Positive", "<Keyboard>/space")
             .With("Negative", "<Keyboard>/leftShift");
         _climb.AddBinding("<Gamepad>/rightStick/y").WithProcessor("axisDeadzone");
+        _climb.AddCompositeBinding("1DAxis")
+            .With("Positive", "<Gamepad>/dpad/up")
+            .With("Negative", "<Gamepad>/dpad/down");
+        _climb.AddCompositeBinding("1DAxis")
+            .With("Positive", "<Gamepad>/rightShoulder")
+            .With("Negative", "<Gamepad>/leftShoulder");
 
         _beam = new InputAction("Beam", InputActionType.Button);
         _beam.AddBinding("<Mouse>/leftButton");
         _beam.AddBinding("<Gamepad>/rightTrigger");
+        _beam.AddBinding("<Gamepad>/buttonSouth");
 
         _seed = new InputAction("Seed", InputActionType.Button);
         _seed.AddBinding("<Mouse>/rightButton");
         _seed.AddBinding("<Gamepad>/leftTrigger");
+        _seed.AddBinding("<Gamepad>/buttonWest");
     }
 
     private void OnEnable()

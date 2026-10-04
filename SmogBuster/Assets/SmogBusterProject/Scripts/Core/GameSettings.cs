@@ -9,6 +9,7 @@ public static class GameSettings
     public const string PrefMusicVolume = "options.musicVolume";
     public const string PrefSfxVolume = "options.sfxVolume";
     public const string PrefVibration = "options.vibration";
+    public const string PrefFixedJoystick = "options.fixedJoystick";
 
     private const float DefaultVolume = 0.8f;
 
@@ -30,6 +31,13 @@ public static class GameSettings
     {
         get => PlayerPrefs.GetInt(PrefVibration, 1) == 1;
         set => PlayerPrefs.SetInt(PrefVibration, value ? 1 : 0);
+    }
+
+    /// <summary>Joystick fijo en su sitio (true) o dinámico, que aparece bajo el pulgar (false, por defecto). GDD 10.4.</summary>
+    public static bool FixedJoystick
+    {
+        get => PlayerPrefs.GetInt(PrefFixedJoystick, 0) == 1;
+        set => PlayerPrefs.SetInt(PrefFixedJoystick, value ? 1 : 0);
     }
 
     public static void Save() => PlayerPrefs.Save();
