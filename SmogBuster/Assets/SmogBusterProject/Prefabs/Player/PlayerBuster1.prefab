@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 280414826589290065}
   - component: {fileID: 7459789704528402382}
   - component: {fileID: 6938896652328670963}
+  - component: {fileID: 5953116182227528567}
   m_Layer: 0
   m_Name: PlayerBuster1
   m_TagString: Untagged
@@ -218,6 +219,19 @@ MonoBehaviour:
   _alertVolume: 0.7
   _alertThreshold: 0.8
   _alertRepeat: 3
+--- !u!114 &5953116182227528567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5565141978225087962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72af7dc8988dcc344ab52292373ffd36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameplayHaptics
+  _alertThreshold: 0.8
 --- !u!1 &6195994256036962268
 GameObject:
   m_ObjectHideFlags: 0
