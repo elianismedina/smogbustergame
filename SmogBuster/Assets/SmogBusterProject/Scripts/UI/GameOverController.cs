@@ -133,7 +133,7 @@ public class GameOverController : MonoBehaviour
         AddStat("Nubes de smog disipadas", _session.CloudsPurified.ToString());
         AddStat("Smog eliminado", $"{Mathf.RoundToInt(_session.SmogRemoved * 100f)}%");
         if (victory && _session.TimeBonus > 0) AddStat("Bonus por tiempo", $"+{_session.TimeBonus:N0}");
-        AddStat("PUNTOS", _session.Score.ToString("N0"), "gameover-stat--total");
+        AddStat(_session.IsNewBest ? "¡NUEVO RÉCORD!" : "PUNTOS", _session.Score.ToString("N0"), "gameover-stat--total");
     }
 
     private void AddStat(string label, string value, string extraClass = null)

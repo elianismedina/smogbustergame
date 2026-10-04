@@ -75,6 +75,14 @@ public class GameSession : MonoBehaviour
     /// <summary>Puntos del bonus por tiempo (solo al ganar).</summary>
     public int TimeBonus { get; private set; }
 
+    private const string BestScorePrefix = "best.";
+
+    /// <summary>Mejor puntaje guardado de un nivel (nombre de escena), 0 si no se ha ganado.</summary>
+    public static int BestScore(string sceneName) => PlayerPrefs.GetInt(BestScorePrefix + sceneName, 0);
+
+    /// <summary>True si esta partida superó el mejor puntaje del nivel.</summary>
+    public bool IsNewBest { get; private set; }
+
     /// <summary>Se lanza cuando cambian el puntaje o las estadísticas.</summary>
     public event Action StatsChanged;
 
@@ -200,11 +208,21 @@ public class GameSession : MonoBehaviour
         {
             TimeBonus = Mathf.CeilToInt(TimeRemaining) * _timeBonusPerSecond;
             Score += TimeBonus;
+            SaveBestScore();
             StatsChanged?.Invoke();
         }
         // El dron se queda flotando en su sitio (salvo tras un choque, que ya lo hace caer)
         if (_input != null) _input.Locked = true;
         Ended?.Invoke(result);
+    }
+
+    private void SaveBestScore()
+    {
+        string key = BestScorePrefix + gameObject.scene.name;
+        if (Score <= PlayerPrefs.GetInt(key, 0)) return;
+        PlayerPrefs.SetInt(key, Score);
+        PlayerPrefs.Save();
+        IsNewBest = true;
     }
 
     private void HandleDebugKeys()

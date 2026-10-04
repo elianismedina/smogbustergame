@@ -367,3 +367,17 @@
 .fade--visible {
     opacity: 1;
 }
+
+/* ---------- Selección de nivel ---------- */
+
+.level-button {
+    -unity-text-align: middle-left;
+    padding-left: 40px;
+}
+
+.level-best {
+    font-size: 28px;
+    color: rgb(255, 214, 102);
+    -unity-text-align: middle-center;
+    margin: -4px 0 8px 0;
+}

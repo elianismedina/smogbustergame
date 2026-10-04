@@ -23,6 +23,7 @@ public class MainMenuController : MonoBehaviour
     private VisualElement _menu;
     private VisualElement _smogLayer;
     private VisualElement _optionsOverlay;
+    private VisualElement _levelsOverlay;
     private VisualElement _fade;
 
     private Button _btnPlay;
@@ -30,6 +31,9 @@ public class MainMenuController : MonoBehaviour
     private Button _btnExit;
     private Button _btnOptionsBack;
     private Button _btnDifficulty;
+    private Button _btnLevel1;
+    private Button _btnLevelsBack;
+    private Label _level1Best;
 
     private Slider _sliderMusic;
     private Slider _sliderSfx;
@@ -56,6 +60,7 @@ public class MainMenuController : MonoBehaviour
         _menu = _root.Q<VisualElement>("menu");
         _smogLayer = _root.Q<VisualElement>("smog-layer");
         _optionsOverlay = _root.Q<VisualElement>("options-overlay");
+        _levelsOverlay = _root.Q<VisualElement>("levels-overlay");
         _fade = _root.Q<VisualElement>("fade");
 
         _btnPlay = _root.Q<Button>("btn-play");
@@ -63,6 +68,12 @@ public class MainMenuController : MonoBehaviour
         _btnExit = _root.Q<Button>("btn-exit");
         _btnOptionsBack = _root.Q<Button>("btn-options-back");
         _btnDifficulty = _root.Q<Button>("btn-difficulty");
+        _btnLevel1 = _root.Q<Button>("btn-level-1");
+        _btnLevelsBack = _root.Q<Button>("btn-levels-back");
+        _level1Best = _root.Q<Label>("level-1-best");
+        // Los niveles 2 y 3 aún no existen
+        _root.Q<Button>("btn-level-2")?.SetEnabled(false);
+        _root.Q<Button>("btn-level-3")?.SetEnabled(false);
 
         _sliderMusic = _root.Q<Slider>("slider-music");
         _sliderSfx = _root.Q<Slider>("slider-sfx");
@@ -75,6 +86,8 @@ public class MainMenuController : MonoBehaviour
         RegisterButton(_btnExit, OnExitClicked, "btn-exit");
         RegisterButton(_btnOptionsBack, CloseOptions, "btn-options-back");
         RegisterButton(_btnDifficulty, OnDifficultyClicked, "btn-difficulty");
+        RegisterButton(_btnLevel1, OnLevel1Clicked, "btn-level-1");
+        RegisterButton(_btnLevelsBack, CloseLevels, "btn-levels-back");
 
         LoadOptions();
         _sliderMusic?.RegisterValueChangedCallback(OnMusicChanged);
@@ -115,6 +128,8 @@ public class MainMenuController : MonoBehaviour
         UnregisterButton(_btnExit, OnExitClicked);
         UnregisterButton(_btnOptionsBack, CloseOptions);
         UnregisterButton(_btnDifficulty, OnDifficultyClicked);
+        UnregisterButton(_btnLevel1, OnLevel1Clicked);
+        UnregisterButton(_btnLevelsBack, CloseLevels);
 
         _sliderMusic?.UnregisterValueChangedCallback(OnMusicChanged);
         _sliderSfx?.UnregisterValueChangedCallback(OnSfxChanged);
@@ -261,11 +276,44 @@ public class MainMenuController : MonoBehaviour
         _btnOptions?.Focus();
     }
 
+    private bool IsLevelsOpen => _levelsOverlay != null && _levelsOverlay.resolvedStyle.display == DisplayStyle.Flex;
+
+    private void OpenLevels()
+    {
+        if (_levelsOverlay == null) return;
+
+        int best = GameSession.BestScore(_nextSceneName);
+        if (_level1Best != null) _level1Best.text = best > 0 ? $"Mejor puntaje: {best:N0}" : "";
+
+        _levelsOverlay.style.display = DisplayStyle.Flex;
+        _levelsOverlay.schedule.Execute(() =>
+        {
+            _levelsOverlay.AddToClassList("overlay--visible");
+            _btnLevel1?.Focus();
+        });
+    }
+
+    private void CloseLevels()
+    {
+        if (_levelsOverlay == null) return;
+
+        _levelsOverlay.RemoveFromClassList("overlay--visible");
+        _levelsOverlay.schedule.Execute(() => _levelsOverlay.style.display = DisplayStyle.None).StartingIn(200);
+        _btnPlay?.Focus();
+    }
+
     #endregion
 
     #region Eventos de Botones
 
+    // JUGAR abre la selección de nivel
     private void OnPlayClicked()
+    {
+        if (_isLoading) return;
+        OpenLevels();
+    }
+
+    private void OnLevel1Clicked()
     {
         if (_isLoading) return;
 
@@ -305,6 +353,11 @@ public class MainMenuController : MonoBehaviour
             PlaySelectSound();
             CloseOptions();
         }
+        else if (IsLevelsOpen)
+        {
+            PlaySelectSound();
+            CloseLevels();
+        }
 #if UNITY_ANDROID && !UNITY_EDITOR
         else
         {
@@ -318,6 +371,7 @@ public class MainMenuController : MonoBehaviour
     {
         _isLoading = true;
         _btnPlay?.SetEnabled(false);
+        _btnLevel1?.SetEnabled(false);
         _btnOptions?.SetEnabled(false);
         _btnExit?.SetEnabled(false);
 
