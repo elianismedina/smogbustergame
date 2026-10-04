@@ -23,7 +23,7 @@ public class FollowCamera : MonoBehaviour
 
     [Header("Primera persona")]
     [Tooltip("Posición de la cámara respecto al dron, en el marco de su rumbo (x lateral, y altura, z adelante).")]
-    [SerializeField] private Vector3 _firstPersonOffset = new Vector3(0f, 0.5f, -0.3f);
+    [SerializeField] private Vector3 _firstPersonOffset = new Vector3(0f, 0.3f, -0.8f);
     [Tooltip("Grados hacia abajo: deja ver el suelo y lo que hay delante.")]
     [SerializeField] private float _firstPersonPitch = 8f;
     [SerializeField] private float _firstPersonNearClip = 0.05f;

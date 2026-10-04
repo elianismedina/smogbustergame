@@ -35383,7 +35383,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FollowCamera
   _target: {fileID: 2009726937}
   _mode: 0
-  _firstPersonOffset: {x: 0, y: 0.5, z: -0.3}
+  _firstPersonOffset: {x: 0, y: 0.3, z: -0.8}
   _firstPersonPitch: 8
   _firstPersonNearClip: 0.05
   _hiddenModel: {fileID: 0}
