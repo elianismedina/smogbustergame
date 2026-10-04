@@ -373,6 +373,9 @@
 .level-button {
     -unity-text-align: middle-left;
     padding-left: 40px;
+    /* Fredoka es más ancha: el nombre del nivel debe caber en el botón */
+    font-size: 36px;
+    letter-spacing: 2px;
 }
 
 .level-best {
