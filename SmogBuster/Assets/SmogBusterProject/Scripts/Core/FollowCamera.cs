@@ -45,6 +45,14 @@ public class FollowCamera : MonoBehaviour
     private MeshRenderer[] _modelRenderers;
     private bool _modelHidden;
     private float _yaw;
+    private float _kick;
+    private float _shake;
+
+    /// <summary>Golpe de cámara hacia arriba (grados) que vuelve solo, p. ej. al lanzar una semilla.</summary>
+    public void Kick(float degrees) => _kick = Mathf.Max(_kick, degrees);
+
+    /// <summary>Temblor continuo (grados) mientras se llame cada frame; se apaga solo si se deja de llamar.</summary>
+    public void Shake(float degrees) => _shake = Mathf.Max(_shake, degrees);
 
     /// <summary>Rumbo de la cámara alrededor del objetivo (grados). Es estable aunque la cámara mire hacia el objetivo al moverse de lado.</summary>
     public float Heading => _yaw;
@@ -93,6 +101,7 @@ public class FollowCamera : MonoBehaviour
         if (firstPerson)
         {
             PlaceFirstPerson();
+            ApplyKickAndShake();
             return;
         }
 
@@ -110,6 +119,22 @@ public class FollowCamera : MonoBehaviour
         Vector3 desired = DesiredPosition();
         transform.position = Vector3.Lerp(transform.position, desired, 1f - Mathf.Exp(-_positionSmoothing * dt));
         transform.LookAt(_target.position + _lookOffset);
+        ApplyKickAndShake();
+    }
+
+    // Se suma después de colocar la cámara, así no se acumula entre frames
+    private void ApplyKickAndShake()
+    {
+        float dt = Time.deltaTime;
+        if (_kick <= 0.001f && _shake <= 0.001f) return;
+
+        float t = Time.time * 40f;
+        float shakeX = (Mathf.PerlinNoise(t, 0.3f) - 0.5f) * 2f * _shake;
+        float shakeY = (Mathf.PerlinNoise(0.7f, t) - 0.5f) * 2f * _shake;
+        transform.rotation *= Quaternion.Euler(-_kick + shakeX, shakeY, 0f);
+
+        _kick = Mathf.MoveTowards(_kick, 0f, (_kick * 8f + 2f) * dt);
+        _shake = Mathf.MoveTowards(_shake, 0f, 20f * dt);
     }
 
     // En el morro del dron, siguiendo su rumbo pero no su inclinación (evita mareos al acelerar)

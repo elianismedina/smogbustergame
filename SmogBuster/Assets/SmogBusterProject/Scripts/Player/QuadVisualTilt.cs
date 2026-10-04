@@ -3,6 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Inclina el modelo visual según la velocidad local (el Rigidbody raíz tiene la rotación congelada)
 /// y hace girar las hélices si se encuentran hijos cuyo nombre contenga prop/rotor/blade/helice.
+/// Otros scripts (p. ej. <see cref="DroneAnimations"/>) pueden sumar un giro y un desplazamiento extra al modelo.
 /// </summary>
 public class QuadVisualTilt : MonoBehaviour
 {
@@ -17,6 +18,14 @@ public class QuadVisualTilt : MonoBehaviour
     [SerializeField] private float _propellerSpeed = 2400f;
 
     private Quaternion _baseRotation;
+    private Vector3 _basePosition;
+    private Quaternion _tilt;
+
+    /// <summary>Giro que se suma a la inclinación (retroceso, celebración...). Se aplica en el espacio del modelo.</summary>
+    public Quaternion ExtraRotation { get; set; } = Quaternion.identity;
+
+    /// <summary>Desplazamiento local que se suma a la posición del modelo.</summary>
+    public Vector3 ExtraOffset { get; set; }
 
     private void Awake()
     {
@@ -31,6 +40,8 @@ public class QuadVisualTilt : MonoBehaviour
         }
 
         _baseRotation = _model.localRotation;
+        _basePosition = _model.localPosition;
+        _tilt = _baseRotation;
 
         if (_propellers == null || _propellers.Length == 0)
         {
@@ -53,7 +64,9 @@ public class QuadVisualTilt : MonoBehaviour
         float roll = -Mathf.Clamp(localVelocity.x * speedFactor, -1f, 1f) * _maxTiltAngle;
 
         Quaternion target = _baseRotation * Quaternion.Euler(pitch, 0f, roll);
-        _model.localRotation = Quaternion.Slerp(_model.localRotation, target, 1f - Mathf.Exp(-_tiltSmoothing * Time.deltaTime));
+        _tilt = Quaternion.Slerp(_tilt, target, 1f - Mathf.Exp(-_tiltSmoothing * Time.deltaTime));
+        _model.localRotation = _tilt * ExtraRotation;
+        _model.localPosition = _basePosition + ExtraOffset;
 
         float spin = _propellerSpeed * Time.deltaTime;
         for (int i = 0; i < _propellers.Length; i++)
