@@ -4,7 +4,8 @@ using UnityEngine.UIElements;
 /// <summary>
 /// HUD con la barra de nivel de smog. Lee <see cref="GameSession.Smog"/> (0-1) y la muestra
 /// con relleno animado, porcentaje y color (verde = limpio, marrón rojizo = muy contaminado).
-/// Por encima del umbral crítico el borde parpadea.
+/// Por encima del umbral crítico el borde parpadea. Un icono (<see cref="SmogStateIcon"/>) muestra el estado
+/// con una forma distinta (pulmones, nube con mascarilla, alerta), para no depender solo del color.
 /// Sin GameSession usa <see cref="SmogClouds.Density"/>; también se puede alimentar con <see cref="SetLevel"/>.
 /// </summary>
 [RequireComponent(typeof(UIDocument))]
@@ -19,6 +20,9 @@ public class SmogMeterController : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float _criticalThreshold = 0.75f;
     [SerializeField] private float _pulseInterval = 0.5f;
+    [Tooltip("Por debajo de este nivel el icono muestra pulmones (aire limpio); por encima, la nube con mascarilla.")]
+    [Range(0f, 1f)]
+    [SerializeField] private float _cleanThreshold = 0.4f;
     [SerializeField] private Gradient _colors = DefaultGradient();
 
     private VisualElement _root;
@@ -26,6 +30,7 @@ public class SmogMeterController : MonoBehaviour
     private VisualElement _meter;
     private VisualElement _fill;
     private Label _value;
+    private SmogStateIcon _icon;
     private IVisualElementScheduledItem _pulse;
     private Rect _lastSafeArea;
 
@@ -51,6 +56,13 @@ public class SmogMeterController : MonoBehaviour
         _meter = _root.Q<VisualElement>("smog-meter");
         _fill = _root.Q<VisualElement>("smog-meter-fill");
         _value = _root.Q<Label>("smog-meter-value");
+        VisualElement header = _root.Q<VisualElement>(className: "smog-meter__header");
+        if (header != null && _icon == null)
+        {
+            _icon = new SmogStateIcon();
+            _icon.AddToClassList("smog-meter__icon");
+            header.Insert(0, _icon);
+        }
 
         if (_session == null) _session = FindAnyObjectByType<GameSession>();
         if (_session == null && _source == null) _source = FindAnyObjectByType<SmogClouds>();
@@ -89,6 +101,12 @@ public class SmogMeterController : MonoBehaviour
         }
 
         bool critical = _displayed >= _criticalThreshold;
+        if (_icon != null)
+        {
+            _icon.Current = critical ? SmogStateIcon.State.Alert
+                : _displayed < _cleanThreshold ? SmogStateIcon.State.Clean
+                : SmogStateIcon.State.Polluted;
+        }
         _meter.EnableInClassList("smog-meter--critical", critical);
         if (!critical) _meter.RemoveFromClassList("smog-meter--pulse");
     }
