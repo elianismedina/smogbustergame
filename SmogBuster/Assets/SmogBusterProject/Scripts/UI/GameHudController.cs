@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 /// <summary>
 /// HUD de juego (GDD 6.2 y 9.3): un joystick táctil para moverse y botones que se mantienen
 /// pulsados para subir, bajar y disparar el Rayo. Pasa sus valores a <see cref="QuadInput"/>.
-/// Muestra el tiempo restante de <see cref="GameSession"/> (MM:SS).
+/// Muestra el tiempo restante de <see cref="GameSession"/> (MM:SS), el puntaje y los árboles plantados.
 /// Ajusta el área segura (notch) y oculta los controles táctiles en dispositivos sin pantalla táctil.
 /// </summary>
 [RequireComponent(typeof(UIDocument))]
@@ -36,6 +36,10 @@ public class GameHudController : MonoBehaviour
     private QuadcopterCrash _crash;
     private GameSession _session;
     private Label _timer;
+    private Label _score;
+    private Label _trees;
+    private int _shownScore = -1;
+    private int _shownTrees = -1;
     private Label _boundary;
     private VisualElement _crosshair;
     private PurifierBeam _beam;
@@ -53,6 +57,8 @@ public class GameHudController : MonoBehaviour
         _safeArea = _root.Q<VisualElement>("game-hud-safe-area");
         _touchControls = _root.Q<VisualElement>("touch-controls");
         _timer = _root.Q<Label>("hud-timer");
+        _score = _root.Q<Label>("hud-score");
+        _trees = _root.Q<Label>("hud-trees");
         _boundary = _root.Q<Label>("hud-boundary");
         _crosshair = _root.Q<VisualElement>("crosshair");
 
@@ -73,6 +79,8 @@ public class GameHudController : MonoBehaviour
         _seeds = _input != null ? _input.GetComponent<SeedLauncher>() : null;
         _session = FindAnyObjectByType<GameSession>();
         if (_timer != null) _timer.style.display = _session != null ? DisplayStyle.Flex : DisplayStyle.None;
+        VisualElement stats = _root.Q<VisualElement>("hud-stats");
+        if (stats != null) stats.style.display = _session != null ? DisplayStyle.Flex : DisplayStyle.None;
 
         _root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
     }
@@ -93,6 +101,7 @@ public class GameHudController : MonoBehaviour
     {
         if (Screen.safeArea != _lastSafeArea) ApplySafeArea();
         UpdateTimer();
+        UpdateStats();
         UpdateBeamReady();
         UpdateBoundary();
         UpdateCrosshair();
@@ -175,6 +184,33 @@ public class GameHudController : MonoBehaviour
         _shownSeconds = seconds;
         _timer.text = $"{seconds / 60:00}:{seconds % 60:00}";
         _timer.EnableInClassList("hud-timer--warning", seconds <= _timerWarning);
+    }
+
+    private void UpdateStats()
+    {
+        if (_session == null) return;
+
+        if (_score != null && _session.Score != _shownScore)
+        {
+            bool bump = _shownScore >= 0;
+            _shownScore = _session.Score;
+            _score.text = _shownScore.ToString("N0");
+            if (bump) Bump(_score);
+        }
+
+        if (_trees != null && _session.TreesPlanted != _shownTrees)
+        {
+            bool bump = _shownTrees >= 0;
+            _shownTrees = _session.TreesPlanted;
+            _trees.text = $"ÁRBOLES {_shownTrees}/{_session.TotalPlantingSpots}";
+            if (bump) Bump(_trees);
+        }
+    }
+
+    private static void Bump(VisualElement element)
+    {
+        element.AddToClassList("hud-stat--bump");
+        element.schedule.Execute(() => element.RemoveFromClassList("hud-stat--bump")).StartingIn(150);
     }
 
     // Móvil real, Device Simulator (crea un Touchscreen) o PC táctil

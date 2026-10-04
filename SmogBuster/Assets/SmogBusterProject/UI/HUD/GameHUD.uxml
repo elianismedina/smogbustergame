@@ -33,6 +33,11 @@
             </ui:VisualElement>
             <!-- Aviso de borde del mapa (GDD 5.4); GameHudController lo muestra cerca de las paredes -->
             <ui:Label text="FUERA DE ALCANCE · vuelve a la ciudad" name="hud-boundary" class="hud-boundary" picking-mode="Ignore"/>
+            <!-- Puntaje y árboles plantados (GDD 9.3), arriba al centro -->
+            <ui:VisualElement name="hud-stats" class="hud-stats" picking-mode="Ignore">
+                <ui:Label text="0" name="hud-score" class="hud-stat hud-stat--score" picking-mode="Ignore"/>
+                <ui:Label text="ÁRBOLES 0/0" name="hud-trees" class="hud-stat hud-stat--trees" picking-mode="Ignore"/>
+            </ui:VisualElement>
             <ui:Label text="03:00" name="hud-timer" class="hud-timer" picking-mode="Ignore"/>
             <ui:Button text="II" name="btn-pause" class="pause-button"/>
         </ui:VisualElement>

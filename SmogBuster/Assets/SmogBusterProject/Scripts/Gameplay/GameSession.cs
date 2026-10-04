@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 /// - Victoria: smog al 0% antes de que acabe el tiempo.
 /// - Derrota: smog al 100%, tiempo a 00:00 o choque contra un edificio.
 /// Usa tiempo escalado, así que se detiene con la pausa (timeScale = 0).
+/// También lleva el puntaje y las estadísticas de impacto (GDD 9.3): nubes disipadas, árboles plantados
+/// y smog eliminado, con un bonus por el tiempo que sobra al ganar.
 /// </summary>
 public class GameSession : MonoBehaviour
 {
@@ -31,6 +33,13 @@ public class GameSession : MonoBehaviour
     [Header("Tiempo")]
     [Tooltip("Duración del nivel en segundos.")]
     [SerializeField] private float _timeLimit = 180f;
+
+    [Header("Puntaje")]
+    [SerializeField] private int _cloudPoints = 100;
+    [SerializeField] private int _microCloudPoints = 50;
+    [SerializeField] private int _treePoints = 250;
+    [Tooltip("Puntos por cada segundo que sobra al ganar.")]
+    [SerializeField] private int _timeBonusPerSecond = 10;
 
     [Header("Referencias (se buscan en la escena si están vacías)")]
     [SerializeField] private QuadcopterCrash _player;
@@ -56,6 +65,19 @@ public class GameSession : MonoBehaviour
     public Result Outcome { get; private set; } = Result.None;
     public bool IsOver => Outcome != Result.None;
 
+    public int Score { get; private set; }
+    public int CloudsPurified { get; private set; }
+    public int TreesPlanted { get; private set; }
+    /// <summary>Puntos de siembra del nivel (sembrados o no).</summary>
+    public int TotalPlantingSpots { get; private set; }
+    /// <summary>Smog total que el jugador ha quitado (0-1 por cada 100%), aunque luego haya vuelto a subir.</summary>
+    public float SmogRemoved { get; private set; }
+    /// <summary>Puntos del bonus por tiempo (solo al ganar).</summary>
+    public int TimeBonus { get; private set; }
+
+    /// <summary>Se lanza cuando cambian el puntaje o las estadísticas.</summary>
+    public event Action StatsChanged;
+
     /// <summary>Se lanza una sola vez, al terminar la partida.</summary>
     public event Action<Result> Ended;
 
@@ -77,11 +99,23 @@ public class GameSession : MonoBehaviour
         }
 
         if (_clouds != null) _clouds.Density = Smog;
+
+        SmogCloud.Purified += OnCloudPurified;
+        PlantingSpot.Planted += OnTreePlanted;
+    }
+
+    private void Start()
+    {
+        // Los puntos de siembra se registran en su OnEnable, antes de Start
+        TotalPlantingSpots = PlantingSpot.Available.Count + TreesPlanted;
+        StatsChanged?.Invoke();
     }
 
     private void OnDisable()
     {
         if (_player != null) _player.Crashed -= OnPlayerCrashed;
+        SmogCloud.Purified -= OnCloudPurified;
+        PlantingSpot.Planted -= OnTreePlanted;
     }
 
     private void OnDestroy()
@@ -113,7 +147,11 @@ public class GameSession : MonoBehaviour
     public void ReduceSmog(float amount)
     {
         if (IsOver || amount <= 0f) return;
+        float before = Smog;
         SetSmog(Smog - amount);
+        SmogRemoved += before - Smog;
+        // Se gana en el acto: si se esperase al Update, la subida periódica podría adelantarse y quitar la victoria
+        if (Smog <= 0f) End(Result.Victory);
     }
 
     /// <summary>Sube el smog (p. ej. una micro-nube que no se neutralizó).</summary>
@@ -131,11 +169,33 @@ public class GameSession : MonoBehaviour
 
     private void OnPlayerCrashed() => End(Result.Crash);
 
+    private void OnCloudPurified(SmogCloud cloud)
+    {
+        if (IsOver) return;
+        CloudsPurified++;
+        Score += cloud.IsMicro ? _microCloudPoints : _cloudPoints;
+        StatsChanged?.Invoke();
+    }
+
+    private void OnTreePlanted(PlantingSpot spot)
+    {
+        if (IsOver) return;
+        TreesPlanted++;
+        Score += _treePoints;
+        StatsChanged?.Invoke();
+    }
+
     private void End(Result result)
     {
         if (IsOver) return;
 
         Outcome = result;
+        if (result == Result.Victory)
+        {
+            TimeBonus = Mathf.CeilToInt(TimeRemaining) * _timeBonusPerSecond;
+            Score += TimeBonus;
+            StatsChanged?.Invoke();
+        }
         // El dron se queda flotando en su sitio (salvo tras un choque, que ya lo hace caer)
         if (_input != null) _input.Locked = true;
         Ended?.Invoke(result);

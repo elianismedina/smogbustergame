@@ -423,6 +423,48 @@
     border-radius: 24px;
 }
 
+/* ---------- Puntaje y árboles (arriba al centro) ---------- */
+
+/* Centrados arriba, entre la barra de smog (izquierda) y el temporizador (derecha) */
+.hud-stats {
+    position: absolute;
+    top: 28px;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.hud-stat {
+    margin: 0 8px;
+    padding: 6px 24px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    color: rgb(225, 235, 230);
+    background-color: rgba(14, 28, 38, 0.72);
+    border-width: 3px;
+    border-color: rgba(120, 230, 170, 0.6);
+    border-radius: 20px;
+    transition-property: scale;
+    transition-duration: 0.15s;
+}
+
+.hud-stat--score {
+    font-size: 40px;
+    letter-spacing: 2px;
+}
+
+.hud-stat--trees {
+    font-size: 28px;
+    color: rgb(150, 235, 140);
+}
+
+/* Late un instante al sumar puntos o plantar */
+.hud-stat--bump {
+    scale: 1.12 1.12;
+}
+
 .hud-timer--warning {
     color: rgb(240, 95, 85);
     border-color: rgba(235, 90, 80, 0.85);
