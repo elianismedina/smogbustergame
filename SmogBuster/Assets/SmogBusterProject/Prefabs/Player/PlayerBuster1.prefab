@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7100000000000000003}
   - component: {fileID: 280414826589290065}
   - component: {fileID: 7459789704528402382}
+  - component: {fileID: 6938896652328670963}
   m_Layer: 0
   m_Name: PlayerBuster1
   m_TagString: Untagged
@@ -169,6 +170,7 @@ MonoBehaviour:
   _range: 35
   _aimRadius: 1.5
   _assistAngle: 20
+  _assistVerticalAngle: 40
   _downAngle: 4
   _firstPersonLineStart: 2.5
 --- !u!114 &7459789704528402382
@@ -191,6 +193,31 @@ MonoBehaviour:
   _busyTime: 0.35
   _flightTime: 0.9
   _missDistance: 14
+--- !u!114 &6938896652328670963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5565141978225087962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a522513ded2197c40921a7f550f14915, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameplayAudio
+  _beamLoop: {fileID: 8300000, guid: a3bdc9811fc642b4184877b4496abf9f, type: 3}
+  _beamVolume: 0.6
+  _beamFade: 0.08
+  _cloudPurified: {fileID: 8300000, guid: e2024d9cdc71e8047afc86df3fa41a65, type: 3}
+  _cloudPurifiedVolume: 0.8
+  _seedLaunch: {fileID: 8300000, guid: 0235a7e5874baba4e9814602690d6ecf, type: 3}
+  _seedLaunchVolume: 0.8
+  _bloom: {fileID: 8300000, guid: 26a4035ea15834c4ab03ad6b18d82de7, type: 3}
+  _bloomVolume: 0.9
+  _alert: {fileID: 8300000, guid: e1adf896cc338d54592f51a560b948bd, type: 3}
+  _alertVolume: 0.7
+  _alertThreshold: 0.8
+  _alertRepeat: 3
 --- !u!1 &6195994256036962268
 GameObject:
   m_ObjectHideFlags: 0

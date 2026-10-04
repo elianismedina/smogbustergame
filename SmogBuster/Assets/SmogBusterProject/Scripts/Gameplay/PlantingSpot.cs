@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,6 +30,9 @@ public class PlantingSpot : MonoBehaviour
 
     /// <summary>Puntos que todavía no se han sembrado.</summary>
     public static IReadOnlyList<PlantingSpot> Available => AvailableList;
+
+    /// <summary>Se lanza cuando una semilla llega y la planta brota (para sonido y efectos).</summary>
+    public static event Action<PlantingSpot> Planted;
 
     public bool IsPlanted { get; private set; }
     public bool IsTargeted => _targeted;
@@ -76,6 +80,7 @@ public class PlantingSpot : MonoBehaviour
         if (_highlight != null) _highlight.SetActive(false);
         if (_indicator != null) _indicator.SetActive(false);
         StartCoroutine(Grow());
+        Planted?.Invoke(this);
     }
 
     private IEnumerator Grow()
