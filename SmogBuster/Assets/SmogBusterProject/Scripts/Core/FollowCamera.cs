@@ -5,7 +5,9 @@ using UnityEngine;
 /// - Primera persona: va en el centro del dron, un poco por detrás de las hélices delanteras, y mira hacia
 ///   donde apunta. Se oculta el cuerpo; las hélices y motores delanteros siguen a la vista en las
 ///   esquinas superiores, para sentir que se pilota el dron. Al estrellarse pasa a tercera persona.
-/// - Tercera persona (persecución): se mantiene detrás del objetivo siguiendo su rumbo con suavizado.
+/// - Tercera persona cercana (por defecto): justo detrás y por encima del dron, mirando por encima y por
+///   delante de él, así el dron se ve abajo en el centro y la mira queda cerca del centro de la pantalla.
+///   Se mantiene detrás del objetivo siguiendo su rumbo con suavizado.
 ///   Solo se recoloca detrás cuando el objetivo mira en la misma dirección que la cámara: si el dron
 ///   vuelve hacia la cámara o se mueve de lado, la cámara no gira, y así el joystick (relativo a la
 ///   cámara) no cambia de sentido a mitad de movimiento.
@@ -19,7 +21,7 @@ public class FollowCamera : MonoBehaviour
     }
 
     [SerializeField] private Transform _target;
-    [SerializeField] private ViewMode _mode = ViewMode.FirstPerson;
+    [SerializeField] private ViewMode _mode = ViewMode.ThirdPerson;
 
     [Header("Primera persona")]
     [Tooltip("Posición de la cámara respecto al dron, en el marco de su rumbo (x lateral, y altura, z adelante).")]
@@ -34,9 +36,9 @@ public class FollowCamera : MonoBehaviour
 
     [Header("Tercera persona")]
     [Tooltip("Posición relativa al objetivo, en el marco de su rumbo (x lateral, y altura, z atrás es negativo).")]
-    [SerializeField] private Vector3 _offset = new Vector3(0f, 3f, -7f);
-    [Tooltip("Punto al que mira, relativo al objetivo.")]
-    [SerializeField] private Vector3 _lookOffset = new Vector3(0f, 0.5f, 0f);
+    [SerializeField] private Vector3 _offset = new Vector3(0f, 2f, -5f);
+    [Tooltip("Punto al que mira, relativo al objetivo y en el marco del rumbo de la cámara (z adelante).")]
+    [SerializeField] private Vector3 _lookOffset = new Vector3(0f, 1f, 5f);
     [SerializeField] private float _positionSmoothing = 6f;
     [SerializeField] private float _yawSmoothing = 3f;
     [SerializeField] private float _minHeight = 0.5f;
@@ -86,7 +88,7 @@ public class FollowCamera : MonoBehaviour
         else
         {
             transform.position = DesiredPosition();
-            transform.LookAt(_target.position + _lookOffset);
+            transform.LookAt(LookPoint());
         }
     }
 
@@ -121,7 +123,7 @@ public class FollowCamera : MonoBehaviour
 
         Vector3 desired = DesiredPosition();
         transform.position = Vector3.Lerp(transform.position, desired, 1f - Mathf.Exp(-_positionSmoothing * dt));
-        transform.LookAt(_target.position + _lookOffset);
+        transform.LookAt(LookPoint());
         ApplyKickAndShake();
     }
 
@@ -175,6 +177,10 @@ public class FollowCamera : MonoBehaviour
             if (r != null) r.enabled = !hidden;
         }
     }
+
+    // Por encima y por delante del dron, en el marco del rumbo de la cámara: el dron queda abajo
+    // en el centro y la mira (hacia donde apunta el Rayo) cerca del centro de la pantalla
+    private Vector3 LookPoint() => _target.position + Quaternion.Euler(0f, _yaw, 0f) * _lookOffset;
 
     private Vector3 DesiredPosition()
     {
