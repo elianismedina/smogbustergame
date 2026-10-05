@@ -52,7 +52,7 @@ public class GameHudController : MonoBehaviour
     private int _shownSeconds = -1;
     private Rect _lastSafeArea;
     private Button _cameraButton;
-    private Label _cameraMode;
+    private CameraSwitchIcon _cameraIcon;
     private FollowCamera _followCamera;
 
     private void OnEnable()
@@ -93,10 +93,15 @@ public class GameHudController : MonoBehaviour
         // Botón de cámara: la vista elegida se recuerda entre partidas. Se aplica antes del primer frame del
         // brain, así se empieza directamente en esa vista, sin mezcla.
         _cameraButton = _root.Q<Button>("btn-camera");
-        _cameraMode = _root.Q<Label>("camera-button-mode");
         if (Camera.main != null) _followCamera = Camera.main.GetComponent<FollowCamera>();
         if (_cameraButton != null)
         {
+            if (_cameraIcon == null)
+            {
+                _cameraIcon = new CameraSwitchIcon();
+                _cameraIcon.AddToClassList("camera-button__icon");
+            }
+            _cameraButton.Add(_cameraIcon);
             // Sin foco: si no, Espacio (subir) volvería a pulsarlo
             _cameraButton.focusable = false;
             _cameraButton.clicked += ToggleCamera;
@@ -176,7 +181,7 @@ public class GameHudController : MonoBehaviour
         _crosshair.EnableInClassList("crosshair--locked", _beam.CurrentTarget != null);
     }
 
-    // Muestra la vista actual (3ª / 1ª) y atiende V en el teclado y Select (View) en el mando.
+    // Resalta el botón en primera persona y atiende V en el teclado y Select (View) en el mando.
     // Se oculta al terminar la partida o al chocar, como los demás controles.
     private void UpdateCameraButton()
     {
@@ -188,7 +193,7 @@ public class GameHudController : MonoBehaviour
 
         bool firstPerson = _followCamera.Mode == FollowCamera.ViewMode.FirstPerson;
         _cameraButton.EnableInClassList("camera-button--first-person", firstPerson);
-        if (_cameraMode != null) _cameraMode.text = firstPerson ? "1ª" : "3ª";
+        if (_cameraIcon != null) _cameraIcon.Highlighted = firstPerson;
 
         // En pausa (timeScale 0) no se cambia de vista
         if (Time.timeScale <= 0f) return;

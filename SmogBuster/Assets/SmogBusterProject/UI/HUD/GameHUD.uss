@@ -323,29 +323,14 @@
     scale: 0.92 0.92;
 }
 
-/* En primera persona el botón queda marcado */
+/* En primera persona el botón queda marcado (el icono pasa al verde de acento) */
 .camera-button--first-person {
     border-color: rgb(120, 230, 170);
-    background-color: rgba(44, 102, 104, 0.9);
 }
 
-.camera-button__mode {
-    margin: 0;
-    padding: 0;
-    font-size: 46px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    color: rgb(225, 235, 230);
-}
-
-.camera-button__caption {
-    margin: 0;
-    padding: 0;
-    font-size: 20px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    letter-spacing: 1px;
-    color: rgb(150, 200, 180);
+.camera-button__icon {
+    width: 88px;
+    height: 88px;
 }
 
 /* ---------- Botones de acción (GDD 9.3: grandes, abajo a la derecha) ---------- */
