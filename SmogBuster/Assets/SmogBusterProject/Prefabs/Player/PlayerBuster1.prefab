@@ -157,7 +157,9 @@ MonoBehaviour:
   _maxTiltAngle: 25
   _tiltSmoothing: 6
   _propellers: []
-  _propellerSpeed: 2400
+  _propellerSpeed: 1500
+  _propellerMaxSpeed: 2100
+  _propellerSmoothing: 4
 --- !u!114 &280414826589290065
 MonoBehaviour:
   m_ObjectHideFlags: 0
