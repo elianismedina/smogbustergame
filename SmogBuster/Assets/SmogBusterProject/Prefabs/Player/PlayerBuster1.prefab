@@ -157,9 +157,12 @@ MonoBehaviour:
   _maxTiltAngle: 25
   _tiltSmoothing: 6
   _propellers: []
-  _propellerSpeed: 1500
-  _propellerMaxSpeed: 2100
+  _propellerSpeed: 2700
+  _propellerMaxSpeed: 3600
   _propellerSmoothing: 4
+  _maxStepPerFrame: 40
+  _blurDiscMaterial: {fileID: 2100000, guid: 8da2228efe6d4a445b32e0a93c369b76, type: 2}
+  _blurDiscAlpha: {x: 0.25, y: 0.4}
 --- !u!114 &280414826589290065
 MonoBehaviour:
   m_ObjectHideFlags: 0
