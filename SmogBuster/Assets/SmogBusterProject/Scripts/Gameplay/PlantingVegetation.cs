@@ -91,8 +91,9 @@ public class PlantingVegetation : MonoBehaviour
             {
                 if (hit.collider.transform.IsChildOf(transform)) continue;
                 if (Mathf.Abs(hit.point.y - center.y) > 0.6f || hit.normal.y < 0.7f) break;
-                // En el parque el suelo con colisión queda un poco por debajo del césped: nunca por debajo del punto
-                position = new Vector3(hit.point.x, Mathf.Max(hit.point.y, center.y), hit.point.z);
+                // La altura es la del propio punto (césped o azotea): las colisiones de los edificios son cajas
+                // algo más altas que la azotea que se ve, y las plantas quedarían flotando
+                position = new Vector3(hit.point.x, center.y, hit.point.z);
                 return true;
             }
         }
