@@ -1,15 +1,16 @@
+using Unity.Cinemachine;
 using UnityEngine;
 
 /// <summary>
-/// Cámara del dron con dos modos:
-/// - Primera persona: va en el centro del dron, un poco por detrás de las hélices delanteras, y mira hacia
-///   donde apunta. Se oculta el cuerpo; las hélices y motores delanteros siguen a la vista en las
-///   esquinas superiores, para sentir que se pilota el dron. Al estrellarse pasa a tercera persona.
-/// - Tercera persona cercana (por defecto): justo detrás y por encima del dron, mirando por encima y por
-///   delante de él, así el dron se ve abajo en el centro y la mira queda cerca del centro de la pantalla.
-///   Siempre se recoloca detrás del dron siguiendo su rumbo con suavizado, así mira hacia donde va.
-/// En los dos modos el stick lateral gira el dron (<see cref="SteersWithHeading"/>): si el stick moviera de
-/// lado respecto a una cámara que sigue al dron, el dron acabaría dando vueltas.
+/// Cámara del dron, va en la Main Camera junto al CinemachineBrain. No mueve la cámara: elige qué
+/// cámara virtual manda subiendo su prioridad, y traduce los efectos del juego a Cinemachine.
+/// - Tercera persona cercana (por defecto, CM_TerceraPersona): detrás y por encima del dron, mirando por
+///   encima y por delante de él, así el dron se ve abajo en el centro y la mira queda cerca del centro.
+/// - Primera persona (CM_PrimeraPersona): fija en FPV_Mount, en el centro del dron un poco por detrás de
+///   las hélices delanteras. Se oculta el cuerpo; las hélices y motores delanteros siguen a la vista.
+/// - Caída (CM_Caida): al estrellarse, la cámara se queda donde estaba y mira cómo cae el dron.
+/// En los dos modos de vuelo el stick lateral gira el dron (<see cref="SteersWithHeading"/>): si el stick
+/// moviera de lado respecto a una cámara que sigue al dron, el dron acabaría dando vueltas.
 /// </summary>
 public class FollowCamera : MonoBehaviour
 {
@@ -22,46 +23,54 @@ public class FollowCamera : MonoBehaviour
     [SerializeField] private Transform _target;
     [SerializeField] private ViewMode _mode = ViewMode.ThirdPerson;
 
+    [Header("Cámaras virtuales")]
+    [SerializeField] private CinemachineCamera _thirdPersonCamera;
+    [SerializeField] private CinemachineCamera _firstPersonCamera;
+    [SerializeField] private CinemachineCamera _crashCamera;
+    [Tooltip("Prioridad que toma la cámara elegida (primera persona o caída) para mandar sobre la de tercera persona.")]
+    [SerializeField] private int _activePriority = 30;
+
     [Header("Primera persona")]
-    [Tooltip("Posición de la cámara respecto al dron, en el marco de su rumbo (x lateral, y altura, z adelante).")]
+    [Tooltip("Punto de montaje de la cámara, hijo del dron. Solo sigue el rumbo: el dron no se inclina en la raíz.")]
+    [SerializeField] private Transform _fpvMount;
+    [Tooltip("Posición del montaje respecto al dron (x lateral, y altura, z adelante).")]
     [SerializeField] private Vector3 _firstPersonOffset = new Vector3(0f, 0.3f, -0.8f);
     [Tooltip("Grados hacia abajo: deja ver el suelo y lo que hay delante.")]
     [SerializeField] private float _firstPersonPitch = 8f;
-    [SerializeField] private float _firstPersonNearClip = 0.05f;
     [Tooltip("Modelo que se oculta en primera persona (los renderers de malla bajo él). Si se deja vacío, se usa el hijo Quadcopter_Drone.")]
     [SerializeField] private Transform _hiddenModel;
     [Tooltip("Dejar a la vista las hélices y motores que quedan delante de la cámara.")]
     [SerializeField] private bool _showFrontPropellers = true;
 
-    [Header("Tercera persona")]
-    [Tooltip("Posición relativa al objetivo, en el marco de su rumbo (x lateral, y altura, z atrás es negativo).")]
-    [SerializeField] private Vector3 _offset = new Vector3(0f, 2f, -5f);
-    [Tooltip("Punto al que mira, relativo al objetivo y en el marco del rumbo de la cámara (z adelante).")]
-    [SerializeField] private Vector3 _lookOffset = new Vector3(0f, 1f, 5f);
-    [SerializeField] private float _positionSmoothing = 6f;
-    [Tooltip("Rapidez con la que la cámara se recoloca detrás del dron al girar.")]
-    [SerializeField] private float _yawSmoothing = 6f;
-    [SerializeField] private float _minHeight = 0.5f;
+    [Header("Efectos")]
+    [Tooltip("Fuente de impulsos en el dron (golpes de cámara y choque).")]
+    [SerializeField] private CinemachineImpulseSource _impulse;
+    [Tooltip("Metros de golpe por cada grado de Kick (el impulso desplaza la cámara, no la gira).")]
+    [SerializeField] private float _kickPerDegree = 0.12f;
+    [SerializeField] private float _crashImpulse = 0.8f;
+    [Tooltip("Rapidez con la que se apaga el temblor si se deja de llamar a Shake (grados por segundo).")]
+    [SerializeField] private float _shakeDecay = 20f;
 
-    private Camera _camera;
-    private float _thirdPersonNearClip;
+    private CinemachineBasicMultiChannelPerlin[] _noises;
     private MeshRenderer[] _modelRenderers;
     private bool _modelHidden;
-    private float _yaw;
-    private float _kick;
+    private bool _crashed;
     private float _shake;
 
     /// <summary>Golpe de cámara hacia arriba (grados) que vuelve solo, p. ej. al lanzar una semilla.</summary>
-    public void Kick(float degrees) => _kick = Mathf.Max(_kick, degrees);
+    public void Kick(float degrees)
+    {
+        if (_impulse != null && degrees > 0f) _impulse.GenerateImpulseWithVelocity(Vector3.up * degrees * _kickPerDegree);
+    }
 
     /// <summary>Temblor continuo (grados) mientras se llame cada frame; se apaga solo si se deja de llamar.</summary>
     public void Shake(float degrees) => _shake = Mathf.Max(_shake, degrees);
 
-    /// <summary>Rumbo de la cámara alrededor del objetivo (grados). Es estable aunque la cámara mire hacia el objetivo al moverse de lado.</summary>
-    public float Heading => _yaw;
+    /// <summary>Rumbo real de la cámara (grados), el que da el CinemachineBrain.</summary>
+    public float Heading => transform.eulerAngles.y;
 
-    /// <summary>Si es false, la cámara mantiene su rumbo actual (p. ej. mientras el dron cae girando).
-    /// En primera persona, además, pasa a tercera persona para ver la caída.</summary>
+    /// <summary>Si es false, la cámara deja de seguir al dron (p. ej. mientras cae girando):
+    /// pasa a la cámara de caída, que se queda quieta y lo mira.</summary>
     public bool FollowYaw { get; set; } = true;
 
     /// <summary>True mientras la vista es en primera persona.</summary>
@@ -80,18 +89,15 @@ public class FollowCamera : MonoBehaviour
             return;
         }
 
-        _camera = GetComponent<Camera>();
-        if (_camera != null) _thirdPersonNearClip = _camera.nearClipPlane;
+        if (_fpvMount != null) _fpvMount.SetLocalPositionAndRotation(_firstPersonOffset, Quaternion.Euler(_firstPersonPitch, 0f, 0f));
         if (_hiddenModel == null) _hiddenModel = _target.Find("Quadcopter_Drone");
         if (_hiddenModel != null) _modelRenderers = HideableRenderers(_hiddenModel);
-
-        _yaw = _target.eulerAngles.y;
-        if (IsFirstPerson) PlaceFirstPerson();
-        else
+        _noises = new[]
         {
-            transform.position = DesiredPosition();
-            transform.LookAt(LookPoint());
-        }
+            _thirdPersonCamera != null ? _thirdPersonCamera.GetComponent<CinemachineBasicMultiChannelPerlin>() : null,
+            _firstPersonCamera != null ? _firstPersonCamera.GetComponent<CinemachineBasicMultiChannelPerlin>() : null,
+        };
+        UpdatePriorities();
     }
 
     private void LateUpdate()
@@ -101,52 +107,32 @@ public class FollowCamera : MonoBehaviour
             return;
         }
 
-        bool firstPerson = IsFirstPerson;
-        SetModelHidden(firstPerson);
-        if (_camera != null) _camera.nearClipPlane = firstPerson ? _firstPersonNearClip : _thirdPersonNearClip;
+        if (!FollowYaw && !_crashed) StartCrash();
+        else if (FollowYaw) _crashed = false;
 
-        if (firstPerson)
+        UpdatePriorities();
+        SetModelHidden(IsFirstPerson);
+
+        // El perfil de ruido gira la cámara 1 grado por unidad de ganancia
+        foreach (CinemachineBasicMultiChannelPerlin noise in _noises)
         {
-            PlaceFirstPerson();
-            ApplyKickAndShake();
-            return;
+            if (noise != null) noise.AmplitudeGain = _shake;
         }
-
-        float dt = Time.deltaTime;
-        if (FollowYaw)
-        {
-            // Detrás del dron, mirando hacia donde va
-            _yaw = Mathf.LerpAngle(_yaw, _target.eulerAngles.y, 1f - Mathf.Exp(-_yawSmoothing * dt));
-        }
-
-        Vector3 desired = DesiredPosition();
-        transform.position = Vector3.Lerp(transform.position, desired, 1f - Mathf.Exp(-_positionSmoothing * dt));
-        transform.LookAt(LookPoint());
-        ApplyKickAndShake();
+        _shake = Mathf.MoveTowards(_shake, 0f, _shakeDecay * Time.deltaTime);
     }
 
-    // Se suma después de colocar la cámara, así no se acumula entre frames
-    private void ApplyKickAndShake()
+    private void UpdatePriorities()
     {
-        float dt = Time.deltaTime;
-        if (_kick <= 0.001f && _shake <= 0.001f) return;
-
-        float t = Time.time * 40f;
-        float shakeX = (Mathf.PerlinNoise(t, 0.3f) - 0.5f) * 2f * _shake;
-        float shakeY = (Mathf.PerlinNoise(0.7f, t) - 0.5f) * 2f * _shake;
-        transform.rotation *= Quaternion.Euler(-_kick + shakeX, shakeY, 0f);
-
-        _kick = Mathf.MoveTowards(_kick, 0f, (_kick * 8f + 2f) * dt);
-        _shake = Mathf.MoveTowards(_shake, 0f, 20f * dt);
+        if (_firstPersonCamera != null) _firstPersonCamera.Priority = IsFirstPerson ? _activePriority : 10;
+        if (_crashCamera != null) _crashCamera.Priority = _crashed ? _activePriority + 10 : 0;
     }
 
-    // En el morro del dron, siguiendo su rumbo pero no su inclinación (evita mareos al acelerar)
-    private void PlaceFirstPerson()
+    // La cámara de caída arranca justo donde está la cámara (el brain hace corte, no mezcla)
+    private void StartCrash()
     {
-        _yaw = _target.eulerAngles.y;
-        Quaternion heading = Quaternion.Euler(0f, _yaw, 0f);
-        transform.position = _target.position + heading * _firstPersonOffset;
-        transform.rotation = heading * Quaternion.Euler(_firstPersonPitch, 0f, 0f);
+        _crashed = true;
+        if (_crashCamera != null) _crashCamera.ForceCameraPosition(transform.position, transform.rotation);
+        if (_impulse != null) _impulse.GenerateImpulseWithVelocity(Random.onUnitSphere * _crashImpulse);
     }
 
     // Todo el modelo salvo, si se pide, las hélices y motores que quedan por delante de la cámara
@@ -174,16 +160,5 @@ public class FollowCamera : MonoBehaviour
         {
             if (r != null) r.enabled = !hidden;
         }
-    }
-
-    // Por encima y por delante del dron, en el marco del rumbo de la cámara: el dron queda abajo
-    // en el centro y la mira (hacia donde apunta el Rayo) cerca del centro de la pantalla
-    private Vector3 LookPoint() => _target.position + Quaternion.Euler(0f, _yaw, 0f) * _lookOffset;
-
-    private Vector3 DesiredPosition()
-    {
-        Vector3 position = _target.position + Quaternion.Euler(0f, _yaw, 0f) * _offset;
-        position.y = Mathf.Max(position.y, _minHeight);
-        return position;
     }
 }
