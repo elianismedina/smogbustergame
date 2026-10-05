@@ -78,6 +78,7 @@ public class GameHudController : MonoBehaviour
         _beam = _input != null ? _input.GetComponent<PurifierBeam>() : null;
         _seeds = _input != null ? _input.GetComponent<SeedLauncher>() : null;
         _session = FindAnyObjectByType<GameSession>();
+        if (_input != null) _input.MouseBlocker = IsOverControl;
         if (_timer != null) _timer.style.display = _session != null ? DisplayStyle.Flex : DisplayStyle.None;
         VisualElement stats = _root.Q<VisualElement>("hud-stats");
         if (stats != null) stats.style.display = _session != null ? DisplayStyle.Flex : DisplayStyle.None;
@@ -87,6 +88,7 @@ public class GameHudController : MonoBehaviour
 
     private void OnDisable()
     {
+        if (_input != null && _input.MouseBlocker == (System.Func<Vector2, bool>)IsOverControl) _input.MouseBlocker = null;
         _root?.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         ReleaseSticks();
         _beamPulse?.Pause();
@@ -213,6 +215,17 @@ public class GameHudController : MonoBehaviour
     {
         element.AddToClassList("hud-stat--bump");
         element.schedule.Execute(() => element.RemoveFromClassList("hud-stat--bump")).StartingIn(150);
+    }
+
+    // True si la posición de pantalla (origen abajo a la izquierda) cae sobre un control táctil, el botón
+    // de pausa o un panel abierto: ahí un clic de ratón no debe disparar el Rayo ni lanzar semillas
+    private bool IsOverControl(Vector2 screenPosition)
+    {
+        if (_root?.panel == null) return false;
+        Vector2 panelPos = RuntimePanelUtils.ScreenToPanel(_root.panel, new Vector2(screenPosition.x, Screen.height - screenPosition.y));
+        VisualElement picked = _root.panel.Pick(panelPos);
+        // Solo cuenta lo de este HUD: el panel también tiene la barra de smog y la pantalla de resultados
+        return picked != null && picked != _root && _root.Contains(picked);
     }
 
     // Móvil real, Device Simulator (crea un Touchscreen) o PC táctil
