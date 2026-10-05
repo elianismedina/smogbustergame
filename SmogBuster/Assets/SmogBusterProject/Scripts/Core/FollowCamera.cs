@@ -42,8 +42,8 @@ public class FollowCamera : MonoBehaviour
     [SerializeField] private Transform _hiddenModel;
     [Tooltip("Dejar a la vista las hélices y motores que quedan delante de la cámara.")]
     [SerializeField] private bool _showFrontPropellers = true;
-    [Tooltip("A esta distancia del montaje (metros) se considera que la cámara ya llegó a primera persona.")]
-    [SerializeField] private float _arrivedDistance = 0.5f;
+    [Tooltip("Al cambiar a primera persona, el cuerpo se oculta cuando la cámara está a esta distancia del montaje (metros), antes de entrar en el modelo.")]
+    [SerializeField] private float _hideModelDistance = 1.6f;
 
     [Header("Efectos")]
     [Tooltip("Fuente de impulsos en el dron (golpes de cámara y choque).")]
@@ -76,7 +76,7 @@ public class FollowCamera : MonoBehaviour
     /// pasa a la cámara de caída, que se queda quieta y lo mira.</summary>
     public bool FollowYaw { get; set; } = true;
 
-    /// <summary>True mientras la vista es en primera persona (la cámara ya llegó al dron, no durante la mezcla).</summary>
+    /// <summary>True mientras la vista es en primera persona (la cámara ya llegó al dron, no al principio de la mezcla).</summary>
     public bool IsFirstPerson { get; private set; }
 
     /// <summary>Vista elegida (la de primera persona no se usa mientras el dron cae).</summary>
@@ -130,10 +130,10 @@ public class FollowCamera : MonoBehaviour
         else if (FollowYaw) _crashed = false;
 
         UpdatePriorities();
-        // El cuerpo se oculta y la mira sale de la cámara solo al terminar la mezcla, cuando la cámara ya
-        // está en el dron; si no, el dron desaparecería a mitad de camino
+        // El cuerpo se oculta (y la mira sale de la cámara) en el último tramo de la mezcla, justo antes de que
+        // la cámara entre en el modelo: ni desaparece a mitad de camino ni se ve el dron por dentro
         IsFirstPerson = WantsFirstPerson
-                        && (_fpvMount == null || (transform.position - _fpvMount.position).sqrMagnitude < _arrivedDistance * _arrivedDistance);
+                        && (_fpvMount == null || (transform.position - _fpvMount.position).sqrMagnitude < _hideModelDistance * _hideModelDistance);
         SetModelHidden(IsFirstPerson);
 
         // El perfil de ruido gira la cámara 1 grado por unidad de ganancia
