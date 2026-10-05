@@ -220,6 +220,11 @@
     height: 62%;
 }
 
+/* Joystick oculto en la web de escritorio (GameHudController) */
+.touch-zone--hidden {
+    display: none;
+}
+
 .joystick {
     flex-grow: 1;
 }

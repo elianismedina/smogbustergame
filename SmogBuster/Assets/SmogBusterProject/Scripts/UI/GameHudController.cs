@@ -63,6 +63,9 @@ public class GameHudController : MonoBehaviour
         _crosshair = _root.Q<VisualElement>("crosshair");
 
         _moveStick = CreateStick("touch-zone-left", "joystick--move");
+        // En la web de escritorio el dron se mueve con el teclado: el joystick sobra (los botones se quedan,
+        // se pueden pulsar con el ratón)
+        if (IsDesktopWeb()) _root.Q<VisualElement>("touch-zone-left")?.AddToClassList("touch-zone--hidden");
         _upButton = new HoldButton(_root.Q<VisualElement>("btn-up"));
         _downButton = new HoldButton(_root.Q<VisualElement>("btn-down"));
         _beamElement = _root.Q<VisualElement>("btn-beam");
@@ -230,6 +233,9 @@ public class GameHudController : MonoBehaviour
 
     // Móvil real, Device Simulator (crea un Touchscreen) o PC táctil
     private bool HasTouchInput() => Application.isMobilePlatform || Touchscreen.current != null || _showSticksOnDesktop;
+
+    // WebGL en un navegador de escritorio (en el móvil Application.isMobilePlatform es true)
+    private bool IsDesktopWeb() => Application.platform == RuntimePlatform.WebGLPlayer && !Application.isMobilePlatform && !_showSticksOnDesktop;
 
     private void SetSticksVisible(bool visible)
     {
