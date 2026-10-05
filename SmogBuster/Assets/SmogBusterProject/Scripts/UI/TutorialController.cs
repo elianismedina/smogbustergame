@@ -38,8 +38,8 @@ public class TutorialController : MonoBehaviour
         new Step
         {
             Title = "Vuela",
-            Touch = "Arrastra el joystick para moverte. Usa ▲ y ▼ para subir y bajar.",
-            Keys = "Muévete con W A S D. Sube con Espacio y baja con Shift.",
+            Touch = "Joystick arriba para avanzar y a los lados para girar. Usa ▲ y ▼ para subir y bajar.",
+            Keys = "W y S avanzan y retroceden, A y D giran. Sube con Espacio y baja con Shift.",
             Target = "touch-zone-left",
         },
         new Step

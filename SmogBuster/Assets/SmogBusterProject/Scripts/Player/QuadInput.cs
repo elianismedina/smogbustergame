@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Entrada del quadcopter (GDD 6.2). Combina teclado, ratón y gamepad con los valores de los
-/// controles táctiles del HUD (métodos Set*). En primera persona el stick lateral gira el dron; en tercera, gira hacia donde se mueve.
+/// controles táctiles del HUD (métodos Set*). El stick lateral gira el dron y el vertical lo mueve adelante y atrás; la cámara lo sigue por detrás.
 /// Teclado: WASD mover, Espacio subir, Shift izquierdo bajar, clic izquierdo Rayo, clic derecho Semilla.
 /// Mando (Bluetooth o USB, GDD 10.4): stick izquierdo mover; stick derecho, cruceta o RB/LB subir y bajar;
 /// RT o A Rayo; LT o X Semilla; Start pausa (ver PauseMenuController).

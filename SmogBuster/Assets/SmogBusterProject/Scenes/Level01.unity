@@ -35391,9 +35391,8 @@ MonoBehaviour:
   _offset: {x: 0, y: 2, z: -5}
   _lookOffset: {x: 0, y: 1, z: 5}
   _positionSmoothing: 6
-  _yawSmoothing: 3
+  _yawSmoothing: 6
   _minHeight: 0.5
-  _followConeAngle: 45
 --- !u!114 &1154730237
 MonoBehaviour:
   m_ObjectHideFlags: 0

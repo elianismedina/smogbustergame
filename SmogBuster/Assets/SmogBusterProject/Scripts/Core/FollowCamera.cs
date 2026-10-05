@@ -7,10 +7,9 @@ using UnityEngine;
 ///   esquinas superiores, para sentir que se pilota el dron. Al estrellarse pasa a tercera persona.
 /// - Tercera persona cercana (por defecto): justo detrás y por encima del dron, mirando por encima y por
 ///   delante de él, así el dron se ve abajo en el centro y la mira queda cerca del centro de la pantalla.
-///   Se mantiene detrás del objetivo siguiendo su rumbo con suavizado.
-///   Solo se recoloca detrás cuando el objetivo mira en la misma dirección que la cámara: si el dron
-///   vuelve hacia la cámara o se mueve de lado, la cámara no gira, y así el joystick (relativo a la
-///   cámara) no cambia de sentido a mitad de movimiento.
+///   Siempre se recoloca detrás del dron siguiendo su rumbo con suavizado, así mira hacia donde va.
+/// En los dos modos el stick lateral gira el dron (<see cref="SteersWithHeading"/>): si el stick moviera de
+/// lado respecto a una cámara que sigue al dron, el dron acabaría dando vueltas.
 /// </summary>
 public class FollowCamera : MonoBehaviour
 {
@@ -40,10 +39,9 @@ public class FollowCamera : MonoBehaviour
     [Tooltip("Punto al que mira, relativo al objetivo y en el marco del rumbo de la cámara (z adelante).")]
     [SerializeField] private Vector3 _lookOffset = new Vector3(0f, 1f, 5f);
     [SerializeField] private float _positionSmoothing = 6f;
-    [SerializeField] private float _yawSmoothing = 3f;
+    [Tooltip("Rapidez con la que la cámara se recoloca detrás del dron al girar.")]
+    [SerializeField] private float _yawSmoothing = 6f;
     [SerializeField] private float _minHeight = 0.5f;
-    [Tooltip("La cámara solo se recoloca detrás si el objetivo mira a menos de estos grados de su frente.")]
-    [SerializeField] private float _followConeAngle = 45f;
 
     private Camera _camera;
     private float _thirdPersonNearClip;
@@ -66,8 +64,12 @@ public class FollowCamera : MonoBehaviour
     /// En primera persona, además, pasa a tercera persona para ver la caída.</summary>
     public bool FollowYaw { get; set; } = true;
 
-    /// <summary>True mientras la vista es en primera persona (el dron gira con el stick lateral).</summary>
+    /// <summary>True mientras la vista es en primera persona.</summary>
     public bool IsFirstPerson => _mode == ViewMode.FirstPerson && FollowYaw;
+
+    /// <summary>True mientras la cámara sigue el rumbo del dron (los dos modos, salvo al caer):
+    /// el stick lateral gira el dron y el vertical lo mueve adelante y atrás.</summary>
+    public bool SteersWithHeading => FollowYaw;
 
     private void Start()
     {
@@ -113,12 +115,8 @@ public class FollowCamera : MonoBehaviour
         float dt = Time.deltaTime;
         if (FollowYaw)
         {
-            float delta = Mathf.Abs(Mathf.DeltaAngle(_yaw, _target.eulerAngles.y));
-            // 1 si el objetivo mira hacia delante de la cámara; 0 a partir de _followConeAngle
-            // (de lado o hacia la cámara), para que mover el stick de lado no haga girar la cámara
-            float ahead = Mathf.Clamp01(1f - delta / _followConeAngle);
-            float rate = _yawSmoothing * ahead;
-            _yaw = Mathf.LerpAngle(_yaw, _target.eulerAngles.y, 1f - Mathf.Exp(-rate * dt));
+            // Detrás del dron, mirando hacia donde va
+            _yaw = Mathf.LerpAngle(_yaw, _target.eulerAngles.y, 1f - Mathf.Exp(-_yawSmoothing * dt));
         }
 
         Vector3 desired = DesiredPosition();
