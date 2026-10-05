@@ -108,6 +108,9 @@ InitTestScene*.unity*
 # Asset Store packages (licensed, not redistributable — import locally from the Asset Store)
 /[Aa]ssets/POLYGON city pack/
 /[Aa]ssets/POLYGON city pack.meta
+# LowpolyVegetationPackFree by PolyMount (Asset Store, import locally)
+/[Aa]ssets/PolyMount/
+/[Aa]ssets/PolyMount.meta
 
 # Licensed music (Epidemic Sound, not redistributable): keep the audio local, commit only the .meta so scene references keep their GUID
 /[Aa]ssets/SmogBusterProject/Audio/BGM/main_menu_music.wav
