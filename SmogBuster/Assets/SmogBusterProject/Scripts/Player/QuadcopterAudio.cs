@@ -3,8 +3,9 @@ using UnityEngine;
 
 /// <summary>
 /// Zumbido de motores del quadcopter: un loop 3D cuyo tono y volumen siguen
-/// la velocidad horizontal y el ascenso. Arranca con "spin-up" y, al estrellarse,
-/// el motor se apaga bajando de tono.
+/// la velocidad horizontal y el ascenso. Arranca con "spin-up" y, al estrellarse o perder,
+/// el motor se apaga bajando de tono. Al ganar sigue en vuelo estacionario mientras el dron
+/// celebra y después se desvanece poco a poco.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class QuadcopterAudio : MonoBehaviour
@@ -25,6 +26,10 @@ public class QuadcopterAudio : MonoBehaviour
     [Header("Arranque y apagado")]
     [SerializeField] private float _spinUpDuration = 0.8f;
     [SerializeField] private float _powerDownDuration = 0.7f;
+    [Tooltip("Al ganar, segundos que el motor sigue en vuelo estacionario (lo que dura la celebración del dron).")]
+    [SerializeField] private float _victoryHoverTime = 1.3f;
+    [Tooltip("Al ganar, segundos que tarda el motor en desvanecerse tras la celebración.")]
+    [SerializeField] private float _victoryFadeDuration = 2f;
 
     private Rigidbody _rb;
     private QuadcopterController _controller;
@@ -73,8 +78,18 @@ public class QuadcopterAudio : MonoBehaviour
         if (_session != null) _session.Ended -= OnSessionEnded;
     }
 
-    // Al terminar la partida (victoria o derrota) los motores se apagan igual que al chocar
-    private void OnSessionEnded(GameSession.Result result) => OnCrashed();
+    // Al perder los motores se apagan igual que al chocar; al ganar el dron sigue flotando y celebra,
+    // así que el motor se desvanece despacio en vez de sonar a fallo
+    private void OnSessionEnded(GameSession.Result result)
+    {
+        if (result != GameSession.Result.Victory)
+        {
+            OnCrashed();
+            return;
+        }
+        if (_poweringDown) return;
+        StartCoroutine(VictoryWindDown());
+    }
 
     private void Update()
     {
@@ -116,6 +131,25 @@ public class QuadcopterAudio : MonoBehaviour
             float k = t / _powerDownDuration;
             _source.pitch = Mathf.Lerp(startPitch, startPitch * 0.35f, k);
             _source.volume = Mathf.Lerp(startVolume, 0f, k * k);
+            yield return null;
+        }
+        _source.Stop();
+    }
+
+    private IEnumerator VictoryWindDown()
+    {
+        // Mientras el dron celebra, Update sigue moviendo el tono y el volumen como en vuelo normal
+        yield return new WaitForSeconds(_victoryHoverTime);
+        if (_poweringDown) yield break;
+        _poweringDown = true;
+
+        float startPitch = _source.pitch;
+        float startVolume = _source.volume;
+        for (float t = 0f; t < _victoryFadeDuration; t += Time.deltaTime)
+        {
+            float k = t / _victoryFadeDuration;
+            _source.pitch = Mathf.Lerp(startPitch, startPitch * 0.85f, k);
+            _source.volume = Mathf.Lerp(startVolume, 0f, k);
             yield return null;
         }
         _source.Stop();

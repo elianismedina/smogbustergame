@@ -21,6 +21,8 @@ public class GameOverController : MonoBehaviour
     [SerializeField] private float _crashDelay = 1.2f;
     [Tooltip("Segundos entre el final por smog o tiempo y la pantalla.")]
     [SerializeField] private float _showDelay = 0.6f;
+    [Tooltip("Segundos entre ganar y la pantalla: deja ver la celebración del dron y la frase de victoria.")]
+    [SerializeField] private float _victoryDelay = 2.8f;
     [SerializeField] private string _menuSceneName = "MainMenu";
     [SerializeField] private float _fadeDuration = 0.4f;
     [Tooltip("Efecto de sonido al perder (smog al 100%, tiempo agotado o choque).")]
@@ -109,7 +111,8 @@ public class GameOverController : MonoBehaviour
         }
 
         FillStats(victory);
-        StartCoroutine(ShowAfterDelay(result == GameSession.Result.Crash ? _crashDelay : _showDelay));
+        float delay = result == GameSession.Result.Crash ? _crashDelay : victory ? _victoryDelay : _showDelay;
+        StartCoroutine(ShowAfterDelay(delay));
     }
 
     private void SetTexts(string title, string subtitle, string hint)
