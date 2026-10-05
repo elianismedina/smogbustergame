@@ -11,6 +11,7 @@ public static class GameSettings
     public const string PrefVibration = "options.vibration";
     public const string PrefFixedJoystick = "options.fixedJoystick";
     public const string PrefDifficulty = "options.difficulty";
+    public const string PrefFirstPersonView = "options.firstPersonView";
 
     /// <summary>Dificultad ajustable (GDD 10.2 y 10.5): velocidad del smog y tiempo extra.</summary>
     public enum DifficultyLevel
@@ -48,6 +49,16 @@ public static class GameSettings
         get => PlayerPrefs.GetInt(PrefFixedJoystick, 0) == 1;
         set => PlayerPrefs.SetInt(PrefFixedJoystick, value ? 1 : 0);
     }
+
+    /// <summary>Última vista elegida con el botón de cámara del HUD (false = tercera persona).</summary>
+    public static bool FirstPersonView
+    {
+        get => PlayerPrefs.GetInt(PrefFirstPersonView, 0) == 1;
+        set => PlayerPrefs.SetInt(PrefFirstPersonView, value ? 1 : 0);
+    }
+
+    /// <summary>True si el jugador ya eligió una vista alguna vez (si no, manda la del Inspector).</summary>
+    public static bool HasViewChoice => PlayerPrefs.HasKey(PrefFirstPersonView);
 
     public static DifficultyLevel Difficulty
     {

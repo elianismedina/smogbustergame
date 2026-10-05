@@ -49,6 +49,9 @@
             </ui:VisualElement>
             <ui:Label text="03:00" name="hud-timer" class="hud-timer" picking-mode="Ignore"/>
             <ui:Button text="II" name="btn-pause" class="pause-button"/>
+            <!-- Cambio de cámara (tercera / primera persona), debajo de la pausa.
+                 GameHudController le pone el icono vectorial (CameraSwitchIcon) y lo resalta en primera persona. -->
+            <ui:Button name="btn-camera" class="camera-button"/>
         </ui:VisualElement>
 
         <!-- Menú de pausa -->

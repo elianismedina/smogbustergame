@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 /// pulsados para subir, bajar y disparar el Rayo. Pasa sus valores a <see cref="QuadInput"/>.
 /// Muestra el tiempo restante de <see cref="GameSession"/> (MM:SS), el puntaje y los árboles plantados.
 /// Ajusta el área segura (notch) y oculta los controles táctiles en dispositivos sin pantalla táctil.
+/// El botón de cámara (también V o Select) cambia entre tercera y primera persona y recuerda la elección.
 /// </summary>
 [RequireComponent(typeof(UIDocument))]
 public class GameHudController : MonoBehaviour
@@ -50,6 +51,9 @@ public class GameHudController : MonoBehaviour
     private IVisualElementScheduledItem _beamPulse;
     private int _shownSeconds = -1;
     private Rect _lastSafeArea;
+    private Button _cameraButton;
+    private CameraSwitchIcon _cameraIcon;
+    private FollowCamera _followCamera;
 
     private void OnEnable()
     {
@@ -86,6 +90,28 @@ public class GameHudController : MonoBehaviour
         VisualElement stats = _root.Q<VisualElement>("hud-stats");
         if (stats != null) stats.style.display = _session != null ? DisplayStyle.Flex : DisplayStyle.None;
 
+        // Botón de cámara: la vista elegida se recuerda entre partidas. Se aplica antes del primer frame del
+        // brain, así se empieza directamente en esa vista, sin mezcla.
+        _cameraButton = _root.Q<Button>("btn-camera");
+        if (Camera.main != null) _followCamera = Camera.main.GetComponent<FollowCamera>();
+        if (_cameraButton != null)
+        {
+            if (_cameraIcon == null)
+            {
+                _cameraIcon = new CameraSwitchIcon();
+                _cameraIcon.AddToClassList("camera-button__icon");
+            }
+            _cameraButton.Add(_cameraIcon);
+            // Sin foco: si no, Espacio (subir) volvería a pulsarlo
+            _cameraButton.focusable = false;
+            _cameraButton.clicked += ToggleCamera;
+            _cameraButton.style.display = _followCamera != null ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+        if (_followCamera != null && GameSettings.HasViewChoice)
+        {
+            _followCamera.SetMode(GameSettings.FirstPersonView ? FollowCamera.ViewMode.FirstPerson : FollowCamera.ViewMode.ThirdPerson);
+        }
+
         _root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
     }
 
@@ -93,6 +119,7 @@ public class GameHudController : MonoBehaviour
     {
         if (_input != null && _input.MouseBlocker == (System.Func<Vector2, bool>)IsOverControl) _input.MouseBlocker = null;
         _root?.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+        if (_cameraButton != null) _cameraButton.clicked -= ToggleCamera;
         ReleaseSticks();
         _beamPulse?.Pause();
         _seedPulse?.Pause();
@@ -110,6 +137,7 @@ public class GameHudController : MonoBehaviour
         UpdateBeamReady();
         UpdateBoundary();
         UpdateCrosshair();
+        UpdateCameraButton();
         if (_input == null) return;
 
         // Al terminar la partida (o tras el choque) los controles no hacen nada y se ocultan
@@ -151,6 +179,35 @@ public class GameHudController : MonoBehaviour
         _crosshair.style.left = panelPos.x;
         _crosshair.style.top = panelPos.y;
         _crosshair.EnableInClassList("crosshair--locked", _beam.CurrentTarget != null);
+    }
+
+    // Resalta el botón en primera persona y atiende V en el teclado y Select (View) en el mando.
+    // Se oculta al terminar la partida o al chocar, como los demás controles.
+    private void UpdateCameraButton()
+    {
+        if (_cameraButton == null || _followCamera == null) return;
+
+        bool over = (_crash != null && _crash.HasCrashed) || (_session != null && _session.IsOver);
+        _cameraButton.style.display = over ? DisplayStyle.None : DisplayStyle.Flex;
+        if (over) return;
+
+        bool firstPerson = _followCamera.Mode == FollowCamera.ViewMode.FirstPerson;
+        _cameraButton.EnableInClassList("camera-button--first-person", firstPerson);
+        if (_cameraIcon != null) _cameraIcon.Highlighted = firstPerson;
+
+        // En pausa (timeScale 0) no se cambia de vista
+        if (Time.timeScale <= 0f) return;
+        bool key = Keyboard.current != null && Keyboard.current.vKey.wasPressedThisFrame;
+        bool select = Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame;
+        if (key || select) ToggleCamera();
+    }
+
+    private void ToggleCamera()
+    {
+        if (_followCamera == null || !_followCamera.FollowYaw || Time.timeScale <= 0f) return;
+        _followCamera.ToggleView();
+        GameSettings.FirstPersonView = _followCamera.Mode == FollowCamera.ViewMode.FirstPerson;
+        GameSettings.Save();
     }
 
     private void UpdateBoundary()
