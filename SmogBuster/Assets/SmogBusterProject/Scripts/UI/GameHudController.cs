@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 /// <summary>
 /// HUD de juego (GDD 6.2 y 9.3): un joystick táctil para moverse y botones que se mantienen
 /// pulsados para subir, bajar y disparar el Rayo. Pasa sus valores a <see cref="QuadInput"/>.
-/// Muestra el tiempo restante de <see cref="GameSession"/> (MM:SS).
+/// Muestra el tiempo restante de <see cref="GameSession"/> (MM:SS), el puntaje y los árboles plantados.
 /// Ajusta el área segura (notch) y oculta los controles táctiles en dispositivos sin pantalla táctil.
 /// </summary>
 [RequireComponent(typeof(UIDocument))]
@@ -36,6 +36,10 @@ public class GameHudController : MonoBehaviour
     private QuadcopterCrash _crash;
     private GameSession _session;
     private Label _timer;
+    private Label _score;
+    private Label _trees;
+    private int _shownScore = -1;
+    private int _shownTrees = -1;
     private Label _boundary;
     private VisualElement _crosshair;
     private PurifierBeam _beam;
@@ -53,10 +57,15 @@ public class GameHudController : MonoBehaviour
         _safeArea = _root.Q<VisualElement>("game-hud-safe-area");
         _touchControls = _root.Q<VisualElement>("touch-controls");
         _timer = _root.Q<Label>("hud-timer");
+        _score = _root.Q<Label>("hud-score");
+        _trees = _root.Q<Label>("hud-trees");
         _boundary = _root.Q<Label>("hud-boundary");
         _crosshair = _root.Q<VisualElement>("crosshair");
 
         _moveStick = CreateStick("touch-zone-left", "joystick--move");
+        // En la web de escritorio el dron se mueve con el teclado: el joystick sobra (los botones se quedan,
+        // se pueden pulsar con el ratón)
+        if (IsDesktopWeb()) _root.Q<VisualElement>("touch-zone-left")?.AddToClassList("touch-zone--hidden");
         _upButton = new HoldButton(_root.Q<VisualElement>("btn-up"));
         _downButton = new HoldButton(_root.Q<VisualElement>("btn-down"));
         _beamElement = _root.Q<VisualElement>("btn-beam");
@@ -72,13 +81,17 @@ public class GameHudController : MonoBehaviour
         _beam = _input != null ? _input.GetComponent<PurifierBeam>() : null;
         _seeds = _input != null ? _input.GetComponent<SeedLauncher>() : null;
         _session = FindAnyObjectByType<GameSession>();
+        if (_input != null) _input.MouseBlocker = IsOverControl;
         if (_timer != null) _timer.style.display = _session != null ? DisplayStyle.Flex : DisplayStyle.None;
+        VisualElement stats = _root.Q<VisualElement>("hud-stats");
+        if (stats != null) stats.style.display = _session != null ? DisplayStyle.Flex : DisplayStyle.None;
 
         _root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
     }
 
     private void OnDisable()
     {
+        if (_input != null && _input.MouseBlocker == (System.Func<Vector2, bool>)IsOverControl) _input.MouseBlocker = null;
         _root?.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         ReleaseSticks();
         _beamPulse?.Pause();
@@ -93,6 +106,7 @@ public class GameHudController : MonoBehaviour
     {
         if (Screen.safeArea != _lastSafeArea) ApplySafeArea();
         UpdateTimer();
+        UpdateStats();
         UpdateBeamReady();
         UpdateBoundary();
         UpdateCrosshair();
@@ -103,6 +117,8 @@ public class GameHudController : MonoBehaviour
         SetSticksVisible(!over && HasTouchInput());
         if (over) return;
 
+        // Fijo o dinámico según Opciones (se puede cambiar desde la pausa)
+        if (_moveStick != null) _moveStick.Floating = !GameSettings.FixedJoystick;
         _input.SetMove(_moveStick?.Value ?? Vector2.zero);
         float climb = (_upButton.IsPressed ? 1f : 0f) - (_downButton.IsPressed ? 1f : 0f);
         _input.SetClimb(climb);
@@ -177,8 +193,49 @@ public class GameHudController : MonoBehaviour
         _timer.EnableInClassList("hud-timer--warning", seconds <= _timerWarning);
     }
 
+    private void UpdateStats()
+    {
+        if (_session == null) return;
+
+        if (_score != null && _session.Score != _shownScore)
+        {
+            bool bump = _shownScore >= 0;
+            _shownScore = _session.Score;
+            _score.text = _shownScore.ToString("N0");
+            if (bump) Bump(_score);
+        }
+
+        if (_trees != null && _session.TreesPlanted != _shownTrees)
+        {
+            bool bump = _shownTrees >= 0;
+            _shownTrees = _session.TreesPlanted;
+            _trees.text = $"ÁRBOLES {_shownTrees}/{_session.TotalPlantingSpots}";
+            if (bump) Bump(_trees);
+        }
+    }
+
+    private static void Bump(VisualElement element)
+    {
+        element.AddToClassList("hud-stat--bump");
+        element.schedule.Execute(() => element.RemoveFromClassList("hud-stat--bump")).StartingIn(150);
+    }
+
+    // True si la posición de pantalla (origen abajo a la izquierda) cae sobre un control táctil, el botón
+    // de pausa o un panel abierto: ahí un clic de ratón no debe disparar el Rayo ni lanzar semillas
+    private bool IsOverControl(Vector2 screenPosition)
+    {
+        if (_root?.panel == null) return false;
+        Vector2 panelPos = RuntimePanelUtils.ScreenToPanel(_root.panel, new Vector2(screenPosition.x, Screen.height - screenPosition.y));
+        VisualElement picked = _root.panel.Pick(panelPos);
+        // Solo cuenta lo de este HUD: el panel también tiene la barra de smog y la pantalla de resultados
+        return picked != null && picked != _root && _root.Contains(picked);
+    }
+
     // Móvil real, Device Simulator (crea un Touchscreen) o PC táctil
     private bool HasTouchInput() => Application.isMobilePlatform || Touchscreen.current != null || _showSticksOnDesktop;
+
+    // WebGL en un navegador de escritorio (en el móvil Application.isMobilePlatform es true)
+    private bool IsDesktopWeb() => Application.platform == RuntimePlatform.WebGLPlayer && !Application.isMobilePlatform && !_showSticksOnDesktop;
 
     private void SetSticksVisible(bool visible)
     {

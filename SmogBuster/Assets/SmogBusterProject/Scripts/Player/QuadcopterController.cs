@@ -4,8 +4,9 @@ using UnityEngine;
 /// Controlador de movimiento arcade del quadcopter.
 /// - Velocidad horizontal: PID de velocidad -> aceleración.
 /// - Altitud: PID de altura con setpoint que sube/baja con la entrada.
-/// - Rumbo en tercera persona: el dron gira solo hacia donde se mueve (GDD 6.2, sin giro manual).
-/// - Rumbo en primera persona: el stick lateral gira el dron y el vertical lo mueve adelante/atrás.
+/// - Rumbo: con la cámara siguiendo al dron (primera o tercera persona), el stick lateral gira el dron y
+///   el vertical lo mueve adelante/atrás según su rumbo; la cámara va detrás y mira hacia donde va.
+/// - Sin esa cámara (o mientras cae), el dron gira solo hacia donde se mueve.
 /// Usa ForceMode.Acceleration, así que la masa del Rigidbody no afecta a la sensación.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
@@ -33,7 +34,7 @@ public class QuadcopterController : MonoBehaviour
     [SerializeField] private float _maxYawRate = 240f;
     [Tooltip("Por debajo de esta velocidad (m/s) el dron mantiene su rumbo.")]
     [SerializeField] private float _minTurnSpeed = 0.8f;
-    [Tooltip("En primera persona: grados por segundo de giro con el stick lateral.")]
+    [Tooltip("Grados por segundo de giro con el stick lateral (con la cámara siguiendo al dron).")]
     [SerializeField] private float _firstPersonTurnRate = 110f;
 
     [Header("Referencia de movimiento")]
@@ -89,16 +90,16 @@ public class QuadcopterController : MonoBehaviour
         UpdateAltitude(dt);
     }
 
-    private bool IsFirstPerson => _followCamera != null && _followCamera.IsFirstPerson;
+    private bool SteersWithHeading => _followCamera != null && _followCamera.SteersWithHeading;
 
     private void UpdateYaw(float dt)
     {
-        // Primera persona: el stick lateral gira el dron (y con él la vista)
-        if (IsFirstPerson)
+        // Con la cámara siguiendo al dron, el stick lateral gira el dron (y con él la vista)
+        if (SteersWithHeading)
         {
             _heading += _input.Move.x * _firstPersonTurnRate * dt;
         }
-        // Tercera persona: mirar hacia donde se quiere ir, así el Rayo dispara en la dirección del movimiento
+        // Sin cámara que lo siga: mirar hacia donde se quiere ir, así el Rayo dispara en la dirección del movimiento
         else if (_targetVelocity.magnitude > _minTurnSpeed)
         {
             float targetHeading = Mathf.Atan2(_targetVelocity.x, _targetVelocity.z) * Mathf.Rad2Deg;
@@ -124,8 +125,8 @@ public class QuadcopterController : MonoBehaviour
         Quaternion yawRotation = Quaternion.Euler(0f, referenceYaw, 0f);
 
         Vector2 stick = _input.Move;
-        // En primera persona el stick lateral gira en vez de desplazar de lado: adelante/atrás según el rumbo
-        Vector3 desired = IsFirstPerson
+        // El stick lateral gira en vez de desplazar de lado: adelante/atrás según el rumbo
+        Vector3 desired = SteersWithHeading
             ? Quaternion.Euler(0f, _heading, 0f) * new Vector3(0f, 0f, stick.y) * _maxSpeed
             : yawRotation * new Vector3(stick.x, 0f, stick.y) * _maxSpeed;
 

@@ -195,7 +195,8 @@
 }
 
 .menu-button {
-    min-height: 88px;
+    /* Zona de toque mínima de 48 dp (GDD 10.4, WCAG 2.5.5): ~120 px a la resolución de referencia en un móvil típico */
+    min-height: 120px;
     margin: 8px 0;
     padding: 0 24px;
     font-size: 38px;
@@ -226,15 +227,16 @@
 }
 
 .menu-button--primary {
-    min-height: 104px;
+    min-height: 128px;
     font-size: 44px;
-    background-color: rgb(46, 150, 104);
+    /* Verde oscurecido: texto blanco con contraste 5.4:1 (WCAG 1.4.3) */
+    background-color: rgb(30, 122, 82);
     border-color: rgb(160, 245, 195);
 }
 
 .menu-button--primary:hover,
 .menu-button--primary:focus {
-    background-color: rgb(60, 180, 124);
+    background-color: rgb(40, 140, 94);
 }
 
 .menu-button--ghost {
@@ -253,7 +255,7 @@
     bottom: 24px;
     right: 32px;
     font-size: 24px;
-    color: rgb(110, 130, 140);
+    color: rgb(160, 178, 186);
 }
 
 /* ---------- Panel de opciones ---------- */
@@ -281,7 +283,8 @@
 .panel {
     width: 100%;
     max-width: 760px;
-    padding: 40px 48px;
+    /* Vertical ajustado: con filas de 48 dp, Opciones debe caber en 1080 px de alto */
+    padding: 28px 48px;
     background-color: rgb(20, 40, 50);
     border-width: 3px;
     border-color: rgb(120, 230, 170);
@@ -294,16 +297,17 @@
     -unity-text-align: middle-center;
     letter-spacing: 6px;
     color: rgb(120, 230, 170);
-    margin-bottom: 24px;
+    margin-bottom: 8px;
 }
 
 .panel-button {
-    margin-top: 24px;
+    margin-top: 12px;
 }
 
 .option-slider,
 .option-toggle {
-    min-height: 80px;
+    /* Toda la fila responde al toque: es la zona de 48 dp */
+    min-height: 120px;
     margin: 6px 0;
     align-items: center;
 }
@@ -324,11 +328,11 @@
 }
 
 .option-slider .unity-base-slider__dragger {
-    width: 48px;
-    height: 48px;
-    margin-top: -24px;
-    margin-left: -24px;
-    border-radius: 24px;
+    width: 64px;
+    height: 64px;
+    margin-top: -32px;
+    margin-left: -32px;
+    border-radius: 32px;
     border-width: 0;
     background-color: rgb(120, 230, 170);
 }
@@ -362,4 +366,47 @@
 
 .fade--visible {
     opacity: 1;
+}
+
+/* ---------- Selección de nivel ---------- */
+
+.level-button {
+    -unity-text-align: middle-left;
+    padding-left: 40px;
+    /* Fredoka es más ancha: el nombre del nivel debe caber en el botón */
+    font-size: 36px;
+    letter-spacing: 2px;
+}
+
+.level-best {
+    font-size: 28px;
+    color: rgb(255, 214, 102);
+    -unity-text-align: middle-center;
+    margin: -4px 0 8px 0;
+}
+
+/* ---------- Créditos ---------- */
+
+.credits-panel {
+    max-height: 100%;
+}
+
+.credits-scroll {
+    max-height: 640px;
+    flex-shrink: 1;
+}
+
+.credits-heading {
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(120, 230, 170);
+    margin-top: 16px;
+}
+
+.credits-line {
+    font-size: 28px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    color: rgb(225, 235, 230);
 }

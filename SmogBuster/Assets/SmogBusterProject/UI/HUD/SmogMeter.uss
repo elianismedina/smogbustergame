@@ -26,9 +26,15 @@
 
 .smog-meter__header {
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+}
+
+/* Icono de estado (SmogStateIcon): pulmones, nube con mascarilla o alerta */
+.smog-meter__icon {
+    width: 56px;
+    height: 56px;
+    margin-right: 12px;
 }
 
 .smog-meter__title {
@@ -45,7 +51,7 @@
     -unity-font-style: bold;
     color: rgb(225, 235, 230);
     padding: 0;
-    margin: 0;
+    margin: 0 0 0 auto;
 }
 
 .smog-meter__track {

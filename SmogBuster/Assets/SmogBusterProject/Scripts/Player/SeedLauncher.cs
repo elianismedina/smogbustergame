@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -33,6 +34,9 @@ public class SeedLauncher : MonoBehaviour
 
     /// <summary>Punto de siembra al que iría la semilla si se lanzase ahora.</summary>
     public PlantingSpot CurrentTarget { get; private set; }
+
+    /// <summary>Se lanza al disparar una semilla (para sonido y efectos).</summary>
+    public event Action Launched;
 
     /// <summary>True justo después de lanzar: el Rayo no puede dispararse.</summary>
     public bool IsBusy => Time.time < _busyUntil;
@@ -84,6 +88,7 @@ public class SeedLauncher : MonoBehaviour
         SeedProjectile seed = Instantiate(_seedPrefab, start, Quaternion.identity);
         seed.Launch(start, end, _flightTime, target);
         SetTarget(null);
+        Launched?.Invoke();
     }
 
     private PlantingSpot FindTarget()

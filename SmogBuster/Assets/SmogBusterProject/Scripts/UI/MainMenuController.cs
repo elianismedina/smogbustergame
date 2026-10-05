@@ -23,16 +23,25 @@ public class MainMenuController : MonoBehaviour
     private VisualElement _menu;
     private VisualElement _smogLayer;
     private VisualElement _optionsOverlay;
+    private VisualElement _levelsOverlay;
+    private VisualElement _creditsOverlay;
     private VisualElement _fade;
 
     private Button _btnPlay;
     private Button _btnOptions;
     private Button _btnExit;
     private Button _btnOptionsBack;
+    private Button _btnDifficulty;
+    private Button _btnLevel1;
+    private Button _btnLevelsBack;
+    private Button _btnCredits;
+    private Button _btnCreditsBack;
+    private Label _level1Best;
 
     private Slider _sliderMusic;
     private Slider _sliderSfx;
     private Toggle _toggleVibration;
+    private Toggle _toggleFixedJoystick;
 
     private IVisualElementScheduledItem _smogDrift;
     private Rect _lastSafeArea;
@@ -54,27 +63,45 @@ public class MainMenuController : MonoBehaviour
         _menu = _root.Q<VisualElement>("menu");
         _smogLayer = _root.Q<VisualElement>("smog-layer");
         _optionsOverlay = _root.Q<VisualElement>("options-overlay");
+        _levelsOverlay = _root.Q<VisualElement>("levels-overlay");
+        _creditsOverlay = _root.Q<VisualElement>("credits-overlay");
         _fade = _root.Q<VisualElement>("fade");
 
         _btnPlay = _root.Q<Button>("btn-play");
         _btnOptions = _root.Q<Button>("btn-options");
         _btnExit = _root.Q<Button>("btn-exit");
         _btnOptionsBack = _root.Q<Button>("btn-options-back");
+        _btnDifficulty = _root.Q<Button>("btn-difficulty");
+        _btnLevel1 = _root.Q<Button>("btn-level-1");
+        _btnLevelsBack = _root.Q<Button>("btn-levels-back");
+        _btnCredits = _root.Q<Button>("btn-credits");
+        _btnCreditsBack = _root.Q<Button>("btn-credits-back");
+        _level1Best = _root.Q<Label>("level-1-best");
+        // Los niveles 2 y 3 aún no existen
+        _root.Q<Button>("btn-level-2")?.SetEnabled(false);
+        _root.Q<Button>("btn-level-3")?.SetEnabled(false);
 
         _sliderMusic = _root.Q<Slider>("slider-music");
         _sliderSfx = _root.Q<Slider>("slider-sfx");
         _toggleVibration = _root.Q<Toggle>("toggle-vibration");
+        _toggleFixedJoystick = _root.Q<Toggle>("toggle-fixed-joystick");
 
         // 3. Registrar listeners con comprobación previa
         RegisterButton(_btnPlay, OnPlayClicked, "btn-play");
         RegisterButton(_btnOptions, OnOptionsClicked, "btn-options");
         RegisterButton(_btnExit, OnExitClicked, "btn-exit");
         RegisterButton(_btnOptionsBack, CloseOptions, "btn-options-back");
+        RegisterButton(_btnDifficulty, OnDifficultyClicked, "btn-difficulty");
+        RegisterButton(_btnLevel1, OnLevel1Clicked, "btn-level-1");
+        RegisterButton(_btnLevelsBack, CloseLevels, "btn-levels-back");
+        RegisterButton(_btnCredits, OpenCredits, "btn-credits");
+        RegisterButton(_btnCreditsBack, CloseCredits, "btn-credits-back");
 
         LoadOptions();
         _sliderMusic?.RegisterValueChangedCallback(OnMusicChanged);
         _sliderSfx?.RegisterValueChangedCallback(OnSfxChanged);
         _toggleVibration?.RegisterValueChangedCallback(OnVibrationChanged);
+        _toggleFixedJoystick?.RegisterValueChangedCallback(OnFixedJoystickChanged);
 
         // 4. Ajustes por plataforma: iOS y WebGL no permiten cerrar la app
 #if UNITY_IOS || UNITY_WEBGL
@@ -108,10 +135,16 @@ public class MainMenuController : MonoBehaviour
         UnregisterButton(_btnOptions, OnOptionsClicked);
         UnregisterButton(_btnExit, OnExitClicked);
         UnregisterButton(_btnOptionsBack, CloseOptions);
+        UnregisterButton(_btnDifficulty, OnDifficultyClicked);
+        UnregisterButton(_btnLevel1, OnLevel1Clicked);
+        UnregisterButton(_btnLevelsBack, CloseLevels);
+        UnregisterButton(_btnCredits, OpenCredits);
+        UnregisterButton(_btnCreditsBack, CloseCredits);
 
         _sliderMusic?.UnregisterValueChangedCallback(OnMusicChanged);
         _sliderSfx?.UnregisterValueChangedCallback(OnSfxChanged);
         _toggleVibration?.UnregisterValueChangedCallback(OnVibrationChanged);
+        _toggleFixedJoystick?.UnregisterValueChangedCallback(OnFixedJoystickChanged);
 
         _root?.UnregisterCallback<GeometryChangedEvent>(OnRootGeometryChanged);
         _smogDrift?.Pause();
@@ -195,6 +228,20 @@ public class MainMenuController : MonoBehaviour
         _sliderMusic?.SetValueWithoutNotify(GameSettings.MusicVolume);
         _sliderSfx?.SetValueWithoutNotify(GameSettings.SfxVolume);
         _toggleVibration?.SetValueWithoutNotify(GameSettings.Vibration);
+        _toggleFixedJoystick?.SetValueWithoutNotify(GameSettings.FixedJoystick);
+        ShowDifficulty();
+    }
+
+    // Fácil -> Normal -> Difícil -> Fácil
+    private void OnDifficultyClicked()
+    {
+        GameSettings.Difficulty = (GameSettings.DifficultyLevel)(((int)GameSettings.Difficulty + 1) % 3);
+        ShowDifficulty();
+    }
+
+    private void ShowDifficulty()
+    {
+        if (_btnDifficulty != null) _btnDifficulty.text = "DIFICULTAD: " + GameSettings.DifficultyName(GameSettings.Difficulty);
     }
 
     // El volumen se aplica al mixer en vivo, mientras se mueve el slider
@@ -211,6 +258,8 @@ public class MainMenuController : MonoBehaviour
     }
 
     private void OnVibrationChanged(ChangeEvent<bool> evt) => GameSettings.Vibration = evt.newValue;
+
+    private void OnFixedJoystickChanged(ChangeEvent<bool> evt) => GameSettings.FixedJoystick = evt.newValue;
 
     private bool IsOptionsOpen => _optionsOverlay != null && _optionsOverlay.resolvedStyle.display == DisplayStyle.Flex;
 
@@ -237,11 +286,65 @@ public class MainMenuController : MonoBehaviour
         _btnOptions?.Focus();
     }
 
+    private bool IsCreditsOpen => _creditsOverlay != null && _creditsOverlay.resolvedStyle.display == DisplayStyle.Flex;
+
+    private void OpenCredits()
+    {
+        if (_creditsOverlay == null || _isLoading) return;
+        _creditsOverlay.style.display = DisplayStyle.Flex;
+        _creditsOverlay.schedule.Execute(() =>
+        {
+            _creditsOverlay.AddToClassList("overlay--visible");
+            _btnCreditsBack?.Focus();
+        });
+    }
+
+    private void CloseCredits()
+    {
+        if (_creditsOverlay == null) return;
+        _creditsOverlay.RemoveFromClassList("overlay--visible");
+        _creditsOverlay.schedule.Execute(() => _creditsOverlay.style.display = DisplayStyle.None).StartingIn(200);
+        _btnCredits?.Focus();
+    }
+
+    private bool IsLevelsOpen => _levelsOverlay != null && _levelsOverlay.resolvedStyle.display == DisplayStyle.Flex;
+
+    private void OpenLevels()
+    {
+        if (_levelsOverlay == null) return;
+
+        int best = GameSession.BestScore(_nextSceneName);
+        if (_level1Best != null) _level1Best.text = best > 0 ? $"Mejor puntaje: {best:N0}" : "";
+
+        _levelsOverlay.style.display = DisplayStyle.Flex;
+        _levelsOverlay.schedule.Execute(() =>
+        {
+            _levelsOverlay.AddToClassList("overlay--visible");
+            _btnLevel1?.Focus();
+        });
+    }
+
+    private void CloseLevels()
+    {
+        if (_levelsOverlay == null) return;
+
+        _levelsOverlay.RemoveFromClassList("overlay--visible");
+        _levelsOverlay.schedule.Execute(() => _levelsOverlay.style.display = DisplayStyle.None).StartingIn(200);
+        _btnPlay?.Focus();
+    }
+
     #endregion
 
     #region Eventos de Botones
 
+    // JUGAR abre la selección de nivel
     private void OnPlayClicked()
+    {
+        if (_isLoading) return;
+        OpenLevels();
+    }
+
+    private void OnLevel1Clicked()
     {
         if (_isLoading) return;
 
@@ -281,6 +384,16 @@ public class MainMenuController : MonoBehaviour
             PlaySelectSound();
             CloseOptions();
         }
+        else if (IsLevelsOpen)
+        {
+            PlaySelectSound();
+            CloseLevels();
+        }
+        else if (IsCreditsOpen)
+        {
+            PlaySelectSound();
+            CloseCredits();
+        }
 #if UNITY_ANDROID && !UNITY_EDITOR
         else
         {
@@ -294,6 +407,7 @@ public class MainMenuController : MonoBehaviour
     {
         _isLoading = true;
         _btnPlay?.SetEnabled(false);
+        _btnLevel1?.SetEnabled(false);
         _btnOptions?.SetEnabled(false);
         _btnExit?.SetEnabled(false);
 

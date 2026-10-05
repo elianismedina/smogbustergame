@@ -46,6 +46,9 @@ public class SmogCloud : MonoBehaviour
     /// <summary>Nubes que siguen en el aire.</summary>
     public static IReadOnlyList<SmogCloud> Active => ActiveList;
 
+    /// <summary>Se lanza cuando el Rayo disipa una nube (para sonido y efectos).</summary>
+    public static event System.Action<SmogCloud> Purified;
+
     public bool IsMicro => _isMicro;
 
     /// <summary>Radio aproximado en metros (para colocar su marcador encima).</summary>
@@ -102,6 +105,7 @@ public class SmogCloud : MonoBehaviour
         if (_gone) return;
         GameSession.Instance?.ReduceSmog(_purifyAmount);
         Disappear();
+        Purified?.Invoke(this);
     }
 
     private void Disappear()

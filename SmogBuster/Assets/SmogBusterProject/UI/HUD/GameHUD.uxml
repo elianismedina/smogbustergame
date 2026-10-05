@@ -6,7 +6,16 @@
 
         <!-- Mira del Rayo (GameHudController la coloca donde apunta el rayo) -->
         <ui:VisualElement name="crosshair" class="crosshair" picking-mode="Ignore">
-            <ui:VisualElement class="crosshair__dot" picking-mode="Ignore"/>
+            <!-- Contorno oscuro detrás de las esquinas: la mira se ve también sobre el cielo claro -->
+            <ui:VisualElement class="crosshair__corner crosshair__corner--outline crosshair__corner--tl" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--outline crosshair__corner--tr" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--outline crosshair__corner--bl" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--outline crosshair__corner--br" picking-mode="Ignore"/>
+            <!-- Cuatro esquinas en escuadra -->
+            <ui:VisualElement class="crosshair__corner crosshair__corner--tl" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--tr" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--bl" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--br" picking-mode="Ignore"/>
         </ui:VisualElement>
 
         <!-- Marcadores sobre las nubes de smog (CloudMarkersController); debajo de los controles -->
@@ -33,6 +42,11 @@
             </ui:VisualElement>
             <!-- Aviso de borde del mapa (GDD 5.4); GameHudController lo muestra cerca de las paredes -->
             <ui:Label text="FUERA DE ALCANCE · vuelve a la ciudad" name="hud-boundary" class="hud-boundary" picking-mode="Ignore"/>
+            <!-- Puntaje y árboles plantados (GDD 9.3), arriba al centro -->
+            <ui:VisualElement name="hud-stats" class="hud-stats" picking-mode="Ignore">
+                <ui:Label text="0" name="hud-score" class="hud-stat hud-stat--score" picking-mode="Ignore"/>
+                <ui:Label text="ÁRBOLES 0/0" name="hud-trees" class="hud-stat hud-stat--trees" picking-mode="Ignore"/>
+            </ui:VisualElement>
             <ui:Label text="03:00" name="hud-timer" class="hud-timer" picking-mode="Ignore"/>
             <ui:Button text="II" name="btn-pause" class="pause-button"/>
         </ui:VisualElement>
@@ -44,6 +58,7 @@
                 <ui:Slider label="Música" name="pause-slider-music" low-value="0" high-value="1" value="0.8" class="option-slider"/>
                 <ui:Slider label="Efectos" name="pause-slider-sfx" low-value="0" high-value="1" value="0.8" class="option-slider"/>
                 <ui:Toggle label="Vibración" name="pause-toggle-vibration" value="true" class="option-toggle"/>
+                <ui:Toggle label="Joystick fijo" name="pause-toggle-fixed-joystick" value="false" class="option-toggle"/>
                 <ui:Button text="CONTINUAR" name="btn-resume" class="menu-button menu-button--primary panel-button"/>
                 <ui:VisualElement class="pause-row">
                     <ui:Button text="REINTENTAR" name="btn-pause-retry" class="menu-button pause-row__button pause-row__button--left"/>

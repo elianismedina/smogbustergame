@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 889835750783337278}
   - component: {fileID: 2394422312420655757}
   - component: {fileID: 4774209577229946703}
+  - component: {fileID: 5796920250292075436}
   m_Layer: 0
   m_Name: GameHUD
   m_TagString: Untagged
@@ -75,6 +76,8 @@ MonoBehaviour:
   _stickRadius: 110
   _deadZone: 0.12
   _timerWarning: 30
+  _playAreaHalfSize: 77.5
+  _boundaryMargin: 6
 --- !u!114 &2394422312420655757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,4 +107,20 @@ MonoBehaviour:
   _heightOffset: 1.5
   _fullSizeDistance: 15
   _minScale: 0.45
+  _edgeMargin: 100
+  _topMargin: 260
   _maxDistance: 140
+--- !u!114 &5796920250292075436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4474563007509518495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e53fcf2cddf95241bc0474aa23a9fa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialController
+  _alwaysShow: 0
+  _startDelay: 0.6

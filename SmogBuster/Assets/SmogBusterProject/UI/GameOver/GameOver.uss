@@ -83,3 +83,44 @@
 .gameover-overlay--victory .gameover-title {
     color: rgb(120, 230, 170);
 }
+
+/* ---------- Resumen de impacto ---------- */
+
+.gameover-stats {
+    width: 100%;
+    margin-bottom: 24px;
+    padding: 16px 28px;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+}
+
+.gameover-stat {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 6px 0;
+}
+
+.gameover-stat__label {
+    font-size: 28px;
+    color: rgb(185, 205, 210);
+}
+
+.gameover-stat__value {
+    font-size: 28px;
+    -unity-font-style: bold;
+    color: rgb(225, 235, 230);
+}
+
+.gameover-stat--total {
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top-width: 2px;
+    border-color: rgba(185, 205, 210, 0.3);
+}
+
+.gameover-stat--total .gameover-stat__label,
+.gameover-stat--total .gameover-stat__value {
+    font-size: 36px;
+    -unity-font-style: bold;
+    color: rgb(255, 214, 102);
+}

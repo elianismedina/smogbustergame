@@ -17,34 +17,90 @@
 
 .crosshair {
     position: absolute;
-    width: 72px;
-    height: 72px;
+    width: 92px;
+    height: 92px;
     translate: -50% -50%;
-    border-radius: 36px;
-    border-width: 4px;
-    border-color: rgba(255, 255, 255, 0.85);
-    align-items: center;
-    justify-content: center;
-    transition-property: scale, border-color;
+    transition-property: scale;
     transition-duration: 0.12s;
 }
 
-.crosshair__dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.9);
+/* Cada esquina es un cuadrado con solo dos bordes visibles (forma de escuadra) */
+.crosshair__corner {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-color: rgba(255, 255, 255, 0.9);
+    transition-property: border-color;
+    transition-duration: 0.12s;
 }
 
-/* Nube fijada: la mira se vuelve cian y se cierra un poco */
+.crosshair__corner--tl {
+    left: 0;
+    top: 0;
+    border-left-width: 5px;
+    border-top-width: 5px;
+}
+
+.crosshair__corner--tr {
+    right: 0;
+    top: 0;
+    border-right-width: 5px;
+    border-top-width: 5px;
+}
+
+.crosshair__corner--bl {
+    left: 0;
+    bottom: 0;
+    border-left-width: 5px;
+    border-bottom-width: 5px;
+}
+
+.crosshair__corner--br {
+    right: 0;
+    bottom: 0;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+}
+
+/* Contorno: las mismas esquinas, algo más gruesas y grandes, en oscuro y por detrás */
+.crosshair__corner--outline {
+    width: 34px;
+    height: 34px;
+    margin: -4px;
+    border-color: rgba(10, 20, 28, 0.75);
+}
+
+.crosshair__corner--outline.crosshair__corner--tl {
+    border-left-width: 13px;
+    border-top-width: 13px;
+}
+
+.crosshair__corner--outline.crosshair__corner--tr {
+    border-right-width: 13px;
+    border-top-width: 13px;
+}
+
+.crosshair__corner--outline.crosshair__corner--bl {
+    border-left-width: 13px;
+    border-bottom-width: 13px;
+}
+
+.crosshair__corner--outline.crosshair__corner--br {
+    border-right-width: 13px;
+    border-bottom-width: 13px;
+}
+
+/* Nube fijada: las esquinas se vuelven cian y se cierran sobre el objetivo */
 .crosshair--locked {
-    border-color: rgb(120, 220, 255);
-    border-width: 6px;
     scale: 0.8 0.8;
 }
 
-.crosshair--locked .crosshair__dot {
-    background-color: rgb(120, 220, 255);
+.crosshair--locked .crosshair__corner {
+    border-color: rgb(120, 220, 255);
+}
+
+.crosshair--locked .crosshair__corner--outline {
+    border-color: rgba(10, 20, 28, 0.75);
 }
 
 /* ---------- Marcadores de nubes (diana sobre cada nube) ---------- */
@@ -164,6 +220,11 @@
     height: 62%;
 }
 
+/* Joystick oculto en la web de escritorio (GameHudController) */
+.touch-zone--hidden {
+    display: none;
+}
+
 .joystick {
     flex-grow: 1;
 }
@@ -209,8 +270,8 @@
     position: absolute;
     top: 28px;
     right: 36px;
-    width: 104px;
-    height: 104px;
+    width: 128px;
+    height: 128px;
     margin: 0;
     padding: 0;
     font-size: 40px;
@@ -407,8 +468,8 @@
 .hud-timer {
     position: absolute;
     top: 28px;
-    right: 160px;
-    height: 104px;
+    right: 180px;
+    height: 128px;
     min-width: 200px;
     margin: 0;
     padding: 0 28px;
@@ -421,6 +482,48 @@
     border-width: 3px;
     border-color: rgba(120, 230, 170, 0.6);
     border-radius: 24px;
+}
+
+/* ---------- Puntaje y árboles (arriba al centro) ---------- */
+
+/* Centrados arriba, entre la barra de smog (izquierda) y el temporizador (derecha) */
+.hud-stats {
+    position: absolute;
+    top: 28px;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.hud-stat {
+    margin: 0 8px;
+    padding: 6px 24px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    color: rgb(225, 235, 230);
+    background-color: rgba(14, 28, 38, 0.72);
+    border-width: 3px;
+    border-color: rgba(120, 230, 170, 0.6);
+    border-radius: 20px;
+    transition-property: scale;
+    transition-duration: 0.15s;
+}
+
+.hud-stat--score {
+    font-size: 40px;
+    letter-spacing: 2px;
+}
+
+.hud-stat--trees {
+    font-size: 28px;
+    color: rgb(150, 235, 140);
+}
+
+/* Late un instante al sumar puntos o plantar */
+.hud-stat--bump {
+    scale: 1.12 1.12;
 }
 
 .hud-timer--warning {
@@ -443,4 +546,75 @@
 
 .pause-row__button--left {
     margin-right: 16px;
+}
+
+/* ---------- Tutorial de la primera partida (TutorialController) ---------- */
+
+.tutorial-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(5, 12, 16, 0.55);
+}
+
+/* Anillo que late alrededor del control del que habla la tarjeta */
+.tutorial-ring {
+    position: absolute;
+    border-width: 8px;
+    border-color: rgb(255, 214, 102);
+    border-radius: 40px;
+    transition-property: scale, opacity;
+    transition-duration: 0.4s;
+}
+
+.tutorial-ring--pulse {
+    scale: 1.08 1.08;
+    opacity: 0.55;
+}
+
+.tutorial-card {
+    width: 100%;
+    max-width: 820px;
+    padding: 32px 48px;
+    background-color: rgb(20, 40, 50);
+    border-width: 4px;
+    border-color: rgb(255, 214, 102);
+    border-radius: 32px;
+}
+
+.tutorial-card__counter {
+    font-size: 26px;
+    color: rgb(185, 205, 210);
+    -unity-text-align: middle-center;
+}
+
+.tutorial-card__title {
+    font-size: 60px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(255, 214, 102);
+    margin: 4px 0 12px 0;
+}
+
+.tutorial-card__body {
+    font-size: 36px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    color: rgb(240, 245, 245);
+    margin-bottom: 20px;
+}
+
+.tutorial-card__row {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.tutorial-card__button {
+    flex-grow: 1;
+    flex-basis: 0;
+    margin: 0 8px;
 }
