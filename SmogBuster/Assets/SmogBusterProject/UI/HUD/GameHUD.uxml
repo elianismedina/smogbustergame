@@ -42,6 +42,8 @@
             </ui:VisualElement>
             <!-- Aviso de borde del mapa (GDD 5.4); GameHudController lo muestra cerca de las paredes -->
             <ui:Label text="FUERA DE ALCANCE · vuelve a la ciudad" name="hud-boundary" class="hud-boundary" picking-mode="Ignore"/>
+            <!-- Frase de inicio en el centro, a la vez que la voz (GameplayAudio.StartVoicePlayed) -->
+            <ui:Label text="Let&apos;s clean the air of this city!" name="hud-start-line" class="hud-start-line" picking-mode="Ignore"/>
             <!-- Puntaje y árboles plantados (GDD 9.3), arriba al centro -->
             <ui:VisualElement name="hud-stats" class="hud-stats" picking-mode="Ignore">
                 <ui:Label text="0" name="hud-score" class="hud-stat hud-stat--score" picking-mode="Ignore"/>

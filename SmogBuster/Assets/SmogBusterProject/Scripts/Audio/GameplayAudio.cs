@@ -44,6 +44,9 @@ public class GameplayAudio : MonoBehaviour
     private float _nextAlertTime;
     private bool _aboveThreshold;
     private float _playTime;
+
+    /// <summary>Al sonar la voz de inicio, con su duración en segundos (el HUD muestra la frase a la vez).</summary>
+    public static event System.Action<float> StartVoicePlayed;
     private bool _startVoicePlayed;
 
     private void Awake()
@@ -96,6 +99,7 @@ public class GameplayAudio : MonoBehaviour
         if (_playTime < _startVoiceDelay) return;
         _startVoicePlayed = true;
         Play(_startVoice, _startVoiceVolume);
+        StartVoicePlayed?.Invoke(_startVoice.length);
     }
 
     private void UpdateBeam()
