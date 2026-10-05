@@ -62,6 +62,34 @@
     border-bottom-width: 5px;
 }
 
+/* Contorno: las mismas esquinas, algo más gruesas y grandes, en oscuro y por detrás */
+.crosshair__corner--outline {
+    width: 34px;
+    height: 34px;
+    margin: -4px;
+    border-color: rgba(10, 20, 28, 0.75);
+}
+
+.crosshair__corner--outline.crosshair__corner--tl {
+    border-left-width: 13px;
+    border-top-width: 13px;
+}
+
+.crosshair__corner--outline.crosshair__corner--tr {
+    border-right-width: 13px;
+    border-top-width: 13px;
+}
+
+.crosshair__corner--outline.crosshair__corner--bl {
+    border-left-width: 13px;
+    border-bottom-width: 13px;
+}
+
+.crosshair__corner--outline.crosshair__corner--br {
+    border-right-width: 13px;
+    border-bottom-width: 13px;
+}
+
 /* Nube fijada: las esquinas se vuelven cian y se cierran sobre el objetivo */
 .crosshair--locked {
     scale: 0.8 0.8;
@@ -69,6 +97,10 @@
 
 .crosshair--locked .crosshair__corner {
     border-color: rgb(120, 220, 255);
+}
+
+.crosshair--locked .crosshair__corner--outline {
+    border-color: rgba(10, 20, 28, 0.75);
 }
 
 /* ---------- Marcadores de nubes (diana sobre cada nube) ---------- */

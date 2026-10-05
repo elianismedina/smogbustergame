@@ -6,6 +6,11 @@
 
         <!-- Mira del Rayo (GameHudController la coloca donde apunta el rayo) -->
         <ui:VisualElement name="crosshair" class="crosshair" picking-mode="Ignore">
+            <!-- Contorno oscuro detrás de las esquinas: la mira se ve también sobre el cielo claro -->
+            <ui:VisualElement class="crosshair__corner crosshair__corner--outline crosshair__corner--tl" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--outline crosshair__corner--tr" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--outline crosshair__corner--bl" picking-mode="Ignore"/>
+            <ui:VisualElement class="crosshair__corner crosshair__corner--outline crosshair__corner--br" picking-mode="Ignore"/>
             <!-- Cuatro esquinas en escuadra -->
             <ui:VisualElement class="crosshair__corner crosshair__corner--tl" picking-mode="Ignore"/>
             <ui:VisualElement class="crosshair__corner crosshair__corner--tr" picking-mode="Ignore"/>
