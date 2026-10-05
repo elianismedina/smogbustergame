@@ -295,6 +295,59 @@
     scale: 0.92 0.92;
 }
 
+/* ---------- Botón de cámara (debajo de la pausa, mismo aspecto) ---------- */
+
+.camera-button {
+    position: absolute;
+    top: 172px;
+    right: 36px;
+    width: 128px;
+    height: 128px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(14, 28, 38, 0.72);
+    border-width: 3px;
+    border-color: rgba(120, 230, 170, 0.6);
+    border-radius: 24px;
+    transition-property: background-color, scale;
+    transition-duration: 0.12s;
+}
+
+.camera-button:hover {
+    background-color: rgba(44, 102, 104, 0.9);
+}
+
+.camera-button:active {
+    scale: 0.92 0.92;
+}
+
+/* En primera persona el botón queda marcado */
+.camera-button--first-person {
+    border-color: rgb(120, 230, 170);
+    background-color: rgba(44, 102, 104, 0.9);
+}
+
+.camera-button__mode {
+    margin: 0;
+    padding: 0;
+    font-size: 46px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(225, 235, 230);
+}
+
+.camera-button__caption {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    letter-spacing: 1px;
+    color: rgb(150, 200, 180);
+}
+
 /* ---------- Botones de acción (GDD 9.3: grandes, abajo a la derecha) ---------- */
 
 .action-button {

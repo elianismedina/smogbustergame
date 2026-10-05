@@ -8,6 +8,7 @@ using UnityEngine;
 ///   encima y por delante de él, así el dron se ve abajo en el centro y la mira queda cerca del centro.
 /// - Primera persona (CM_PrimeraPersona): fija en FPV_Mount, en el centro del dron un poco por detrás de
 ///   las hélices delanteras. Se oculta el cuerpo; las hélices y motores delanteros siguen a la vista.
+///   Se elige en juego con el botón de cámara del HUD (<see cref="ToggleView"/>).
 /// - Caída (CM_Caida): al estrellarse, la cámara se queda donde estaba y mira cómo cae el dron.
 /// En los dos modos de vuelo el stick lateral gira el dron (<see cref="SteersWithHeading"/>): si el stick
 /// moviera de lado respecto a una cámara que sigue al dron, el dron acabaría dando vueltas.
@@ -41,6 +42,8 @@ public class FollowCamera : MonoBehaviour
     [SerializeField] private Transform _hiddenModel;
     [Tooltip("Dejar a la vista las hélices y motores que quedan delante de la cámara.")]
     [SerializeField] private bool _showFrontPropellers = true;
+    [Tooltip("A esta distancia del montaje (metros) se considera que la cámara ya llegó a primera persona.")]
+    [SerializeField] private float _arrivedDistance = 0.5f;
 
     [Header("Efectos")]
     [Tooltip("Fuente de impulsos en el dron (golpes de cámara y choque).")]
@@ -73,8 +76,24 @@ public class FollowCamera : MonoBehaviour
     /// pasa a la cámara de caída, que se queda quieta y lo mira.</summary>
     public bool FollowYaw { get; set; } = true;
 
-    /// <summary>True mientras la vista es en primera persona.</summary>
-    public bool IsFirstPerson => _mode == ViewMode.FirstPerson && FollowYaw;
+    /// <summary>True mientras la vista es en primera persona (la cámara ya llegó al dron, no durante la mezcla).</summary>
+    public bool IsFirstPerson { get; private set; }
+
+    /// <summary>Vista elegida (la de primera persona no se usa mientras el dron cae).</summary>
+    public ViewMode Mode => _mode;
+
+    /// <summary>Cambia de vista en juego, con la mezcla del brain. No hace nada mientras el dron cae.</summary>
+    public void SetMode(ViewMode mode)
+    {
+        if (!FollowYaw) return;
+        _mode = mode;
+        UpdatePriorities();
+    }
+
+    /// <summary>Pasa de tercera a primera persona o al revés.</summary>
+    public void ToggleView() => SetMode(_mode == ViewMode.FirstPerson ? ViewMode.ThirdPerson : ViewMode.FirstPerson);
+
+    private bool WantsFirstPerson => _mode == ViewMode.FirstPerson && FollowYaw;
 
     /// <summary>True mientras la cámara sigue el rumbo del dron (los dos modos, salvo al caer):
     /// el stick lateral gira el dron y el vertical lo mueve adelante y atrás.</summary>
@@ -111,6 +130,10 @@ public class FollowCamera : MonoBehaviour
         else if (FollowYaw) _crashed = false;
 
         UpdatePriorities();
+        // El cuerpo se oculta y la mira sale de la cámara solo al terminar la mezcla, cuando la cámara ya
+        // está en el dron; si no, el dron desaparecería a mitad de camino
+        IsFirstPerson = WantsFirstPerson
+                        && (_fpvMount == null || (transform.position - _fpvMount.position).sqrMagnitude < _arrivedDistance * _arrivedDistance);
         SetModelHidden(IsFirstPerson);
 
         // El perfil de ruido gira la cámara 1 grado por unidad de ganancia
@@ -123,7 +146,7 @@ public class FollowCamera : MonoBehaviour
 
     private void UpdatePriorities()
     {
-        if (_firstPersonCamera != null) _firstPersonCamera.Priority = IsFirstPerson ? _activePriority : 10;
+        if (_firstPersonCamera != null) _firstPersonCamera.Priority = WantsFirstPerson ? _activePriority : 10;
         if (_crashCamera != null) _crashCamera.Priority = _crashed ? _activePriority + 10 : 0;
     }
 
