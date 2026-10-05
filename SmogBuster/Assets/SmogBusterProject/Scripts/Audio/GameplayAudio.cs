@@ -5,6 +5,7 @@ using UnityEngine;
 /// - Rayo Purificador: pulso en loop mientras se dispara, con fundido de entrada y salida.
 /// - Nube disipada, disparo de semilla y florecimiento: efectos cortos.
 /// - Alerta: pitido al pasar el smog del 80%, que se repite mientras siga por encima.
+/// - Voz de inicio: una frase al empezar a jugar (después del tutorial, si sale).
 /// Va en el dron, junto a <see cref="PurifierBeam"/> y <see cref="SeedLauncher"/>.
 /// </summary>
 public class GameplayAudio : MonoBehaviour
@@ -31,11 +32,19 @@ public class GameplayAudio : MonoBehaviour
     [Tooltip("Segundos entre pitidos mientras el smog siga por encima del umbral.")]
     [SerializeField] private float _alertRepeat = 3f;
 
+    [Header("Voz de inicio")]
+    [SerializeField] private AudioClip _startVoice;
+    [SerializeField] private float _startVoiceVolume = 1f;
+    [Tooltip("Segundos de juego antes de la frase, para que el motor arranque primero. El tutorial no cuenta (pausa el juego).")]
+    [SerializeField] private float _startVoiceDelay = 0.8f;
+
     private PurifierBeam _beam;
     private SeedLauncher _seeds;
     private AudioSource _beamSource;
     private float _nextAlertTime;
     private bool _aboveThreshold;
+    private float _playTime;
+    private bool _startVoicePlayed;
 
     private void Awake()
     {
@@ -73,6 +82,20 @@ public class GameplayAudio : MonoBehaviour
     {
         UpdateBeam();
         UpdateAlert();
+        UpdateStartVoice();
+    }
+
+    // Cuenta tiempo escalado: con el tutorial abierto (timeScale 0) no avanza, así la frase suena al empezar a volar
+    private void UpdateStartVoice()
+    {
+        if (_startVoicePlayed || _startVoice == null) return;
+        GameSession session = GameSession.Instance;
+        if (session != null && session.IsOver) return;
+
+        _playTime += Time.deltaTime;
+        if (_playTime < _startVoiceDelay) return;
+        _startVoicePlayed = true;
+        Play(_startVoice, _startVoiceVolume);
     }
 
     private void UpdateBeam()
