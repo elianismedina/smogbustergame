@@ -280,6 +280,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6920469175360815225}
   - component: {fileID: 5181489895782000437}
+  - component: {fileID: 8170439978047392606}
   m_Layer: 0
   m_Name: PlantingSpot
   m_TagString: Untagged
@@ -325,6 +326,49 @@ MonoBehaviour:
   _growDuration: 1.2
   _purifyPerSecond: 0.002
   _aimHeight: 0.4
+--- !u!114 &8170439978047392606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2698739772392741075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1da5c3512a2fca04eaba79cf8fb272bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlantingVegetation
+  _pieces:
+  - Prefab: {fileID: 182038, guid: 87475ce363e4bcf40b5791256be68f7d, type: 3}
+    Height: {x: 2.2, y: 3}
+    Weight: 1.2
+  - Prefab: {fileID: 170736, guid: c8f241d1151c5a14dbac88fd4bea1d93, type: 3}
+    Height: {x: 2.4, y: 3.4}
+    Weight: 1
+  - Prefab: {fileID: 164484, guid: d59133509f424e849b6d63b76ed0cad2, type: 3}
+    Height: {x: 2, y: 2.8}
+    Weight: 0.8
+  - Prefab: {fileID: 158626, guid: 49b0362a631aa79468a77f04e9cdc298, type: 3}
+    Height: {x: 0.7, y: 1.2}
+    Weight: 2.5
+  - Prefab: {fileID: 167550, guid: 4c780dab19a7e34419d3da69a409ec7e, type: 3}
+    Height: {x: 0.5, y: 0.8}
+    Weight: 2
+  - Prefab: {fileID: 114378, guid: 35047f5db11d8804f941830d7855dcf9, type: 3}
+    Height: {x: 0.45, y: 0.75}
+    Weight: 2
+  - Prefab: {fileID: 190654, guid: f80320821301293469fd7263b5c778a3, type: 3}
+    Height: {x: 0.6, y: 0.9}
+    Weight: 1
+  - Prefab: {fileID: 186700, guid: 458a74fb5b4f6ee4f8ec12ac39eb02a7, type: 3}
+    Height: {x: 0.25, y: 0.4}
+    Weight: 0.8
+  _count: {x: 8, y: 11}
+  _radius: 3.2
+  _innerRadius: 0.7
+  _material: {fileID: 2100000, guid: b2aa0ff31a0af4b4fb784832fa787193, type: 2}
+  _growDuration: 0.9
+  _maxDelay: 0.9
 --- !u!1 &3924112470016696063
 GameObject:
   m_ObjectHideFlags: 0
