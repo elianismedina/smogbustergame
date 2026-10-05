@@ -230,8 +230,14 @@ MonoBehaviour:
   _alertThreshold: 0.8
   _alertRepeat: 3
   _startVoice: {fileID: 8300000, guid: c02364ab96e24f8b8b59c63f2ffb7220, type: 3}
+  _startVoiceText: Let's clean the air of this city!
   _startVoiceVolume: 1
   _startVoiceDelay: 0.8
+  _almostCleanVoice: {fileID: 8300000, guid: 9525a80444ce4eaf8412890e5dd5783c, type: 3}
+  _almostCleanText: The air is almost cleaned up!
+  _almostCleanVolume: 1
+  _almostCleanThreshold: 0.2
+  _almostCleanRearm: 0.3
 --- !u!114 &5953116182227528567
 MonoBehaviour:
   m_ObjectHideFlags: 0

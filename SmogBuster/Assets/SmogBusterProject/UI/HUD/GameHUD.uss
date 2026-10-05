@@ -501,9 +501,9 @@
     opacity: 1;
 }
 
-/* ---------- Frase de inicio (en el centro, con la voz) ---------- */
+/* ---------- Frase de las voces (en el centro, mientras suenan) ---------- */
 
-.hud-start-line {
+.hud-voice-line {
     position: absolute;
     top: 42%;
     left: 50%;
@@ -525,7 +525,7 @@
     transition-duration: 0.4s, 0.4s;
 }
 
-.hud-start-line--visible {
+.hud-voice-line--visible {
     opacity: 1;
     scale: 1 1;
 }

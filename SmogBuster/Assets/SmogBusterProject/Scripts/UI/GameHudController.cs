@@ -42,8 +42,8 @@ public class GameHudController : MonoBehaviour
     private int _shownScore = -1;
     private int _shownTrees = -1;
     private Label _boundary;
-    private Label _startLine;
-    private IVisualElementScheduledItem _startLineHide;
+    private Label _voiceLine;
+    private IVisualElementScheduledItem _voiceLineHide;
     private VisualElement _crosshair;
     private PurifierBeam _beam;
     private SeedLauncher _seeds;
@@ -66,8 +66,8 @@ public class GameHudController : MonoBehaviour
         _score = _root.Q<Label>("hud-score");
         _trees = _root.Q<Label>("hud-trees");
         _boundary = _root.Q<Label>("hud-boundary");
-        _startLine = _root.Q<Label>("hud-start-line");
-        GameplayAudio.StartVoicePlayed += ShowStartLine;
+        _voiceLine = _root.Q<Label>("hud-voice-line");
+        GameplayAudio.VoiceLinePlayed += ShowVoiceLine;
         _crosshair = _root.Q<VisualElement>("crosshair");
 
         _moveStick = CreateStick("touch-zone-left", "joystick--move");
@@ -123,8 +123,8 @@ public class GameHudController : MonoBehaviour
     {
         if (_input != null && _input.MouseBlocker == (System.Func<Vector2, bool>)IsOverControl) _input.MouseBlocker = null;
         _root?.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-        GameplayAudio.StartVoicePlayed -= ShowStartLine;
-        _startLineHide?.Pause();
+        GameplayAudio.VoiceLinePlayed -= ShowVoiceLine;
+        _voiceLineHide?.Pause();
         if (_cameraButton != null) _cameraButton.clicked -= ToggleCamera;
         ReleaseSticks();
         _beamPulse?.Pause();
@@ -208,13 +208,14 @@ public class GameHudController : MonoBehaviour
         if (key || select) ToggleCamera();
     }
 
-    // La frase de inicio sale en el centro mientras suena la voz y se desvanece al terminar
-    private void ShowStartLine(float duration)
+    // La frase de cada voz sale en el centro mientras suena y se desvanece al terminar
+    private void ShowVoiceLine(string text, float duration)
     {
-        if (_startLine == null) return;
-        _startLine.AddToClassList("hud-start-line--visible");
-        _startLineHide?.Pause();
-        _startLineHide = _startLine.schedule.Execute(() => _startLine.RemoveFromClassList("hud-start-line--visible"))
+        if (_voiceLine == null) return;
+        _voiceLine.text = text;
+        _voiceLine.AddToClassList("hud-voice-line--visible");
+        _voiceLineHide?.Pause();
+        _voiceLineHide = _voiceLine.schedule.Execute(() => _voiceLine.RemoveFromClassList("hud-voice-line--visible"))
             .StartingIn((long)(Mathf.Max(duration, 1.5f) * 1000f) + 300);
     }
 
