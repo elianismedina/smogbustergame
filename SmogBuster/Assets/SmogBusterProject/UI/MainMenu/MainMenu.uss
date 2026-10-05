@@ -20,63 +20,16 @@
     bottom: 0;
 }
 
-.sky {
+/* Escenario con la proporción del key art (1376x768); MainMenuBackground.cs
+   lo dimensiona para cubrir la pantalla. Las capas usan % de la imagen. */
+.bg-stage {
     position: absolute;
-    left: 0;
-    right: 0;
+    /* El zoom lento crece hacia abajo y a la izquierda, lejos del logo */
+    transform-origin: 80% 0;
 }
 
-.sky--top {
-    top: 0;
-    height: 40%;
-    background-color: rgb(16, 34, 48);
-}
-
-.sky--mid {
-    top: 40%;
-    height: 30%;
-    background-color: rgb(34, 52, 58);
-}
-
-.sky--low {
-    top: 70%;
-    bottom: 0;
-    background-color: rgb(62, 66, 58);
-}
-
-.sun {
-    position: absolute;
-    width: 160px;
-    height: 160px;
-    right: 7%;
-    top: 9%;
-    border-radius: 80px;
-    background-color: rgb(225, 190, 120);
-    opacity: 0.25;
-}
-
-.skyline {
-    position: absolute;
-    left: -2%;
-    right: -2%;
-    bottom: 0;
-    height: 42%;
-    flex-direction: row;
-    align-items: flex-end;
-}
-
-.building {
-    background-color: rgb(10, 20, 26);
-    margin: 0 4px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-}
-
-.building--light {
-    background-color: rgb(18, 32, 38);
-}
-
-.smog-layer {
+.bg-base,
+.bg-fill {
     position: absolute;
     left: 0;
     top: 0;
@@ -84,52 +37,84 @@
     bottom: 0;
 }
 
-.smog {
+.bg-base {
+    background-image: url("Art/menu_bg_base.jpg");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.bg-drone {
     position: absolute;
-    border-radius: 400px;
-    background-color: rgb(150, 140, 110);
-    transition-property: translate, opacity;
-    transition-duration: 9s;
-    transition-timing-function: ease-in-out;
+    left: 30.523%;
+    top: 53.646%;
+    width: 30.669%;
+    height: 34.115%;
+    background-image: url("Art/menu_drone.png");
+    -unity-background-scale-mode: stretch-to-fill;
 }
 
-.smog--a {
-    width: 70%;
-    height: 34%;
-    left: -15%;
-    bottom: 2%;
-    opacity: 0.14;
+.bg-logo {
+    position: absolute;
+    left: 51.744%;
+    top: 3.646%;
+    width: 44.331%;
+    height: 20.833%;
+    background-image: url("Art/menu_logo.png");
+    -unity-background-scale-mode: stretch-to-fill;
 }
 
-.smog--b {
-    width: 60%;
-    height: 28%;
-    right: -12%;
-    bottom: 10%;
-    opacity: 0.12;
+.bg-logo-glow {
+    position: absolute;
+    left: 50%;
+    top: 0.521%;
+    width: 47.820%;
+    height: 27.083%;
+    background-image: url("Art/menu_logo_glow.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    opacity: 0;
 }
 
-.smog--c {
-    width: 50%;
-    height: 22%;
-    left: 22%;
-    bottom: -10%;
-    opacity: 0.16;
+.bg-beam {
+    position: absolute;
+    left: 47.965%;
+    top: 22.135%;
+    width: 37.5%;
+    height: 42.969%;
+    background-image: url("Art/menu_beam_glow.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    opacity: 0.3;
 }
 
-.smog--d {
-    width: 45%;
-    height: 18%;
-    left: 5%;
-    top: 6%;
-    opacity: 0.06;
+.bg-flare {
+    position: absolute;
+    background-image: url("Art/menu_flare.png");
+    -unity-background-scale-mode: stretch-to-fill;
 }
 
-/* Alterna cada pocos segundos desde MainMenuController */
-.smog-layer--drift .smog--a { translate: 12% 0; opacity: 0.2; }
-.smog-layer--drift .smog--b { translate: -10% -4%; opacity: 0.08; }
-.smog-layer--drift .smog--c { translate: -8% 0; opacity: 0.12; }
-.smog-layer--drift .smog--d { translate: 15% 4%; opacity: 0.1; }
+.bg-impact {
+    left: 79.506%;
+    top: 19.922%;
+    width: 6.977%;
+    height: 12.5%;
+}
+
+/* Luces de las hélices: % del recorte del dron (422x262) */
+.bg-rotor {
+    width: 9.479%;
+    height: 15.267%;
+    opacity: 0.4;
+}
+
+.bg-rotor--1 { left: 5.213%; top: 11.832%; }
+.bg-rotor--2 { left: 23.934%; top: -1.527%; }
+.bg-rotor--3 { left: 87.204%; top: 13.740%; }
+.bg-rotor--4 { left: 72.275%; top: 31.679%; }
+
+.bg-smoke-puff {
+    position: absolute;
+    background-image: url("Art/menu_smoke.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    opacity: 0;
+}
 
 /* ---------- Contenido ---------- */
 
@@ -139,15 +124,16 @@
     top: 0;
     right: 0;
     bottom: 0;
-    align-items: center;
+    /* Botones a la izquierda para dejar a la vista el dron y el logo */
+    align-items: flex-start;
     justify-content: center;
-    padding: 32px;
+    padding: 32px 32px 32px 64px;
 }
 
 .menu {
-    align-items: center;
+    align-items: flex-start;
     width: 100%;
-    max-width: 640px;
+    max-width: 460px;
     flex-shrink: 1;
     opacity: 0;
     translate: 0 24px;
@@ -161,37 +147,9 @@
     translate: 0 0;
 }
 
-.title-block {
-    align-items: center;
-}
-
-.title {
-    font-size: 120px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    letter-spacing: 12px;
-    color: rgb(225, 235, 230);
-    text-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
-    margin: 0;
-    padding: 0;
-}
-
-.title--accent {
-    margin-top: -24px;
-    color: rgb(120, 230, 170);
-}
-
-.subtitle {
-    font-size: 30px;
-    -unity-text-align: middle-center;
-    color: rgb(185, 205, 210);
-    margin-top: 8px;
-    margin-bottom: 48px;
-}
-
 .button-column {
     width: 100%;
-    max-width: 520px;
+    max-width: 460px;
 }
 
 .menu-button {

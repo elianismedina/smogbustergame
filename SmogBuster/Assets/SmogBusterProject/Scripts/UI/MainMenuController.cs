@@ -11,9 +11,6 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private string _nextSceneName = "Level01";
     [SerializeField] private float _fadeDuration = 0.4f;
 
-    [Header("Fondo")]
-    [SerializeField] private float _smogDriftInterval = 9f;
-
     [Header("Sonido")]
     [Tooltip("Se reproduce al pulsar cualquier botón del menú (grupo UI del mixer).")]
     [SerializeField] private AudioClip _selectSound;
@@ -21,7 +18,6 @@ public class MainMenuController : MonoBehaviour
     private VisualElement _root;
     private VisualElement _safeArea;
     private VisualElement _menu;
-    private VisualElement _smogLayer;
     private VisualElement _optionsOverlay;
     private VisualElement _levelsOverlay;
     private VisualElement _creditsOverlay;
@@ -43,7 +39,7 @@ public class MainMenuController : MonoBehaviour
     private Toggle _toggleVibration;
     private Toggle _toggleFixedJoystick;
 
-    private IVisualElementScheduledItem _smogDrift;
+    private MainMenuBackground _background;
     private Rect _lastSafeArea;
     private bool _isLoading;
 
@@ -61,7 +57,6 @@ public class MainMenuController : MonoBehaviour
         // 2. Buscar elementos en la interfaz
         _safeArea = _root.Q<VisualElement>("safe-area");
         _menu = _root.Q<VisualElement>("menu");
-        _smogLayer = _root.Q<VisualElement>("smog-layer");
         _optionsOverlay = _root.Q<VisualElement>("options-overlay");
         _levelsOverlay = _root.Q<VisualElement>("levels-overlay");
         _creditsOverlay = _root.Q<VisualElement>("credits-overlay");
@@ -121,11 +116,8 @@ public class MainMenuController : MonoBehaviour
             _btnPlay?.Focus();
         }).StartingIn(50);
 
-        // 7. Movimiento lento del smog de fondo
-        _smogDrift = _smogLayer?.schedule
-            .Execute(() => _smogLayer.ToggleInClassList("smog-layer--drift"))
-            .StartingIn(100)
-            .Every((long)(_smogDriftInterval * 1000));
+        // 7. Fondo animado (humo, rayo, dron y logo)
+        _background = new MainMenuBackground(_root);
     }
 
     private void OnDisable()
@@ -147,11 +139,14 @@ public class MainMenuController : MonoBehaviour
         _toggleFixedJoystick?.UnregisterValueChangedCallback(OnFixedJoystickChanged);
 
         _root?.UnregisterCallback<GeometryChangedEvent>(OnRootGeometryChanged);
-        _smogDrift?.Pause();
+        _background?.Dispose();
+        _background = null;
     }
 
     private void Update()
     {
+        _background?.Tick(Time.unscaledTime);
+
         // El área segura puede cambiar al rotar el dispositivo
         if (Screen.safeArea != _lastSafeArea)
         {

@@ -1,36 +1,26 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/SmogBusterProject/UI/MainMenu/MainMenu.uss?fileID=7433441132597879392&amp;guid=dab1087fa4394394d9e848f95bd88bf5&amp;type=3#MainMenu"/>
     <ui:VisualElement name="root-container" class="root-container">
+        <!-- Fondo animado a partir del key art (MainMenuBackground.cs). Las posiciones son % de la imagen de 1376x768 -->
         <ui:VisualElement name="background" picking-mode="Ignore" class="background">
-            <ui:VisualElement picking-mode="Ignore" class="sky sky--top"/>
-            <ui:VisualElement picking-mode="Ignore" class="sky sky--mid"/>
-            <ui:VisualElement picking-mode="Ignore" class="sky sky--low"/>
-            <ui:VisualElement picking-mode="Ignore" class="sun"/>
-            <ui:VisualElement name="skyline" picking-mode="Ignore" class="skyline">
-                <ui:VisualElement picking-mode="Ignore" class="building" style="height: 38%; flex-grow: 1.2;"/>
-                <ui:VisualElement picking-mode="Ignore" class="building building--light" style="height: 62%; flex-grow: 0.8;"/>
-                <ui:VisualElement picking-mode="Ignore" class="building" style="height: 46%; flex-grow: 1;"/>
-                <ui:VisualElement picking-mode="Ignore" class="building building--light" style="height: 80%; flex-grow: 0.7;"/>
-                <ui:VisualElement picking-mode="Ignore" class="building" style="height: 54%; flex-grow: 1.3;"/>
-                <ui:VisualElement picking-mode="Ignore" class="building building--light" style="height: 34%; flex-grow: 0.9;"/>
-                <ui:VisualElement picking-mode="Ignore" class="building" style="height: 70%; flex-grow: 0.8;"/>
-                <ui:VisualElement picking-mode="Ignore" class="building building--light" style="height: 44%; flex-grow: 1.1;"/>
-                <ui:VisualElement picking-mode="Ignore" class="building" style="height: 58%; flex-grow: 0.9;"/>
-            </ui:VisualElement>
-            <ui:VisualElement name="smog-layer" picking-mode="Ignore" class="smog-layer">
-                <ui:VisualElement picking-mode="Ignore" class="smog smog--a"/>
-                <ui:VisualElement picking-mode="Ignore" class="smog smog--b"/>
-                <ui:VisualElement picking-mode="Ignore" class="smog smog--c"/>
-                <ui:VisualElement picking-mode="Ignore" class="smog smog--d"/>
+            <ui:VisualElement name="bg-stage" picking-mode="Ignore" class="bg-stage">
+                <ui:VisualElement picking-mode="Ignore" class="bg-base"/>
+                <ui:VisualElement name="bg-smoke" picking-mode="Ignore" class="bg-fill"/>
+                <ui:VisualElement name="bg-beam" picking-mode="Ignore" class="bg-beam"/>
+                <ui:VisualElement name="bg-impact" picking-mode="Ignore" class="bg-flare bg-impact"/>
+                <ui:VisualElement name="bg-drone" picking-mode="Ignore" class="bg-drone">
+                    <ui:VisualElement picking-mode="Ignore" class="bg-flare bg-rotor bg-rotor--1"/>
+                    <ui:VisualElement picking-mode="Ignore" class="bg-flare bg-rotor bg-rotor--2"/>
+                    <ui:VisualElement picking-mode="Ignore" class="bg-flare bg-rotor bg-rotor--3"/>
+                    <ui:VisualElement picking-mode="Ignore" class="bg-flare bg-rotor bg-rotor--4"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="bg-logo-glow" picking-mode="Ignore" class="bg-logo-glow"/>
+                <ui:VisualElement name="bg-logo" picking-mode="Ignore" class="bg-logo"/>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="safe-area" picking-mode="Ignore" class="safe-area">
             <ui:VisualElement name="menu" class="menu">
-                <ui:VisualElement class="title-block">
-                    <ui:Label text="SMOG" name="title-label" class="title"/>
-                    <ui:Label text="BUSTER" name="Label" class="title title--accent"/>
-                </ui:VisualElement>
-                <ui:Label text="Limpia el aire de la ciudad" name="subtitle-label" class="subtitle"/>
+                <!-- El título y el lema vienen en el logo del fondo -->
                 <ui:VisualElement name="VisualElement" class="button-column">
                     <ui:Button text="JUGAR" name="btn-play" class="menu-button menu-button--primary"/>
                     <ui:Button text="OPCIONES" name="btn-options" class="menu-button"/>
