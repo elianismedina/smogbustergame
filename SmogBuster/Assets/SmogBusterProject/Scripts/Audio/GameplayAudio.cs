@@ -6,7 +6,7 @@ using UnityEngine;
 /// - Nube disipada, disparo de semilla y florecimiento: efectos cortos.
 /// - Alerta: pitido al pasar el smog del 80%, que se repite mientras siga por encima.
 /// - Voces con su frase en pantalla: una al empezar a jugar (después del tutorial, si sale) y otra
-///   cada vez que el smog baja al 20% ("el aire está casi limpio").
+///   cada vez que el smog baja al 20% ("el aire está casi limpio") y otra al ganar.
 /// Va en el dron, junto a <see cref="PurifierBeam"/> y <see cref="SeedLauncher"/>.
 /// </summary>
 public class GameplayAudio : MonoBehaviour
@@ -52,6 +52,13 @@ public class GameplayAudio : MonoBehaviour
     [Tooltip("Para volver a sonar, el smog tiene que subir antes por encima de este nivel (si no, sonaría sin parar al rozar el 20%).")]
     [SerializeField] private float _almostCleanRearm = 0.3f;
 
+    [Header("Voz de victoria")]
+    [SerializeField] private AudioClip _victoryVoice;
+    [SerializeField] private string _victoryText = "Look at the blue sky!";
+    [SerializeField] private float _victoryVolume = 1f;
+    [Tooltip("Segundos tras ganar antes de la frase, para que arranque primero el sonido de victoria.")]
+    [SerializeField] private float _victoryVoiceDelay = 0.4f;
+
     private PurifierBeam _beam;
     private SeedLauncher _seeds;
     private AudioSource _beamSource;
@@ -63,6 +70,8 @@ public class GameplayAudio : MonoBehaviour
     public static event System.Action<string, float> VoiceLinePlayed;
     private bool _startVoicePlayed;
     private bool _almostCleanArmed = true;
+    private float _victoryTime;
+    private bool _victoryVoicePlayed;
 
     private void Awake()
     {
@@ -102,6 +111,7 @@ public class GameplayAudio : MonoBehaviour
         UpdateAlert();
         UpdateStartVoice();
         UpdateAlmostCleanVoice();
+        UpdateVictoryVoice();
     }
 
     // Cuenta tiempo escalado: con el tutorial abierto (timeScale 0) no avanza, así la frase suena al empezar a volar
@@ -128,6 +138,17 @@ public class GameplayAudio : MonoBehaviour
             _almostCleanArmed = false;
             PlayVoice(_almostCleanVoice, _almostCleanText, _almostCleanVolume);
         }
+    }
+
+    private void UpdateVictoryVoice()
+    {
+        GameSession session = GameSession.Instance;
+        if (_victoryVoicePlayed || _victoryVoice == null || session == null || session.Outcome != GameSession.Result.Victory) return;
+
+        _victoryTime += Time.deltaTime;
+        if (_victoryTime < _victoryVoiceDelay) return;
+        _victoryVoicePlayed = true;
+        PlayVoice(_victoryVoice, _victoryText, _victoryVolume);
     }
 
     private static void PlayVoice(AudioClip clip, string text, float volume)

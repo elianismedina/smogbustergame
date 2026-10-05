@@ -238,6 +238,10 @@ MonoBehaviour:
   _almostCleanVolume: 1
   _almostCleanThreshold: 0.2
   _almostCleanRearm: 0.3
+  _victoryVoice: {fileID: 8300000, guid: 18e90a523a8842918d73df728802d37b, type: 3}
+  _victoryText: Look at the blue sky!
+  _victoryVolume: 1
+  _victoryVoiceDelay: 0.4
 --- !u!114 &5953116182227528567
 MonoBehaviour:
   m_ObjectHideFlags: 0
