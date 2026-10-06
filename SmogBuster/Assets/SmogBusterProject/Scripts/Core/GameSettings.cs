@@ -82,7 +82,7 @@ public static class GameSettings
     {
         switch (level)
         {
-            case DifficultyLevel.Easy: return 1.5f;
+            case DifficultyLevel.Easy: return 1.75f;
             case DifficultyLevel.Hard: return 0.8f;
             default: return 1f;
         }
