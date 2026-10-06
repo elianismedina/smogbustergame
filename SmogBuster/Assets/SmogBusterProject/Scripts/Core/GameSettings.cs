@@ -91,7 +91,7 @@ public static class GameSettings
     /// <summary>Multiplicador de la velocidad de las micro-nubes (más alto = viajan más rápido).</summary>
     public static float MicroCloudSpeedMultiplier(DifficultyLevel level)
     {
-        return level == DifficultyLevel.Hard ? 1.6f : 1f;
+        return level == DifficultyLevel.Hard ? 2.5f : 1f;
     }
 
     /// <summary>Multiplicador de los segundos que tarda una micro-nube en escaparse (más bajo = se escapa antes).</summary>
