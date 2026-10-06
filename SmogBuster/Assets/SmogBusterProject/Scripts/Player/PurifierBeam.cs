@@ -53,6 +53,11 @@ public class PurifierBeam : MonoBehaviour
         if (Camera.main != null) _camera = Camera.main.GetComponent<FollowCamera>();
         if (_muzzle == null) _muzzle = FindChild(transform, "Cannon_Beam");
         if (_line != null) _line.enabled = false;
+
+        // Dificultad de Opciones: en Difícil el fijado automático es más estrecho
+        float assist = GameSettings.BeamAssistMultiplier(GameSettings.Difficulty);
+        _assistAngle *= assist;
+        _assistVerticalAngle *= assist;
     }
 
     private void Update()

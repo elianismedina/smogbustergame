@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Reglas de la partida (GDD 5.2 y 5.3): nivel global de smog, temporizador y fin de partida.
-/// - El smog empieza en 60% y sube 1% cada 2 s.
+/// - El smog empieza en 60% y sube 1% cada 3 s (partida de 2:00 en Normal).
 /// - Victoria: smog al 0% antes de que acabe el tiempo.
 /// - Derrota: smog al 100%, tiempo a 00:00 o choque contra un edificio.
 /// Usa tiempo escalado, así que se detiene con la pausa (timeScale = 0).
@@ -28,11 +28,11 @@ public class GameSession : MonoBehaviour
     [Tooltip("Cuánto sube el smog en cada paso.")]
     [SerializeField] private float _riseAmount = 0.01f;
     [Tooltip("Segundos entre cada subida.")]
-    [SerializeField] private float _riseInterval = 2f;
+    [SerializeField] private float _riseInterval = 3f;
 
     [Header("Tiempo")]
     [Tooltip("Duración del nivel en segundos.")]
-    [SerializeField] private float _timeLimit = 180f;
+    [SerializeField] private float _timeLimit = 120f;
 
     [Header("Puntaje")]
     [SerializeField] private int _cloudPoints = 100;
@@ -75,7 +75,7 @@ public class GameSession : MonoBehaviour
     /// <summary>Puntos del bonus por tiempo (solo al ganar).</summary>
     public int TimeBonus { get; private set; }
 
-    private const string BestScorePrefix = "best.";
+    private const string BestScorePrefix = "best2.";
 
     /// <summary>Mejor puntaje guardado de un nivel (nombre de escena), 0 si no se ha ganado.</summary>
     public static int BestScore(string sceneName) => PlayerPrefs.GetInt(BestScorePrefix + sceneName, 0);

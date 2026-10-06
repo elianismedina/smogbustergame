@@ -4,7 +4,8 @@ using UnityEngine;
 
 /// <summary>
 /// Nube de smog individual (GDD 8.1 y 8.4). El Rayo Purificador la disipa al instante y baja el smog global.
-/// - Nube grande: está quieta sobre avenidas y fábricas; al disiparla, −5%.
+/// - Nube grande: está sobre avenidas y fábricas; al disiparla, −5%. En Difícil vaga despacio alrededor
+///   de su sitio inicial.
 /// - Micro-nube (la sueltan chimeneas): viaja despacio y, si nadie la neutraliza a tiempo,
 ///   se disuelve en el aire y sube el smog.
 /// Necesita un collider en modo trigger para que el rayo la detecte.
@@ -28,6 +29,10 @@ public class SmogCloud : MonoBehaviour
     [Tooltip("Escala final respecto a la inicial (crece mientras viaja).")]
     [SerializeField] private float _growth = 2f;
 
+    [Header("Nube grande en Difícil")]
+    [Tooltip("Metros que puede alejarse de su sitio inicial al vagar.")]
+    [SerializeField] private float _wanderRadius = 8f;
+
     [Header("Apuntado")]
     [Tooltip("Halo que se enciende cuando la nube está en la mira del Rayo.")]
     [SerializeField] private GameObject _highlight;
@@ -42,6 +47,9 @@ public class SmogCloud : MonoBehaviour
     private float _age;
     private bool _gone;
     private bool _targeted;
+    private Vector3 _home;
+    private float _wanderSpeed;
+    private Vector2 _wanderSign;
 
     /// <summary>Nubes que siguen en el aire.</summary>
     public static IReadOnlyList<SmogCloud> Active => ActiveList;
@@ -69,6 +77,21 @@ public class SmogCloud : MonoBehaviour
 
         Vector2 flat = Random.insideUnitCircle.normalized;
         _driftDirection = new Vector3(flat.x, 0.15f, flat.y).normalized;
+
+        // Dificultad de Opciones: en Difícil las micro-nubes viajan más rápido y se escapan antes
+        if (_isMicro)
+        {
+            GameSettings.DifficultyLevel difficulty = GameSettings.Difficulty;
+            _driftSpeed *= GameSettings.MicroCloudSpeedMultiplier(difficulty);
+            _settleTime *= GameSettings.MicroCloudSettleMultiplier(difficulty);
+        }
+        else
+        {
+            _wanderSpeed = GameSettings.BigCloudWanderSpeed(GameSettings.Difficulty);
+            _home = transform.position;
+            // Sentido al azar en cada eje, para que no vaguen todas igual
+            _wanderSign = new Vector2(Random.value < 0.5f ? -1f : 1f, Random.value < 0.5f ? -1f : 1f);
+        }
     }
 
     private void OnEnable() => ActiveList.Add(this);
@@ -77,10 +100,17 @@ public class SmogCloud : MonoBehaviour
 
     private void Update()
     {
-        if (_gone || !_isMicro) return;
+        if (_gone) return;
         if (GameSession.Instance != null && GameSession.Instance.IsOver) return;
 
         _age += Time.deltaTime;
+
+        if (!_isMicro)
+        {
+            Wander();
+            return;
+        }
+
         transform.position += _driftDirection * (_driftSpeed * Time.deltaTime);
         transform.localScale = _startScale * Mathf.Lerp(1f, _growth, _age / _settleTime);
 
@@ -89,6 +119,19 @@ public class SmogCloud : MonoBehaviour
             GameSession.Instance?.AddSmog(_settleAmount);
             Disappear();
         }
+    }
+
+    /// <summary>
+    /// Nube grande en Difícil: recorre una curva suave (Lissajous) alrededor de su sitio, sin alejarse más
+    /// de <see cref="_wanderRadius"/> en cada eje y a la misma altura. Arranca en su sitio, sin saltos.
+    /// </summary>
+    private void Wander()
+    {
+        if (_wanderSpeed <= 0f || _wanderRadius <= 0f) return;
+        float rate = _wanderSpeed / _wanderRadius;
+        float x = Mathf.Sin(_age * rate) * _wanderSign.x;
+        float z = Mathf.Sin(_age * rate * 0.73f) * _wanderSign.y;
+        transform.position = _home + new Vector3(x, 0f, z) * _wanderRadius;
     }
 
     /// <summary>Enciende o apaga el halo de «en la mira».</summary>

@@ -82,10 +82,34 @@ public static class GameSettings
     {
         switch (level)
         {
-            case DifficultyLevel.Easy: return 1.5f;
-            case DifficultyLevel.Hard: return 0.8f;
+            case DifficultyLevel.Easy: return 1.8f;
+            case DifficultyLevel.Hard: return 0.9f;
             default: return 1f;
         }
+    }
+
+    /// <summary>Multiplicador de la velocidad de las micro-nubes (más alto = viajan más rápido).</summary>
+    public static float MicroCloudSpeedMultiplier(DifficultyLevel level)
+    {
+        return level == DifficultyLevel.Hard ? 4f : 1f;
+    }
+
+    /// <summary>Multiplicador de los segundos que tarda una micro-nube en escaparse (más bajo = se escapa antes).</summary>
+    public static float MicroCloudSettleMultiplier(DifficultyLevel level)
+    {
+        return level == DifficultyLevel.Hard ? 0.8f : 1f;
+    }
+
+    /// <summary>Metros por segundo a los que vagan las nubes grandes (0 = quietas, como en Fácil y Normal).</summary>
+    public static float BigCloudWanderSpeed(DifficultyLevel level)
+    {
+        return level == DifficultyLevel.Hard ? 2.5f : 0f;
+    }
+
+    /// <summary>Multiplicador de los ángulos del fijado automático del Rayo (más bajo = hay que apuntar mejor).</summary>
+    public static float BeamAssistMultiplier(DifficultyLevel level)
+    {
+        return level == DifficultyLevel.Hard ? 0.5f : 1f;
     }
 
     /// <summary>Segundos que se suman (o restan) al tiempo del nivel.</summary>
@@ -93,7 +117,7 @@ public static class GameSettings
     {
         switch (level)
         {
-            case DifficultyLevel.Easy: return 60f;
+            case DifficultyLevel.Easy: return 30f;
             case DifficultyLevel.Hard: return -30f;
             default: return 0f;
         }
