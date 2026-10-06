@@ -100,6 +100,12 @@ public static class GameSettings
         return level == DifficultyLevel.Hard ? 0.8f : 1f;
     }
 
+    /// <summary>Metros por segundo a los que vagan las nubes grandes (0 = quietas, como en Fácil y Normal).</summary>
+    public static float BigCloudWanderSpeed(DifficultyLevel level)
+    {
+        return level == DifficultyLevel.Hard ? 1f : 0f;
+    }
+
     /// <summary>Segundos que se suman (o restan) al tiempo del nivel.</summary>
     public static float ExtraTime(DifficultyLevel level)
     {
