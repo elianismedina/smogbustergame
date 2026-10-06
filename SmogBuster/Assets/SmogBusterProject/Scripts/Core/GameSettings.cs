@@ -106,6 +106,12 @@ public static class GameSettings
         return level == DifficultyLevel.Hard ? 2.5f : 0f;
     }
 
+    /// <summary>Multiplicador de los ángulos del fijado automático del Rayo (más bajo = hay que apuntar mejor).</summary>
+    public static float BeamAssistMultiplier(DifficultyLevel level)
+    {
+        return level == DifficultyLevel.Hard ? 0.5f : 1f;
+    }
+
     /// <summary>Segundos que se suman (o restan) al tiempo del nivel.</summary>
     public static float ExtraTime(DifficultyLevel level)
     {
