@@ -91,7 +91,7 @@ public static class GameSettings
     /// <summary>Multiplicador de la velocidad de las micro-nubes (más alto = viajan más rápido).</summary>
     public static float MicroCloudSpeedMultiplier(DifficultyLevel level)
     {
-        return level == DifficultyLevel.Hard ? 2.5f : 1f;
+        return level == DifficultyLevel.Hard ? 4f : 1f;
     }
 
     /// <summary>Multiplicador de los segundos que tarda una micro-nube en escaparse (más bajo = se escapa antes).</summary>
@@ -103,7 +103,7 @@ public static class GameSettings
     /// <summary>Metros por segundo a los que vagan las nubes grandes (0 = quietas, como en Fácil y Normal).</summary>
     public static float BigCloudWanderSpeed(DifficultyLevel level)
     {
-        return level == DifficultyLevel.Hard ? 1f : 0f;
+        return level == DifficultyLevel.Hard ? 2.5f : 0f;
     }
 
     /// <summary>Segundos que se suman (o restan) al tiempo del nivel.</summary>
