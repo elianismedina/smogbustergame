@@ -6,7 +6,7 @@ using UnityEngine;
 /// - Nube disipada, disparo de semilla y florecimiento: efectos cortos.
 /// - Alerta: pitido al pasar el smog del 80%, que se repite mientras siga por encima.
 /// - Voces con su frase en pantalla: una al empezar a jugar (después del tutorial, si sale) y otra
-///   cada vez que el smog baja al 20% ("el aire está casi limpio") y otra al ganar.
+///   cada vez que el smog baja al 20% ("el aire está casi limpio"), otra cuando se acaba el tiempo y otra al ganar.
 /// Va en el dron, junto a <see cref="PurifierBeam"/> y <see cref="SeedLauncher"/>.
 /// </summary>
 public class GameplayAudio : MonoBehaviour
@@ -52,6 +52,13 @@ public class GameplayAudio : MonoBehaviour
     [Tooltip("Para volver a sonar, el smog tiene que subir antes por encima de este nivel (si no, sonaría sin parar al rozar el 20%).")]
     [SerializeField] private float _almostCleanRearm = 0.3f;
 
+    [Header("Aviso de tiempo")]
+    [SerializeField] private AudioClip _timeRunningOut;
+    [SerializeField] private string _timeRunningOutText = "Time is running out!";
+    [SerializeField] private float _timeRunningOutVolume = 1f;
+    [Tooltip("Suena una vez al quedar estos segundos (el reloj del HUD se pone en aviso a los 30).")]
+    [SerializeField] private float _timeRunningOutAt = 30f;
+
     [Header("Voz de victoria")]
     [SerializeField] private AudioClip _victoryVoice;
     [SerializeField] private string _victoryText = "Look at the blue sky!";
@@ -70,6 +77,7 @@ public class GameplayAudio : MonoBehaviour
     public static event System.Action<string, float> VoiceLinePlayed;
     private bool _startVoicePlayed;
     private bool _almostCleanArmed = true;
+    private bool _timeRunningOutPlayed;
     private float _victoryTime;
     private bool _victoryVoicePlayed;
 
@@ -111,6 +119,7 @@ public class GameplayAudio : MonoBehaviour
         UpdateAlert();
         UpdateStartVoice();
         UpdateAlmostCleanVoice();
+        UpdateTimeRunningOut();
         UpdateVictoryVoice();
     }
 
@@ -138,6 +147,16 @@ public class GameplayAudio : MonoBehaviour
             _almostCleanArmed = false;
             PlayVoice(_almostCleanVoice, _almostCleanText, _almostCleanVolume);
         }
+    }
+
+    private void UpdateTimeRunningOut()
+    {
+        if (_timeRunningOutPlayed || _timeRunningOut == null) return;
+        GameSession session = GameSession.Instance;
+        if (session == null || session.IsOver || session.TimeRemaining > _timeRunningOutAt) return;
+
+        _timeRunningOutPlayed = true;
+        PlayVoice(_timeRunningOut, _timeRunningOutText, _timeRunningOutVolume);
     }
 
     private void UpdateVictoryVoice()

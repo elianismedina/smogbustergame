@@ -238,6 +238,10 @@ MonoBehaviour:
   _almostCleanVolume: 1
   _almostCleanThreshold: 0.2
   _almostCleanRearm: 0.3
+  _timeRunningOut: {fileID: 8300000, guid: 9806537b4e77cc2448403fc0259c3b04, type: 3}
+  _timeRunningOutText: Time is running out!
+  _timeRunningOutVolume: 1
+  _timeRunningOutAt: 30
   _victoryVoice: {fileID: 8300000, guid: 18e90a523a8842918d73df728802d37b, type: 3}
   _victoryText: Look at the blue sky!
   _victoryVolume: 1
@@ -293,6 +297,8 @@ MonoBehaviour:
   _smoothing: 6
   _spinUpDuration: 0.8
   _powerDownDuration: 0.7
+  _victoryHoverTime: 1.3
+  _victoryFadeDuration: 2
 --- !u!114 &2889081301605713307
 MonoBehaviour:
   m_ObjectHideFlags: 0
