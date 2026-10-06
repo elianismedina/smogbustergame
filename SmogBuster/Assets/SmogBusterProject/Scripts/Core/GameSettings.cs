@@ -88,6 +88,18 @@ public static class GameSettings
         }
     }
 
+    /// <summary>Multiplicador de la velocidad de las micro-nubes (más alto = viajan más rápido).</summary>
+    public static float MicroCloudSpeedMultiplier(DifficultyLevel level)
+    {
+        return level == DifficultyLevel.Hard ? 1.6f : 1f;
+    }
+
+    /// <summary>Multiplicador de los segundos que tarda una micro-nube en escaparse (más bajo = se escapa antes).</summary>
+    public static float MicroCloudSettleMultiplier(DifficultyLevel level)
+    {
+        return level == DifficultyLevel.Hard ? 0.8f : 1f;
+    }
+
     /// <summary>Segundos que se suman (o restan) al tiempo del nivel.</summary>
     public static float ExtraTime(DifficultyLevel level)
     {

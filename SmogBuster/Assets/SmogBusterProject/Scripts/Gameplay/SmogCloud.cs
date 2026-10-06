@@ -69,6 +69,14 @@ public class SmogCloud : MonoBehaviour
 
         Vector2 flat = Random.insideUnitCircle.normalized;
         _driftDirection = new Vector3(flat.x, 0.15f, flat.y).normalized;
+
+        // Dificultad de Opciones: en Difícil las micro-nubes viajan más rápido y se escapan antes
+        if (_isMicro)
+        {
+            GameSettings.DifficultyLevel difficulty = GameSettings.Difficulty;
+            _driftSpeed *= GameSettings.MicroCloudSpeedMultiplier(difficulty);
+            _settleTime *= GameSettings.MicroCloudSettleMultiplier(difficulty);
+        }
     }
 
     private void OnEnable() => ActiveList.Add(this);
