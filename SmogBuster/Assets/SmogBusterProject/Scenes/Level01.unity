@@ -26166,6 +26166,68 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4953652439784952, guid: 45374165b7b045b498462bc2d3987a31, type: 3}
   m_PrefabInstance: {fileID: 860109194}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &869895966
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 869895968}
+  - component: {fileID: 869895967}
+  m_Layer: 0
+  m_Name: BirdFlocks
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &869895967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869895966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c0364df9b58ff0448d087cc3c661d12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BirdFlocks
+  _session: {fileID: 1243341321}
+  _flockPrefab: {fileID: 8810605454442767333, guid: e8434d75d5b7ba14683177bdf1b6cbf9, type: 3}
+  _flockCount: 2
+  _flockScale: 8
+  _modelYaw: 0
+  _appearSmog: 0.2
+  _leaveSmog: 0.3
+  _center: {fileID: 0}
+  _radius: {x: 55, y: 95}
+  _height: {x: 24, y: 32}
+  _speed: 9
+  _offscreenDistance: 160
+  _transitionTime: 10
+  _bobAmplitude: 1.5
+  _bobFrequency: 0.25
+  _birdsLoop: {fileID: 8300000, guid: 2960a986d77cc1940a64ee0e447e746b, type: 3}
+  _birdsVolume: 0.5
+  _audioFade: 2
+--- !u!4 &869895968
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869895966}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &872645457
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36794,7 +36856,7 @@ MonoBehaviour:
   _firstPersonPitch: 8
   _hiddenModel: {fileID: 0}
   _showFrontPropellers: 1
-  _arrivedDistance: 0.5
+  _hideModelDistance: 1.6
   _impulse: {fileID: 5427760941065293947}
   _kickPerDegree: 0.12
   _crashImpulse: 0.8
@@ -47186,6 +47248,7 @@ MonoBehaviour:
   _followCamera: {fileID: 1154730236}
   _crashDelay: 1.2
   _showDelay: 1.2
+  _victoryDelay: 2.8
   _menuSceneName: MainMenu
   _fadeDuration: 0.4
   _defeatSound: {fileID: 8300000, guid: 99323c526d2742f46983396e33503207, type: 3}
@@ -65482,3 +65545,4 @@ SceneRoots:
   - {fileID: 186787452}
   - {fileID: 798577890}
   - {fileID: 782342234}
+  - {fileID: 869895968}

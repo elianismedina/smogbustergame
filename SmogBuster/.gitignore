@@ -111,6 +111,9 @@ InitTestScene*.unity*
 # LowpolyVegetationPackFree by PolyMount (Asset Store, import locally)
 /[Aa]ssets/PolyMount/
 /[Aa]ssets/PolyMount.meta
+# Low Poly Birds by Zacxophone (Asset Store, import locally)
+/[Aa]ssets/Zacxophone/
+/[Aa]ssets/Zacxophone.meta
 
 # Licensed music (Epidemic Sound, not redistributable): keep the audio local, commit only the .meta so scene references keep their GUID
 /[Aa]ssets/SmogBusterProject/Audio/BGM/main_menu_music.wav
@@ -120,3 +123,4 @@ InitTestScene*.unity*
 /[Aa]ssets/SmogBusterProject/Audio/SFX/sfx_drone_loop.wav
 /[Aa]ssets/SmogBusterProject/Audio/SFX/game_over_sound.wav
 /[Aa]ssets/SmogBusterProject/Audio/SFX/win_game_sound.wav
+/[Aa]ssets/SmogBusterProject/Audio/SFX/birds_sound.wav
