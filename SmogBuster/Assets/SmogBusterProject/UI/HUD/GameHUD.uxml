@@ -49,7 +49,7 @@
                 <ui:Label text="0" name="hud-score" class="hud-stat hud-stat--score" picking-mode="Ignore"/>
                 <ui:Label text="ÁRBOLES 0/0" name="hud-trees" class="hud-stat hud-stat--trees" picking-mode="Ignore"/>
             </ui:VisualElement>
-            <ui:Label text="03:00" name="hud-timer" class="hud-timer" picking-mode="Ignore"/>
+            <ui:Label text="02:30" name="hud-timer" class="hud-timer" picking-mode="Ignore"/>
             <ui:Button text="II" name="btn-pause" class="pause-button"/>
             <!-- Cambio de cámara (tercera / primera persona), debajo de la pausa.
                  GameHudController le pone el icono vectorial (CameraSwitchIcon) y lo resalta en primera persona. -->

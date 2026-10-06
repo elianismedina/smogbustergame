@@ -39075,8 +39075,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameSession
   _startSmog: 0.6
   _riseAmount: 0.01
-  _riseInterval: 2
-  _timeLimit: 180
+  _riseInterval: 2.3
+  _timeLimit: 150
   _cloudPoints: 100
   _microCloudPoints: 50
   _treePoints: 250
